@@ -1,11 +1,18 @@
 import "./styles/normalize.css"
 
-function component() {
-  const element = document.createElement("div")
+class App {
+  id: string
 
-  element.innerHTML = "Hello"
+  constructor(id: string) {
+    this.id = id
+  }
 
-  return element
+  start(): void {
+    const main = document.createElement("div")
+    main.id = this.id
+    document.body.append(main)
+  }
 }
 
-document.body.appendChild(component())
+const app = new App("app")
+app.start()
