@@ -1,13 +1,13 @@
 {
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-      "ecmaVersion": 2020,
-      "sourceType": "module"
-    },
-    "extends": ["airbnb", "plugin:@typescript-eslint/recommended"],
-    "plugins": ["@typescript-eslint"],
-    "rules": {
-      "no-inline-config": "error"
-      
-    }
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module"
+  },
+  "extends": ["airbnb", "plugin:@typescript-eslint/recommended", "prettier"],
+  "plugins": ["@typescript-eslint", "prettier"],
+  "rules": {
+    "no-inline-config": "error",
+    "prettier/prettier": "error"
   }
+}
