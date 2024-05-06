@@ -1,24 +1,24 @@
-### Описание
+### Description
 
 ***eCommerce application.***
 
 Single Page Application (SPA).\
-Финальный проект курса JS / Front-end EN stage2 RSSchool .\
-Выполняется командой, состоящей из 3 человек.
+Final course project JS / Front-end EN stage2 RSSchool .\
+Performed by a team of 3 people.
 
 
-### Страницы приложения:
+### Application pages:
 
-Логин и страница регистрации 🖥️
-Главная страница 🏠
-Каталог 📋
-Карточка товара 🔎
-Профиль пользователя 👤
-Корзина 🛒
-О нас 🙋‍♂️🙋‍♀️
+Login and Registration pages  🖥️
+Main page 🏠
+Catalog Product page 📋
+Detailed Product page 🔎
+User Profile page 👤
+Basket page 🛒
+About Us page 🙋‍♂️🙋‍♀️
 
 
-### Стек технологий:
+### Technology stack:
 
 1. TypeScript.
 2. CSS.
@@ -26,24 +26,24 @@ Single Page Application (SPA).\
 
 
 
-### Установка пакетов
+### Installing packages
 ```
 npm run install
 ```
 
-### Запуск проекта
+### Run the project
 
-#### Режим разработки
+#### Development mode
 ```
 npm run dev
 ```
 
-#### Сборка проекта
+#### Building the project
 ```
 npm run build
 ```
 
-### Скрипты
+### Scripts
 
 #### ESLint
 ```
@@ -59,23 +59,23 @@ npm run format
 npm run jest
 ```
 
-## Тесты
+## Tests
 
-Код должен покрываться тестами на 25%.
-Как пишутся тесты: https://jestjs.io/docs/getting-started
+The code should be covered by tests by 25%.
+How to right tests: https://jestjs.io/docs/getting-started
 
-## Работа с репозиторием
+## Working with the repository
 
-develop - главная ветка разработки, содержащая последнюю рабочую версию проекта.\
-Для каждой задачи создаем новую ветку от develop, делаем изменения, создаем  pull request в develop.\
-Ветки, создаваемые в начале работы над новой функциональностью должны быть основаны на текущем состоянии ветки develop.\
-Все слияния в ветку develop производятся только через Pull Requests.\
-Ветка считается готовой к слиянию (merge-ready) в develop, если есть хотя бы одно подтверждение от другого члена команды или ментора,
-и все комментарии (если есть), помечены как выполненные.\
-Комментарий может быть отмечен как выполненный только тем, кто его оставил.
+develop - the main development branch containing the latest working version of the project.\
+For each task, we create a new branch from develop, make changes, create a pull request in develop.\
+Branches created at the beginning of work on new functionality should be based on the current state of the develop branch.\
+All merges into the develop branch are made only through Pull Requests.\
+A branch is considered merge-ready in develop if there is at least one confirmation from another team member or mentor,
+and all comments (if any) are marked as completed.\
+A comment can only be marked as completed by the person who left it..
 
-## Отправка на оценку
+## Sending for evaluation
 
-В конце каждого спринта делаем pull request из ветки develop в ветку main с описанием в соответствии с требованиями rs-school. 🎓\
-Ссылку на pull request - ментору.\
-Ссылку на деплой - в cross-check submit.
+At the end of each sprint we make a pull request from the develop branch to the main branch with a description in accordance with the requirements of rs-school. 🎓\
+The link to pull request is for mentor.\
+The link to deployment is for cross-check submit.
