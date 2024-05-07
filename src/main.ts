@@ -10,7 +10,7 @@ class App {
   start(): void {
     const main = document.createElement("div");
     main.id = this.id;
-           document.body.append(main);
+    document.body.append(main);
   }
 }
 
