@@ -9,6 +9,10 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "bundle.js",
+    assetModuleFilename: ({ filename }) => {
+      const relativePath = path.relative(path.resolve(__dirname, "src"), filename)
+      return relativePath
+    },
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".jsx"],
@@ -18,14 +22,14 @@ module.exports = {
       template: "index.html",
     }),
     new MiniCssExtractPlugin(),
-    /*    new CopyWebpackPlugin({
+    new CopyWebpackPlugin({
       patterns: [
         {
           from: path.resolve(__dirname, "src/assets"),
           to: path.resolve(__dirname, "dist/assets"),
         },
       ],
-    }), */
+    }),
   ],
   module: {
     rules: [
@@ -46,6 +50,10 @@ module.exports = {
           },
         },
         exclude: /node_modules/,
+      },
+      {
+        test: /\.(jpg|png|svg)$/,
+        type: "asset/resource",
       },
     ],
   },
