@@ -8,7 +8,7 @@
     "sourceType": "module"
   },
   "extends": [
-    "airbnb",
+    "airbnb-base",
     "plugin:@typescript-eslint/recommended",
     "prettier",
     "plugin:prettier/recommended",
