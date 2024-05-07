@@ -1,15 +1,14 @@
 ### Description
 
-***eCommerce application.***
+**_eCommerce application._**
 
 Single Page Application (SPA).\
 Final course project JS / Front-end EN stage2 RSSchool .\
 Performed by a team of 3 people.
 
-
 ### Application pages:
 
-Login and Registration pages  🖥️
+Login and Registration pages 🖥️
 Main page 🏠
 Catalog Product page 📋
 Detailed Product page 🔎
@@ -17,16 +16,14 @@ User Profile page 👤
 Basket page 🛒
 About Us page 🙋‍♂️🙋‍♀️
 
-
 ### Technology stack:
 
 1. TypeScript.
 2. CSS.
 3. HTML.
 
-
-
 ### Installing packages
+
 ```
 npm run install
 ```
@@ -34,11 +31,13 @@ npm run install
 ### Run the project
 
 #### Development mode
+
 ```
 npm run dev
 ```
 
 #### Building the project
+
 ```
 npm run build
 ```
@@ -46,15 +45,19 @@ npm run build
 ### Scripts
 
 #### ESLint
+
 ```
 npm run lint
 ```
+
 #### Prettier
+
 ```
 npm run format
 ```
 
 #### Jest
+
 ```
 npm run jest
 ```

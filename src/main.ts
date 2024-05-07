@@ -1,18 +1,18 @@
-import "./styles/normalize.css"
+import "./styles/normalize.css";
 
 class App {
-  id: string
+  id: string;
 
   constructor(id: string) {
-    this.id = id
+    this.id = id;
   }
 
   start(): void {
-    const main = document.createElement("div")
-    main.id = this.id
-    document.body.append(main)
+    const main = document.createElement("div");
+    main.id = this.id;
+           document.body.append(main);
   }
 }
 
-const app = new App("app")
-app.start()
+const app = new App("app");
+app.start();
