@@ -55,6 +55,13 @@ module.exports = {
         test: /\.(jpg|png|svg)$/,
         type: "asset/resource",
       },
+      {
+        test: /\.(woff|woff2|eot|ttf|otf)$/,
+        type: "asset/resource",
+        generator: {
+          filename: "fonts/[name][ext]", // Путь, куда будут скопированы шрифты в итоговой сборке
+        },
+      },
     ],
   },
 }

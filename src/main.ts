@@ -1,4 +1,4 @@
-import "./styles/normalize.css"
+import "./styles/main.css"
 
 class App {
   id: string
@@ -16,3 +16,4 @@ class App {
 
 const app = new App("app")
 app.start()
+
