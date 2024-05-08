@@ -41,9 +41,13 @@
     "webpack-dev-server": "^5.0.4"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,json,css,scss,md}": [
+    "*.{ts,js}": [
       "prettier --write",
       "eslint --fix",
+      "git add ."
+    ],
+    "*.{json,css,md,html}": [
+      "prettier --write",
       "git add ."
     ]
   }
