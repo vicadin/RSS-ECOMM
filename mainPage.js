@@ -5,33 +5,51 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function createHeader() {
-    const header = document.createElement('header');
-    header.innerHTML = `
-        <nav>
-            <ul class="navLinks">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#login">Login</a></li>
-                <li><a href="#register">Register</a></li>
-            </ul>
-        </nav>
-    `;
+    const header = document.createElement("header");
+
+    const nav = document.createElement("nav");
+
+    const ul = document.createElement("ul");
+
+    const navLinks = ["Home", "Login", "Register"];
+    navLinks.forEach(linkText => {
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = `#${linkText.toLowerCase()}`;
+        a.textContent = linkText;
+        li.appendChild(a);
+        ul.appendChild(li);
+    });
+
+    nav.appendChild(ul);
+    header.appendChild(h1);
+    header.appendChild(nav);
+
     document.body.appendChild(header);
 }
 
-function createMain() {
-    const main = document.createElement('main');
-    main.innerHTML = `
-        <section id="content">
-            <h2>Welcome to the Shop</h2>
-        </section>
-    `;
+function createMainContent() {
+    const main = document.createElement("main");
+
+    const mainSection = document.createElement("section");
+
+    mainSection.id = "content";
+
+    const p = document.createElement("p");
+    p.textContent = "Shop Main";
+
+    mainSection.appendChild(p);
+    main.appendChild(mainSection);
+
     document.body.appendChild(main);
 }
 
 function createFooter() {
-    const footer = document.createElement('footer');
-    footer.innerHTML = `
-        <p>My shop</p>
-    `;
+    const footer = document.createElement("footer");
+
+    const p = document.createElement("p");
+    p.textContent = "Shop Footer";
+
+    footer.appendChild(p);
     document.body.appendChild(footer);
 }
