@@ -11,6 +11,8 @@ export default class RegistrationForm {
 
   private registrationSection: HTMLElement;
 
+  private logInText: HTMLAnchorElement;
+
   constructor() {
     this.registrationSection = document.createElement("section");
     this.registrationSection.classList.add("registration-section");
@@ -23,6 +25,11 @@ export default class RegistrationForm {
     this.submitButton.classList.add("btn-black");
 
     this.formElement.appendChild(this.submitButton);
+    this.logInText = document.createElement("a");
+    this.logInText.href = "#"; //add login page
+    this.logInText.innerHTML = "Do you already have an account?";
+    this.logInText.classList.add("form-link");
+    this.formElement.appendChild(this.logInText);
 
     this.formElement.addEventListener("input", this.handleInput.bind(this));
     this.formElement.addEventListener("submit", this.handleSubmit.bind(this));
@@ -117,8 +124,6 @@ export default class RegistrationForm {
       this.formElement.insertBefore(input, this.submitButton);
       this.formElement.insertBefore(errorElement, this.submitButton);
     });
-
-    this.formElement.appendChild(this.submitButton);
   }
 
   private validateField(fieldName: string, value: string): string | null {

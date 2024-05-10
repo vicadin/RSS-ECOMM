@@ -35,3 +35,10 @@ body {
   margin-bottom: 12px;
   height: 10px;
 }
+.form-link {
+  text-decoration: none;
+  color: #333;
+  font-size: 16px;
+  margin-top: 14px;
+  text-align: center;
+}
