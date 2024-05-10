@@ -1,55 +1,53 @@
 document.addEventListener("DOMContentLoaded", () => {
-    createHeader();
-    createMain();
-    createFooter();
+  createHeader();
+  createMainContent();
+  createFooter();
 });
 
 function createHeader() {
-    const header = document.createElement("header");
+  const header = document.createElement("header");
+  const nav = document.createElement("nav");
+  const ul = document.createElement("ul");
 
-    const nav = document.createElement("nav");
+  const navLinks = ["Home", "Login", "Register"];
+  navLinks.forEach((linkText) => {
+    const li = document.createElement("li");
+    const a = document.createElement("a");
+    a.href = `#${linkText.toLowerCase()}`;
+    a.textContent = linkText;
+    li.appendChild(a);
+    ul.appendChild(li);
+  });
 
-    const ul = document.createElement("ul");
+  nav.appendChild(ul);
+  header.appendChild(nav);
 
-    const navLinks = ["Home", "Login", "Register"];
-    navLinks.forEach(linkText => {
-        const li = document.createElement("li");
-        const a = document.createElement("a");
-        a.href = `#${linkText.toLowerCase()}`;
-        a.textContent = linkText;
-        li.appendChild(a);
-        ul.appendChild(li);
-    });
-
-    nav.appendChild(ul);
-    header.appendChild(h1);
-    header.appendChild(nav);
-
-    document.body.appendChild(header);
+  document.body.appendChild(header);
 }
 
 function createMainContent() {
-    const main = document.createElement("main");
+  const main = document.createElement("main");
+  const section = document.createElement("section");
+  section.id = "content";
 
-    const mainSection = document.createElement("section");
+  const h2 = document.createElement("h2");
+  h2.textContent = "Welcome to the Shop!";
 
-    mainSection.id = "content";
+  const p = document.createElement("p");
+  p.textContent = "Shop Content.";
 
-    const p = document.createElement("p");
-    p.textContent = "Shop Main";
+  section.appendChild(h2);
+  section.appendChild(p);
+  main.appendChild(section);
 
-    mainSection.appendChild(p);
-    main.appendChild(mainSection);
-
-    document.body.appendChild(main);
+  document.body.appendChild(main);
 }
 
 function createFooter() {
-    const footer = document.createElement("footer");
+  const footer = document.createElement("footer");
+  const p = document.createElement("p");
+  p.textContent = "© Shop Footer";
 
-    const p = document.createElement("p");
-    p.textContent = "Shop Footer";
-
-    footer.appendChild(p);
-    document.body.appendChild(footer);
+  footer.appendChild(p);
+  document.body.appendChild(footer);
 }
