@@ -1,7 +1,21 @@
 import "./form.css";
 
-import EmailAttr, { formAttributes } from "../../../interfaces/login-page-types.ts";
-import { createElement, createForm, createInput } from "../../../interfaces/login-page-utils.ts";
+import {
+  buttonAttr,
+  EmailAttr,
+  formAttributes,
+  passwordAttr,
+  showButtonAttributes,
+} from "../../../interfaces/login-page-types.ts";
+import {
+  createButton,
+  createElement,
+  createForm,
+  createInput,
+  showHidePassword,
+  validateEmail,
+  validatePassword,
+} from "../../../interfaces/login-page-utils.ts";
 
 export class Form {
   form: HTMLFormElement;
@@ -16,16 +30,50 @@ export class Form {
 
   emailError: HTMLSpanElement;
 
+  passwordWrapper: HTMLElement;
+
+  passwordBlockWrapper: HTMLElement;
+
+  passwordInnerWrapper: HTMLElement;
+
+  passwordInput: HTMLInputElement;
+
+  passwordLabel: HTMLElement;
+
+  passwordError: HTMLElement;
+
+  submitButton: HTMLButtonElement;
+
+  showButton: HTMLButtonElement;
+
   constructor() {
     this.form = createForm("form", formAttributes);
+
     this.emailWrapper = createElement("div", "email-wrapper");
-    this.emailInnerWrapper = createElement("div", "email-inner-wrapper");
+    this.emailInnerWrapper = createElement("div", "inner-wrapper");
     this.emailInput = createInput("email-input", EmailAttr);
     this.emailLabel = createElement("label", "email-label", "Email address");
     this.emailInnerWrapper.append(this.emailInput, this.emailLabel);
     this.emailError = createElement("span", "email-error");
     this.emailWrapper.append(this.emailInnerWrapper, this.emailError);
-    this.form.append(this.emailWrapper);
+
+    this.passwordBlockWrapper = createElement("div", "password-block-wrapper");
+    this.passwordWrapper = createElement("div", "password-wrapper");
+    this.passwordInnerWrapper = createElement("div", "inner-wrapper");
+
+    this.passwordInput = createInput("password-input", passwordAttr);
+    this.passwordLabel = createElement("label", "password-label", "Password");
+    this.passwordError = createElement("span", "password-error");
+
+    this.passwordInnerWrapper.append(this.passwordInput, this.passwordLabel);
+    this.passwordWrapper.append(this.passwordInnerWrapper, this.passwordError);
+
+    this.showButton = createButton("button-common show-button", showButtonAttributes, "Show");
+    this.submitButton = createButton("button-common submit-button", buttonAttr, "Log in");
+    this.passwordBlockWrapper.append(this.passwordWrapper, this.showButton);
+
+    this.form.append(this.emailWrapper, this.passwordBlockWrapper, this.submitButton);
+
     this.addEventListeners();
   }
 
@@ -44,26 +92,31 @@ export class Form {
       }
     });
 
-    this.form.addEventListener("submit", (ev) => {
-      ev.preventDefault();
-      if (this.emailInput.validity.valid) {
-        // запрос после проверки
-      } else {
-        if (this.emailInput.validity.valueMissing) {
-          this.emailError.textContent = "This field is required";
-        }
-        this.emailError.classList.add("email-error_active");
+    this.passwordInput.addEventListener("focusin", () => {
+      this.passwordLabel.classList.add("password-label_moved");
+    });
+
+    this.passwordInput.addEventListener("focusout", () => {
+      if (this.passwordInput.value === "") {
+        this.passwordLabel.classList.remove("password-label_moved");
       }
     });
 
-    this.emailInput.addEventListener("input", () => {
-      if (!this.emailInput.validity.valid) {
-        this.emailError.classList.add("email-error_active");
-        this.emailError.textContent = this.emailInput.value.length
-          ? "Please enter an email address in the correct format, such as name@example.com"
-          : "This field is required";
-      } else {
-        this.emailError.textContent = "";
+    this.emailInput.addEventListener("input", validateEmail.bind(this));
+
+    this.passwordInput.addEventListener("input", validatePassword.bind(this));
+
+    this.showButton.addEventListener("click", showHidePassword.bind(this));
+
+    this.form.addEventListener("submit", (ev) => {
+      ev.preventDefault();
+      if (this.emailInput.validity.valid && this.passwordInput.validity.valid) {
+        // here will be a request
+      } else if (this.emailInput.validity.valueMissing) {
+        this.emailError.textContent = "This field is required";
+      }
+      if (this.passwordInput.validity.valueMissing) {
+        this.passwordError.textContent = "This field is required";
       }
     });
   }
