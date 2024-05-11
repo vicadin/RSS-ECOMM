@@ -1,38 +1,29 @@
 import "./form.css";
 
+import EmailAttr, { formAttributes } from "../../../interfaces/login-page-types.ts";
+import { createElement, createForm, createInput } from "../../../interfaces/login-page-utils.ts";
+
 export class Form {
   form: HTMLFormElement;
 
-  emailWrapper: HTMLDivElement;
+  emailWrapper: HTMLElement;
+
+  emailInnerWrapper: HTMLElement;
 
   emailInput: HTMLInputElement;
 
-  emailInnerWrapper: HTMLDivElement;
-
-  emailLabel: HTMLLabelElement;
+  emailLabel: HTMLElement;
 
   emailError: HTMLSpanElement;
 
   constructor() {
-    this.form = document.createElement("form");
-    this.form.setAttribute("novalidate", "novalidate");
-    this.form.className = "form";
-    this.emailWrapper = document.createElement("div");
-    this.emailWrapper.className = "email-wrapper";
-    this.emailInnerWrapper = document.createElement("div");
-    this.emailInput = document.createElement("input");
-    this.emailInput.className = "email-input";
-    this.emailInput.setAttribute("type", "email");
-    this.emailInput.setAttribute("required", "required");
-    this.emailInput.setAttribute("autocomplete", "off");
-    this.emailInput.setAttribute("pattern", "[a-z0-9._%+\\-]+@[a-z0-9.\\-]+\\.[a-z]{2,}$");
-    this.emailLabel = document.createElement("label");
-    this.emailLabel.className = "email-label";
-    this.emailLabel.textContent = "Email address";
+    this.form = createForm("form", formAttributes);
+    this.emailWrapper = createElement("div", "email-wrapper");
+    this.emailInnerWrapper = createElement("div", "email-inner-wrapper");
+    this.emailInput = createInput("email-input", EmailAttr);
+    this.emailLabel = createElement("label", "email-label", "Email address");
     this.emailInnerWrapper.append(this.emailInput, this.emailLabel);
-    this.emailInnerWrapper.className = "email-inner-wrapper";
-    this.emailError = document.createElement("span");
-    this.emailError.className = "email-error";
+    this.emailError = createElement("span", "email-error");
     this.emailWrapper.append(this.emailInnerWrapper, this.emailError);
     this.form.append(this.emailWrapper);
     this.addEventListeners();
@@ -67,8 +58,10 @@ export class Form {
 
     this.emailInput.addEventListener("input", () => {
       if (!this.emailInput.validity.valid) {
-        this.emailError.textContent =
-          "Please enter an email address in the correct format, such as name@example.com";
+        this.emailError.classList.add("email-error_active");
+        this.emailError.textContent = this.emailInput.value.length
+          ? "Please enter an email address in the correct format, such as name@example.com"
+          : "This field is required";
       } else {
         this.emailError.textContent = "";
       }
