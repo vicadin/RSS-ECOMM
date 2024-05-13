@@ -16,6 +16,10 @@ import {
   validateEmail,
   validatePassword,
 } from "../../../interfaces/login-page-utils.ts";
+import {
+  fetchAuthenticateCustomer,
+  fetchGetAccessTokenThroughPassword,
+} from "../../../interfaces/login-page-requests.ts";
 
 export class Form {
   form: HTMLFormElement;
@@ -109,9 +113,16 @@ export class Form {
     this.showButton.addEventListener("click", showHidePassword.bind(this));
 
     this.form.addEventListener("submit", (ev) => {
+      const email = this.emailInput.value;
+      const password = this.passwordInput.value;
       ev.preventDefault();
       if (this.emailInput.validity.valid && this.passwordInput.validity.valid) {
-        // here will be a request
+        const response = fetchGetAccessTokenThroughPassword(email, password);
+
+        response.then((result) => {
+          const token = result.access_token;
+          fetchAuthenticateCustomer(token, email, password);
+        });
       } else if (this.emailInput.validity.valueMissing) {
         this.emailError.textContent = "This field is required";
       }

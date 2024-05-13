@@ -52,8 +52,8 @@ export function showHidePassword(): boolean {
   return true;
 }
 
-export function validatePassword() {
-  const password = this.passwordInput.value;
+export function validatePassword(): void {
+  const password: string = this.passwordInput.value;
 
   if (!this.passwordInput.validity.valid || password.trim().length !== password.length) {
     if (password.length === 0) {
@@ -88,7 +88,7 @@ export function validatePassword() {
   }
 }
 
-export function validateEmail() {
+export function validateEmail(): void {
   if (!this.emailInput.validity.valid) {
     this.emailError.textContent = this.emailInput.value.length
       ? "Please enter an email address in the correct format, such as name@example.com"
