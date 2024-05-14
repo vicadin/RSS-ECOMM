@@ -8,6 +8,7 @@ function createHeader() {
   const header = document.createElement("header");
   const nav = document.createElement("nav");
   const ul = document.createElement("ul");
+  ul.classList.add("nav_list");
 
   const navLinks = ["Home", "Login", "Register"];
   navLinks.forEach((linkText) => {
@@ -17,6 +18,7 @@ function createHeader() {
     a.textContent = linkText;
     li.appendChild(a);
     ul.appendChild(li);
+    li.classList.add("nav_list_item");
   });
 
   nav.appendChild(ul);
@@ -33,11 +35,7 @@ function createMainContent() {
   const h2 = document.createElement("h2");
   h2.textContent = "Welcome to the Shop!";
 
-  const p = document.createElement("p");
-  p.textContent = "Shop Content.";
-
   section.appendChild(h2);
-  section.appendChild(p);
   main.appendChild(section);
 
   document.body.appendChild(main);

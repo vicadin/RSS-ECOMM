@@ -1,0 +1,23 @@
+body {
+    display: flex;
+    flex-direction: column;
+}
+footer {
+    display: flex;
+    justify-content: center;
+}
+#content {
+    min-height: calc(100vh - 80px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.nav_list {
+    display: flex;
+    justify-content: flex-end;
+}
+.nav_list_item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
