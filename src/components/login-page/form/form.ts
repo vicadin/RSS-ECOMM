@@ -50,8 +50,11 @@ export class Form {
 
   showButton: HTMLButtonElement;
 
+  formError: HTMLElement;
+
   constructor() {
     this.form = createForm("form", formAttributes);
+    this.formError = createElement("div", "form-error");
 
     this.emailWrapper = createElement("div", "email-wrapper");
     this.emailInnerWrapper = createElement("div", "inner-wrapper");
@@ -76,9 +79,24 @@ export class Form {
     this.submitButton = createButton("button-common submit-button", buttonAttr, "Log in");
     this.passwordBlockWrapper.append(this.passwordWrapper, this.showButton);
 
-    this.form.append(this.emailWrapper, this.passwordBlockWrapper, this.submitButton);
+    this.form.append(
+      this.formError,
+      this.emailWrapper,
+      this.passwordBlockWrapper,
+      this.submitButton,
+    );
 
     this.addEventListeners();
+  }
+
+  clearFormError() {
+    if (this.formError.textContent) {
+      this.formError.textContent = "";
+    }
+  }
+
+  showRequestError(text: string) {
+    this.formError.textContent = text;
   }
 
   getHtmlElem() {
@@ -113,15 +131,28 @@ export class Form {
     this.showButton.addEventListener("click", showHidePassword.bind(this));
 
     this.form.addEventListener("submit", (ev) => {
+      ev.preventDefault();
       const email = this.emailInput.value;
       const password = this.passwordInput.value;
-      ev.preventDefault();
+
       if (this.emailInput.validity.valid && this.passwordInput.validity.valid) {
         const response = fetchGetAccessTokenThroughPassword(email, password);
-
         response.then((result) => {
           const token = result.access_token;
-          fetchAuthenticateCustomer(token, email, password);
+
+          if (token) {
+            fetchAuthenticateCustomer(token, email, password).then((res) => {
+              if (!res) {
+                this.showRequestError("Sorry, something went wrong. Please, try again later.");
+              } else {
+                // redirect to the main page
+              }
+            });
+          } else if (result.status === 400) {
+            this.showRequestError("Your email and password did not match. Please try again.");
+          } else {
+            this.showRequestError("Sorry, something went wrong. Please, try again later.");
+          }
         });
       } else if (this.emailInput.validity.valueMissing) {
         this.emailError.textContent = "This field is required";

@@ -1,6 +1,13 @@
 .form {
   margin: 30px 0 35px;
 }
+.form-error {
+  box-sizing: border-box;
+  margin-bottom: 20px;
+  color: #ca432f;
+  font-size: 16px;
+  line-height: 1.7;
+}
 
 .email-wrapper {
   position: relative;

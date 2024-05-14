@@ -19,10 +19,10 @@ export async function fetchGetAccessTokenThroughPassword(email: string, password
     if (response.ok) {
       return await response.json();
     }
-  } catch {
-    return false;
+    return response;
+  } catch (err) {
+    return err;
   }
-  return false;
 }
 
 export async function fetchAuthenticateCustomer(
@@ -45,11 +45,12 @@ export async function fetchAuthenticateCustomer(
 
   try {
     const response = await fetch(`${host}/${projectKey}/login`, config);
+
     if (response.ok) {
       return await response.json();
     }
-  } catch {
     return false;
+  } catch (error) {
+    return error;
   }
-  return false;
 }
