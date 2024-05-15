@@ -22,3 +22,5 @@ export const passwordAttr: [string, string][] = [
 export const showButtonAttributes: [string, string][] = [["type", "button"]];
 
 export const buttonAttr = [["type", "submit"]];
+
+export const createAccountButtonAttributes: [string, string][] = [["type", "button"]];

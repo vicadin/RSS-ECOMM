@@ -84,6 +84,9 @@
   background-color: transparent;
   cursor: pointer;
   padding: 0;
+}
+
+.show-button {
   border: 0;
 }
 
