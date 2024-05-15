@@ -1,16 +1,11 @@
-import "./registrationForm.css";
+import "./form.css";
+import * as RegistrationFormUtils from "../../../interfaces/registration/registartionFormUtils";
 
 export default class RegistrationForm {
   private formElement: HTMLFormElement;
-
   private errorElements: { [key: string]: HTMLElement } = {};
-
   private submitButton: HTMLButtonElement;
-
-  private title: HTMLElement;
-
   private registrationSection: HTMLElement;
-
   private logInText: HTMLAnchorElement;
 
   constructor() {
@@ -34,11 +29,6 @@ export default class RegistrationForm {
     this.formElement.addEventListener("input", this.handleInput.bind(this));
     this.formElement.addEventListener("submit", this.handleSubmit.bind(this));
 
-    this.title = document.createElement("h1");
-    this.title.innerText = "Create your account";
-    this.title.classList.add("title");
-
-    this.registrationSection.appendChild(this.title);
     this.registrationSection.appendChild(this.formElement);
   }
 
@@ -88,39 +78,23 @@ export default class RegistrationForm {
   public render(container: HTMLElement): void {
     container.appendChild(this.registrationSection);
     [
-      "email",
-      "password",
-      "firstName",
-      "lastName",
-      "dateOfBirth",
-      "street",
-      "city",
-      "postalCode",
-      "country",
-    ].forEach((fieldName) => {
-      const input = document.createElement("input");
-      if (fieldName === "password") {
-        input.type = "password";
-      } else if (fieldName === "dateOfBirth") {
+      { type: "text", name: "email", placeholder: "Email", required: true },
+      { type: "password", name: "password", placeholder: "Password", required: true },
+      { type: "text", name: "firstName", placeholder: "First Name", required: true },
+      { type: "text", name: "lastName", placeholder: "Last Name", required: true },
+      { type: "text", name: "dateOfBirth", placeholder: "Date of Birth", required: true },
+      { type: "text", name: "street", placeholder: "Street", required: true },
+      { type: "text", name: "city", placeholder: "City", required: true },
+      { type: "text", name: "postalCode", placeholder: "Postal Code", required: true },
+      { type: "text", name: "country", placeholder: "Country", required: true },
+    ].forEach(({ type, name, placeholder, required }) => {
+      const input = RegistrationFormUtils.createInputElement(type, name, placeholder, required);
+      if (name === "dateOfBirth") {
         input.addEventListener("focus", function () {
           this.type = "date";
         });
-      } else {
-        input.type = "text";
       }
-      input.name = fieldName;
-      input.placeholder =
-        fieldName.charAt(0).toUpperCase() +
-        fieldName
-          .slice(1)
-          .replace(/([A-Z])/g, " $1")
-          .trim();
-      input.required = true;
-
-      const errorElement = document.createElement("span");
-      errorElement.classList.add("error-message");
-      errorElement.id = `${fieldName}-error`;
-
+      const errorElement = RegistrationFormUtils.createErrorMessageElement(`${name}-error`);
       this.formElement.insertBefore(input, this.submitButton);
       this.formElement.insertBefore(errorElement, this.submitButton);
     });
@@ -129,86 +103,24 @@ export default class RegistrationForm {
   private validateField(fieldName: string, value: string): string | null {
     switch (fieldName) {
       case "email":
-        return this.validateEmail(value);
+        return RegistrationFormUtils.validateEmail(value);
       case "password":
-        return this.validatePassword(value);
+        return RegistrationFormUtils.validatePassword(value);
       case "firstName":
       case "lastName":
-        return this.validateName(value);
+        return RegistrationFormUtils.validateName(value);
       case "dateOfBirth":
-        return this.validateDateOfBirth(value);
+        return RegistrationFormUtils.validateDateOfBirth(value);
       case "street":
-        return this.validateStreet(value);
+        return RegistrationFormUtils.validateStreet(value);
       case "city":
-        return this.validateCity(value);
+        return RegistrationFormUtils.validateCity(value);
       case "postalCode":
-        return this.validatePostalCode(value);
+        return RegistrationFormUtils.validatePostalCode(value);
       case "country":
-        // return this.validateCountry(value);
         return null;
       default:
         return null;
     }
-  }
-
-  private validateEmail(email: string): string | null {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return "Please enter a valid email address.";
-    }
-    return null;
-  }
-
-  private validatePassword(password: string): string | null {
-    const passwordRegex = /^(?=.*\d)(?=.*[a-zа-я])(?=.*[A-ZА-Я]).{8,}$/;
-    if (!passwordRegex.test(password)) {
-      return "The password must contain a minimum of 8 characters, a minimum of 1 uppercase letter, 1 lowercase letter and 1 number.";
-    }
-    return null;
-  }
-
-  private validateName(name: string): string | null {
-    const nameRegex = /^[a-zA-Z]+$/;
-    if (!nameRegex.test(name)) {
-      return "Please enter a valid name (only letters allowed).";
-    }
-    return null;
-  }
-
-  private validateDateOfBirth(dateString: string): string | null {
-    const today = new Date();
-    const birthDate = new Date(dateString);
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-      age = -1;
-    }
-    if (age < 13) {
-      return "You must be at least 13 years old to register.";
-    }
-    return null;
-  }
-
-  private validateStreet(address: string): string | null {
-    if (address.trim().length === 0) {
-      return "Please enter a valid street name.";
-    }
-    return null;
-  }
-
-  private validateCity(city: string): string | null {
-    const cityRegex = /^[a-zA-Z\s]*$/;
-    if (!cityRegex.test(city) || city.trim().length === 0) {
-      return "Please enter a valid city name (only letters allowed).";
-    }
-    return null;
-  }
-
-  private validatePostalCode(postalCode: string): string | null {
-    const postalCodeRegex = /^\d+$/;
-    if (!postalCodeRegex.test(postalCode)) {
-      return "Please enter a valid postal code (only numbers allowed).";
-    }
-    return null;
   }
 }

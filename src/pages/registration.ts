@@ -1,4 +1,4 @@
-import RegistrationForm from "../components/registrationForm/registrationForm";
+import RegistrationForm from "../components/registration/registrationPage";
 
 const registrationForm = new RegistrationForm();
 /* const container = document.getElementById('registration-form-container'); */

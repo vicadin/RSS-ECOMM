@@ -1,0 +1,12 @@
+body {
+  background-color: #ede1d5;
+}
+.registration-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.title {
+  text-align: center;
+  margin: 24px 0;
+}
