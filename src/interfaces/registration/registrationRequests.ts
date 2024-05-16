@@ -1,3 +1,5 @@
+import { displayError } from "./registartionFormUtils";
+
 export async function getAccessToken() {
   const config = {
     method: "POST",
@@ -12,8 +14,6 @@ export async function getAccessToken() {
       config,
     );
     if (response.ok) {
-      console.log(response);
-
       return await response.json();
     }
     return response;
@@ -59,6 +59,12 @@ export async function registerUser(
     } else {
       const errorData = await response.json();
       console.error("Registration error:", errorData);
+      if (errorData.statusCode === 400) {
+        displayError(errorData.message);
+      } else if (errorData.statusCode === 500) {
+        displayError("Oops! Try again a little later.");
+      }
+
       return false;
     }
   } catch (error) {

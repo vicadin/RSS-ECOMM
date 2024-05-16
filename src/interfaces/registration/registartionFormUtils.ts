@@ -79,3 +79,13 @@ export function validatePostalCode(postalCode: string): string | null {
   }
   return null;
 }
+
+export function displayError(errorMessage: string): void {
+  const errorElement = document.createElement("div");
+  errorElement.textContent = errorMessage;
+  errorElement.classList.add("error-message");
+
+  const form = document.querySelector("form");
+  if (form)
+  form.insertAdjacentElement("afterbegin", errorElement);
+}

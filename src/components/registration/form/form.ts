@@ -1,6 +1,9 @@
 import "./form.css";
 import * as RegistrationFormUtils from "../../../interfaces/registration/registartionFormUtils";
-import { registerUser, getAccessToken } from '../../../interfaces/registration/registrationRequests'; 
+import {
+  registerUser,
+  getAccessToken,
+} from "../../../interfaces/registration/registrationRequests";
 
 export default class RegistrationForm {
   private formElement: HTMLFormElement;
@@ -10,7 +13,7 @@ export default class RegistrationForm {
   private logInText: HTMLAnchorElement;
   private successMessage: HTMLElement;
   private overlay: HTMLElement;
-  
+
   constructor() {
     this.registrationSection = document.createElement("section");
     this.registrationSection.classList.add("registration-section");
@@ -35,9 +38,9 @@ export default class RegistrationForm {
     this.registrationSection.appendChild(this.formElement);
 
     this.overlay = document.createElement("div");
-    this.overlay.classList.add("overlay")
+    this.overlay.classList.add("overlay");
     this.successMessage = document.createElement("div");
-    this.successMessage.innerHTML="registration was successful!"
+    this.successMessage.innerHTML = "registration was successful!";
     this.successMessage.classList.add("alert");
     this.registrationSection.appendChild(this.overlay);
   }
@@ -72,44 +75,61 @@ export default class RegistrationForm {
     event.preventDefault();
 
     const formData = new FormData(this.formElement);
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
-    const firstName = formData.get('firstName') as string;
-    const lastName = formData.get('lastName') as string;
-    const dateOfBirth = formData.get('dateOfBirth') as string;
-    const street = formData.get('street') as string;
-    const city = formData.get('city') as string;
-    const postalCode = formData.get('postalCode') as string;
-    const country = formData.get('country') as string;
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const firstName = formData.get("firstName") as string;
+    const lastName = formData.get("lastName") as string;
+    const dateOfBirth = formData.get("dateOfBirth") as string;
+    const street = formData.get("street") as string;
+    const city = formData.get("city") as string;
+    const postalCode = formData.get("postalCode") as string;
+    const country = formData.get("country") as string;
 
-    if (!email || !password || !firstName || !lastName || !dateOfBirth || !street || !city || !postalCode || !country) {
-      console.error('All fields are required');
+    if (
+      !email ||
+      !password ||
+      !firstName ||
+      !lastName ||
+      !dateOfBirth ||
+      !street ||
+      !city ||
+      !postalCode ||
+      !country
+    ) {
+      console.error("All fields are required");
       return;
     }
 
     const response = getAccessToken();
-        response.then((result) => {
-          const token = result.access_token;
-          console.log(token)
-          if (token) {
+    response.then((result) => {
+      const token = result.access_token;
+      if (token) {
+        registerUser(
+          token,
+          email,
+          password,
+          firstName,
+          lastName,
+          dateOfBirth,
+          street,
+          city,
+          postalCode,
+          country,
+        ).then((res) => {
+          if (res) {
+            console.log(res);
+            this.overlay.classList.add("show");
+            this.registrationSection.appendChild(this.successMessage);
+            setTimeout(() => {
+              window.location.href = "/main";
+            }, 500);
+            // redirect to the main page
+          }
+        });
 
-            registerUser( token, email, password, firstName, lastName, dateOfBirth, street, city, postalCode, country).then((res) => {
-              if (!res) {
-                //this.showRequestError("Sorry, something went wrong. Please, try again later.");
-              } else {
-                this.overlay.classList.add("show")
-                this.registrationSection.appendChild(this.successMessage)
-                setTimeout(() => {
-                  window.location.href = "/main";
-                }, 500);
-                // redirect to the main page
-              }
-            });
-
-       
-        }
-  })
-   
+        console.log(result);
+      }
+    });
   }
 
   private updateErrorMessage(fieldName: string, errorMessage: string | null): void {
