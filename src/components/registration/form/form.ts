@@ -51,6 +51,11 @@ export default class RegistrationForm {
 
     const value = target.value.trim();
     const fieldName = target.name;
+    if (fieldName === "dateOfBirth") {
+      const formattedDate = RegistrationFormUtils.formatDateString(value);
+      target.value = formattedDate;
+    }
+    
     const errorMessage = this.validateField(fieldName, value);
     this.updateErrorMessage(fieldName, errorMessage);
 
@@ -159,11 +164,6 @@ export default class RegistrationForm {
       { type: "text", name: "country", placeholder: "Country", required: true },
     ].forEach(({ type, name, placeholder, required }) => {
       const input = RegistrationFormUtils.createInputElement(type, name, placeholder, required);
-      if (name === "dateOfBirth") {
-        input.addEventListener("focus", function () {
-          this.type = "date";
-        });
-      }
       const errorElement = RegistrationFormUtils.createErrorMessageElement(`${name}-error`);
       this.formElement.insertBefore(input, this.submitButton);
       this.formElement.insertBefore(errorElement, this.submitButton);
