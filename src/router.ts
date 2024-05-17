@@ -21,3 +21,7 @@ export function handleRouting(): void {
     console.error('Element with id "content" not found.');
   }
 }
+export function routerInit() {
+    addEventListener('hashchange',handleRouting);
+    handleRouting();
+}
