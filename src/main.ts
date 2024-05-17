@@ -1,5 +1,4 @@
 import "./styles/normalize.css";
-import LoginPage from "./components/login-page/login-page.ts";
 
 class App {
   id: string;
@@ -17,5 +16,3 @@ class App {
 
 const app = new App("app");
 app.start();
-
-document.getElementById("app").append(new LoginPage().getHtmlElem());
