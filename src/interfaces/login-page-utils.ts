@@ -55,7 +55,6 @@ export function showHidePassword(): boolean {
 export function validatePassword(): void {
   this.clearFormError();
   const password: string = this.passwordInput.value;
-
   if (!this.passwordInput.validity.valid || password.trim().length !== password.length) {
     if (password.length === 0) {
       this.passwordError.textContent = "This field is required";

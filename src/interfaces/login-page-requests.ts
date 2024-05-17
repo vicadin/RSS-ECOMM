@@ -1,8 +1,13 @@
+import { Customer, TokenThroughPassword } from "./login-page-types.ts";
+
 const authUrl = "https://auth.europe-west1.gcp.commercetools.com";
 const host = "https://api.europe-west1.gcp.commercetools.com";
 const projectKey = "commerce-app";
 
-export async function fetchGetAccessTokenThroughPassword(email: string, password: string) {
+export async function fetchGetAccessTokenThroughPassword(
+  email: string,
+  password: string,
+): Promise<TokenThroughPassword> {
   const config = {
     method: "POST",
     headers: {
@@ -29,7 +34,7 @@ export async function fetchAuthenticateCustomer(
   token: string,
   customerEmail: string,
   customerPassword: string,
-) {
+): Promise<Customer | boolean | Error> {
   const data = {
     email: customerEmail,
     password: customerPassword,
@@ -45,7 +50,6 @@ export async function fetchAuthenticateCustomer(
 
   try {
     const response = await fetch(`${host}/${projectKey}/login`, config);
-
     if (response.ok) {
       return await response.json();
     }

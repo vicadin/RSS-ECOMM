@@ -1,7 +1,9 @@
 import "./form.css";
 
 import {
+  AccessTokenResponse,
   buttonAttr,
+  Customer,
   EmailAttr,
   formAttributes,
   passwordAttr,
@@ -134,21 +136,25 @@ export class Form {
       ev.preventDefault();
       const email = this.emailInput.value;
       const password = this.passwordInput.value;
-
       if (this.emailInput.validity.valid && this.passwordInput.validity.valid) {
         const response = fetchGetAccessTokenThroughPassword(email, password);
         response.then((result) => {
-          const token = result.access_token;
-
+          let token: string;
+          if ((result as AccessTokenResponse).token_type === "Bearer") {
+            token = (result as AccessTokenResponse).access_token;
+          }
           if (token) {
             fetchAuthenticateCustomer(token, email, password).then((res) => {
               if (!res) {
                 this.showRequestError("Sorry, something went wrong. Please, try again later.");
               } else {
-                // redirect to the main page
+                const { id } = (res as Customer).customer;
+                localStorage.setItem("id", id);
+                localStorage.setItem("token", JSON.stringify({ token }));
+                window.location.hash = "#home";
               }
             });
-          } else if (result.status === 400) {
+          } else if ((result as Response).status === 400) {
             this.showRequestError("Your email and password did not match. Please try again.");
           } else {
             this.showRequestError("Sorry, something went wrong. Please, try again later.");

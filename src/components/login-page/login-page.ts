@@ -6,6 +6,8 @@ import { createAccountButtonAttributes } from "../../interfaces/login-page-types
 export default class LoginPage {
   loginPage: HTMLDivElement;
 
+  createAccountButton: HTMLButtonElement;
+
   constructor() {
     this.loginPage = document.createElement("div");
     this.loginPage.className = "login-page";
@@ -24,7 +26,7 @@ export default class LoginPage {
     paragraph.textContent =
       "With an account, you can save products to your cabinet, view your order history and swiftly checkout using saved details.";
 
-    const createAccountButton = createButton(
+    this.createAccountButton = createButton(
       "create-account-button button-common ",
       createAccountButtonAttributes,
       "Create account",
@@ -36,12 +38,19 @@ export default class LoginPage {
       form.getHtmlElem(),
       registrationHeading,
       paragraph,
-      createAccountButton,
+      this.createAccountButton,
     );
     this.loginPage.append(loginMainContainer);
+    this.addEventlisteners();
   }
 
   getHtmlElem() {
     return this.loginPage;
+  }
+
+  addEventlisteners() {
+    this.createAccountButton.addEventListener("click", () => {
+      window.location.hash = "#register";
+    });
   }
 }
