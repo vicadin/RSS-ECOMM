@@ -25,7 +25,7 @@ export default class RegistrationForm {
   private billingAddressCheckbox: HTMLInputElement;
 
   private sameAddressCheckbox: HTMLInputElement;
-  
+
   private addressesSection: HTMLElement;
 
   constructor() {
@@ -162,13 +162,10 @@ export default class RegistrationForm {
           this.billingAddressCheckbox.checked,
         ).then((res) => {
           if (res) {
-            console.log(res);
             this.overlay.classList.add("show");
             this.registrationSection.appendChild(this.successMessage);
           }
         });
-
-        console.log(result);
       }
     });
   }
