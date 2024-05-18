@@ -91,8 +91,9 @@ export async function registerUser(
     } else {
       const errorData = await response.json();
       console.error("Registration error:", errorData);
-      if (errorData.statusCode === 400) {
-        displayError(errorData.message);
+      if (errorData.statusCode === 400 && errorData.errors[0].code === "DuplicateField") {
+        console.log(errorData);
+        displayError("User with this email already exists");
       } else if (errorData.statusCode === 500) {
         displayError("Oops! Try again a little later.");
       }
