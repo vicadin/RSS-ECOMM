@@ -1,3 +1,5 @@
+import { countries } from "./countriesList";
+
 export function createInputElement(
   type: string,
   name: string,
@@ -44,33 +46,22 @@ export function validateName(name: string): string | null {
 }
 
 export function validateDateOfBirth(dateString: string): string | null {
-    const dateRegex = /^(\d{2})\.(\d{2})\.(\d{4})$/;
-    if (!dateRegex.test(dateString)) {
-      return "Date of birth must be in the format DD.MM.YYYY.";
-    }
-  
-    const [, day, month, year] = dateString.match(dateRegex)!;
-  
-    if (!day || !month || !year) {
-      return "Invalid date of birth.";
-    }
-  
-    const birthDate = new Date(`${year}-${month}-${day}`);
-  
-    const today = new Date();
-  
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-    
-    if (age < 13) {
-      return "You must be at least 13 years old to register.";
-    }
-  
-    return null;
+  const today = new Date();
+  const birthDate = new Date(dateString);
+
+  if (isNaN(birthDate.getTime())) {
+    return "Invalid date format. Please enter a valid date.";
+  }
+
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age = age -1;
+  }
+  if (age < 13) {
+    return "You must be at least 13 years old to register.";
+  }
+  return null;
 }
 
 export function validateStreet(address: string): string | null {
@@ -102,18 +93,47 @@ export function displayError(errorMessage: string): void {
   errorElement.classList.add("error-message");
 
   const form = document.querySelector("form");
-  if (form)
-  form.insertAdjacentElement("afterbegin", errorElement);
+  if (form) form.insertAdjacentElement("afterbegin", errorElement);
 }
 
 export function formatDateString(input: string): string {
-  // Убираем все символы, кроме цифр
-  const digitsOnly = input.replace(/\D/g, '');
-  
-  // Форматируем дату, добавляя точки после каждых двух цифр
-  const formatted = digitsOnly
-    .replace(/^(\d{2})/, '$1.') // добавляем точку после первых двух цифр
-    .replace(/^(\d{2}\.)(\d{2})/, '$1$2.') // добавляем точку после следующих двух цифр
+  const digitsOnly = input.replace(/\D/g, "");
+
+  const formatted = digitsOnly.replace(/^(\d{2})/, "$1.").replace(/^(\d{2}\.)(\d{2})/, "$1$2.");
 
   return formatted;
+}
+
+export function createCheckboxElement(name: string, label: string) {
+  const container = document.createElement("div");
+  container.classList.add("form-checkbox");
+
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.name = name;
+  checkbox.id = name;
+
+  const labelElement = document.createElement("label");
+  labelElement.textContent = label;
+  labelElement.setAttribute("for", name);
+
+  container.appendChild(checkbox);
+  container.appendChild(labelElement);
+
+  return { checkbox, container };
+}
+
+export function createSelectElement(name: string, required: boolean): HTMLSelectElement {
+  const select = document.createElement("select");
+  select.name = name;
+  select.required = required;
+
+  Object.entries(countries).forEach(([code, country]) => {
+    const option = document.createElement("option");
+    option.value = code;
+    option.textContent = country;
+    select.appendChild(option);
+  });
+
+  return select;
 }

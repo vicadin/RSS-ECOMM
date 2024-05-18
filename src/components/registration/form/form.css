@@ -34,3 +34,46 @@
   margin-top: 14px;
   text-align: center;
 }
+.address-item {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+}
+
+.addresses-section {
+  display: flex;
+  gap: 30px;
+  order: 1;
+}
+.btn-black {
+  order: 2;
+}
+.form-link {
+  order: 3;
+}
+.form select {
+  border: 0;
+  caret-color: #333;
+  color: #333;
+  border-bottom: 2px solid #ccc;
+  background-color: transparent;
+  margin-bottom: 8px;
+  font-size: 18px;
+  font-family: Questrial;
+  outline: none;
+  position: relative;
+}
+.form-checkbox {
+  color: #333;
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+.form-checkbox label {
+  margin-left: 3px;
+  font-size: 14px;
+  padding-top: 5px;
+}
+.form input[type="checkbox"] {
+  margin-bottom: 0;
+}

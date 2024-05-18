@@ -7,12 +7,26 @@ import {
 
 export default class RegistrationForm {
   private formElement: HTMLFormElement;
+
   private errorElements: { [key: string]: HTMLElement } = {};
+
   private submitButton: HTMLButtonElement;
+
   private registrationSection: HTMLElement;
+
   private logInText: HTMLAnchorElement;
+
   private successMessage: HTMLElement;
+
   private overlay: HTMLElement;
+
+  private deliveryAddressCheckbox: HTMLInputElement;
+
+  private billingAddressCheckbox: HTMLInputElement;
+
+  private sameAddressCheckbox: HTMLInputElement;
+  
+  private addressesSection: HTMLElement;
 
   constructor() {
     this.registrationSection = document.createElement("section");
@@ -25,37 +39,38 @@ export default class RegistrationForm {
     this.submitButton.disabled = true;
     this.submitButton.classList.add("btn-black");
 
-    this.formElement.appendChild(this.submitButton);
     this.logInText = document.createElement("a");
     this.logInText.href = "#"; //add login page
     this.logInText.innerHTML = "Do you already have an account?";
     this.logInText.classList.add("form-link");
-    this.formElement.appendChild(this.logInText);
 
     this.formElement.addEventListener("input", this.handleInput.bind(this));
     this.formElement.addEventListener("submit", this.handleSubmit.bind(this));
 
+    this.addressesSection = document.createElement("section");
+    this.addressesSection.classList.add("addresses-section");
+
     this.registrationSection.appendChild(this.formElement);
+
+    this.formElement.appendChild(this.addressesSection);
+    this.formElement.appendChild(this.submitButton);
+    this.formElement.appendChild(this.logInText);
 
     this.overlay = document.createElement("div");
     this.overlay.classList.add("overlay");
     this.successMessage = document.createElement("div");
-    this.successMessage.innerHTML = "registration was successful!";
+    this.successMessage.innerHTML = "Registration was successful!";
     this.successMessage.classList.add("alert");
     this.registrationSection.appendChild(this.overlay);
   }
 
   private handleInput(event: Event): void {
-    const target = event.target as HTMLInputElement;
+    const target = event.target as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
     if (!target || !target.name) return;
 
     const value = target.value.trim();
     const fieldName = target.name;
-    if (fieldName === "dateOfBirth") {
-      const formattedDate = RegistrationFormUtils.formatDateString(value);
-      target.value = formattedDate;
-    }
-    
+
     const errorMessage = this.validateField(fieldName, value);
     this.updateErrorMessage(fieldName, errorMessage);
 
@@ -65,14 +80,24 @@ export default class RegistrationForm {
 
     const allFieldsFilled = (): boolean => {
       const inputElements = Array.from(this.formElement.elements).filter(
-        (element) => element instanceof HTMLInputElement,
-      ) as HTMLInputElement[];
+        (element) =>
+          (element instanceof HTMLInputElement &&
+            element.type !== "checkbox" &&
+            element.type !== "date") ||
+          element instanceof HTMLSelectElement ||
+          element instanceof HTMLTextAreaElement,
+      ) as (HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement)[];
       return inputElements.every((input) => input.value.trim() !== "");
     };
-    if (hasErrors && allFieldsFilled()) {
+
+    if (!hasErrors && allFieldsFilled()) {
       this.submitButton.disabled = false;
     } else {
       this.submitButton.disabled = true;
+    }
+
+    if (this.sameAddressCheckbox.checked) {
+      this.copyDeliveryAddressToBilling();
     }
   }
 
@@ -85,10 +110,15 @@ export default class RegistrationForm {
     const firstName = formData.get("firstName") as string;
     const lastName = formData.get("lastName") as string;
     const dateOfBirth = formData.get("dateOfBirth") as string;
-    const street = formData.get("street") as string;
-    const city = formData.get("city") as string;
-    const postalCode = formData.get("postalCode") as string;
-    const country = formData.get("country") as string;
+
+    const deliveryStreet = formData.get("deliveryStreet") as string;
+    const deliveryCity = formData.get("deliveryCity") as string;
+    const deliveryPostalCode = formData.get("deliveryPostalCode") as string;
+    const deliveryCountry = formData.get("deliveryCountry") as string;
+    const billingStreet = formData.get("billingStreet") as string;
+    const billingCity = formData.get("billingCity") as string;
+    const billingPostalCode = formData.get("billingPostalCode") as string;
+    const billingCountry = formData.get("billingCountry") as string;
 
     if (
       !email ||
@@ -96,10 +126,14 @@ export default class RegistrationForm {
       !firstName ||
       !lastName ||
       !dateOfBirth ||
-      !street ||
-      !city ||
-      !postalCode ||
-      !country
+      !deliveryStreet ||
+      !deliveryCity ||
+      !deliveryPostalCode ||
+      !deliveryCountry ||
+      !billingStreet ||
+      !billingCity ||
+      !billingPostalCode ||
+      !billingCountry
     ) {
       console.error("All fields are required");
       return;
@@ -116,19 +150,21 @@ export default class RegistrationForm {
           firstName,
           lastName,
           dateOfBirth,
-          street,
-          city,
-          postalCode,
-          country,
+          deliveryStreet,
+          deliveryCity,
+          deliveryPostalCode,
+          deliveryCountry,
+          billingStreet,
+          billingCity,
+          billingPostalCode,
+          billingCountry,
+          this.deliveryAddressCheckbox.checked,
+          this.billingAddressCheckbox.checked,
         ).then((res) => {
           if (res) {
             console.log(res);
             this.overlay.classList.add("show");
             this.registrationSection.appendChild(this.successMessage);
-            setTimeout(() => {
-              window.location.href = "/main";
-            }, 500);
-            // redirect to the main page
           }
         });
 
@@ -152,22 +188,117 @@ export default class RegistrationForm {
 
   public render(container: HTMLElement): void {
     container.appendChild(this.registrationSection);
+
     [
       { type: "text", name: "email", placeholder: "Email", required: true },
       { type: "password", name: "password", placeholder: "Password", required: true },
       { type: "text", name: "firstName", placeholder: "First Name", required: true },
       { type: "text", name: "lastName", placeholder: "Last Name", required: true },
       { type: "text", name: "dateOfBirth", placeholder: "Date of Birth", required: true },
-      { type: "text", name: "street", placeholder: "Street", required: true },
-      { type: "text", name: "city", placeholder: "City", required: true },
-      { type: "text", name: "postalCode", placeholder: "Postal Code", required: true },
-      { type: "text", name: "country", placeholder: "Country", required: true },
     ].forEach(({ type, name, placeholder, required }) => {
       const input = RegistrationFormUtils.createInputElement(type, name, placeholder, required);
+      if (name === "dateOfBirth") {
+        input.addEventListener("focus", function () {
+          this.type = "date";
+        });
+      }
       const errorElement = RegistrationFormUtils.createErrorMessageElement(`${name}-error`);
       this.formElement.insertBefore(input, this.submitButton);
       this.formElement.insertBefore(errorElement, this.submitButton);
     });
+
+    this.addressesSection.appendChild(this.createAddressSection("delivery", "Delivery Address"));
+
+    const defaultDeliveryAddressElement = RegistrationFormUtils.createCheckboxElement(
+      "defaultDeliveryAddress",
+      "Make this my default delivery address",
+    );
+    this.deliveryAddressCheckbox = defaultDeliveryAddressElement.checkbox;
+    document
+      .getElementsByClassName("address-item-delivery")[0]
+      .append(defaultDeliveryAddressElement.container);
+
+    const sameAddressElement = RegistrationFormUtils.createCheckboxElement(
+      "sameAddress",
+      "Use the same delivery and billing address",
+    );
+    this.sameAddressCheckbox = sameAddressElement.checkbox;
+    document
+      .getElementsByClassName("address-item-delivery")[0]
+      .append(sameAddressElement.container);
+
+    this.addressesSection.append(this.createAddressSection("billing", "Billing Address"));
+
+    const defaultBillingAddressElement = RegistrationFormUtils.createCheckboxElement(
+      "defaultBillingAddress",
+      "Make this my default billing address",
+    );
+    this.billingAddressCheckbox = defaultBillingAddressElement.checkbox;
+    document
+      .getElementsByClassName("address-item-billing")[0]
+      .append(defaultBillingAddressElement.container);
+  }
+
+  private createAddressSection(prefix: string, title: string): HTMLElement {
+    const section = document.createElement("div");
+    section.classList.add("address-item");
+    section.classList.add(`address-item-${prefix}`);
+
+    const header = document.createElement("h3");
+    header.textContent = title;
+    section.appendChild(header);
+
+    [
+      { type: "text", name: `${prefix}Street`, placeholder: "Street", required: true },
+      { type: "text", name: `${prefix}City`, placeholder: "City", required: true },
+      { type: "text", name: `${prefix}PostalCode`, placeholder: "Postal Code", required: true },
+    ].forEach(({ type, name, placeholder, required }) => {
+      const input = RegistrationFormUtils.createInputElement(type, name, placeholder, required);
+      const errorElement = RegistrationFormUtils.createErrorMessageElement(`${name}-error`);
+
+      section.appendChild(input);
+      section.appendChild(errorElement);
+    });
+
+    const select = RegistrationFormUtils.createSelectElement(`${prefix}Country`, true);
+    const errorElement = RegistrationFormUtils.createErrorMessageElement(`${prefix}Country-error`);
+    section.appendChild(select);
+    section.appendChild(errorElement);
+
+    return section;
+  }
+
+  private copyDeliveryAddressToBilling(): void {
+    const deliveryStreet = this.formElement.querySelector<HTMLInputElement>(
+      'input[name="deliveryStreet"]',
+    )!;
+    const deliveryCity = this.formElement.querySelector<HTMLInputElement>(
+      'input[name="deliveryCity"]',
+    )!;
+    const deliveryPostalCode = this.formElement.querySelector<HTMLInputElement>(
+      'input[name="deliveryPostalCode"]',
+    )!;
+    const deliveryCountry = this.formElement.querySelector<HTMLSelectElement>(
+      'select[name="deliveryCountry"]',
+    )!;
+
+    const billingStreet = this.formElement.querySelector<HTMLInputElement>(
+      'input[name="billingStreet"]',
+    )!;
+    const billingCity = this.formElement.querySelector<HTMLInputElement>(
+      'input[name="billingCity"]',
+    )!;
+    const billingPostalCode = this.formElement.querySelector<HTMLInputElement>(
+      'input[name="billingPostalCode"]',
+    )!;
+    const billingCountry = this.formElement.querySelector<HTMLSelectElement>(
+      'select[name="billingCountry"]',
+    )!;
+
+    billingStreet.value = deliveryStreet.value;
+    billingCity.value = deliveryCity.value;
+    billingPostalCode.value = deliveryPostalCode.value;
+    billingCountry.value = deliveryCountry.value;
   }
 
   private validateField(fieldName: string, value: string): string | null {
@@ -181,14 +312,15 @@ export default class RegistrationForm {
         return RegistrationFormUtils.validateName(value);
       case "dateOfBirth":
         return RegistrationFormUtils.validateDateOfBirth(value);
-      case "street":
+      case "deliveryStreet":
+      case "billingStreet":
         return RegistrationFormUtils.validateStreet(value);
-      case "city":
+      case "deliveryCity":
+      case "billingCity":
         return RegistrationFormUtils.validateCity(value);
-      case "postalCode":
+      case "deliveryPostalCode":
+      case "billingPostalCode":
         return RegistrationFormUtils.validatePostalCode(value);
-      case "country":
-        return null;
       default:
         return null;
     }

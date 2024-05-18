@@ -29,29 +29,61 @@ export async function registerUser(
   firstName: string,
   lastName: string,
   dateOfBirth: string,
-  street: string,
-  city: string,
-  postalCode: string,
-  country: string,
+  deliveryStreet: string,
+  deliveryCity: string,
+  deliveryPostalCode: string,
+  deliveryCountry: string,
+  billingStreet: string,
+  billingCity: string,
+  billingPostalCode: string,
+  billingCountry: string,
+  defaultDeliveryAddress: boolean,
+  defaultBillingAddress: boolean,
 ): Promise<boolean> {
   try {
+    const addresses = [];
+
+    const deliveryAddressIndex = addresses.length;
+    addresses.push({
+      streetName: deliveryStreet,
+      city: deliveryCity,
+      postalCode: deliveryPostalCode,
+      country: deliveryCountry,
+    });
+
+    const billingAddressIndex = addresses.length;
+    addresses.push({
+      streetName: billingStreet,
+      city: billingCity,
+      postalCode: billingPostalCode,
+      country: billingCountry,
+    });
+
+    const requestBody: any = {
+      email: email,
+      password: password,
+      firstName: firstName,
+      lastName: lastName,
+      dateOfBirth: dateOfBirth,
+      addresses: addresses,
+    };
+
+    if (defaultDeliveryAddress) {
+      requestBody.defaultShippingAddress = deliveryAddressIndex;
+    }
+    requestBody.shippingAddresses = [deliveryAddressIndex];
+    if (defaultBillingAddress) {
+      requestBody.defaultBillingAddress = billingAddressIndex;
+    }
+    requestBody.billingAddresses = [billingAddressIndex];
+
     const response = await fetch(`${process.env.HOST}/${process.env.PROJECT_KEY}/customers`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        email: email,
-        password: password,
-        firstName: firstName,
-        lastName: lastName,
-        dateOfBirth: dateOfBirth,
-        streetName: street,
-        city: city,
-        postalCode: postalCode,
-        country: country,
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     if (response.ok) {
