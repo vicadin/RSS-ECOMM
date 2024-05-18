@@ -1,0 +1,129 @@
+.form {
+  margin: 30px 0 35px;
+}
+.form-error {
+  box-sizing: border-box;
+  margin-bottom: 20px;
+  color: #ca432f;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.email-wrapper {
+  position: relative;
+  box-sizing: border-box;
+  padding-top: 25px;
+}
+
+.password-block-wrapper {
+  box-sizing: border-box;
+  margin-top: 35px;
+  position: relative;
+  display: flex;
+}
+
+.password-wrapper {
+  box-sizing: border-box;
+  position: relative;
+  padding-top: 25px;
+  flex-grow: 1;
+}
+
+.inner-wrapper {
+  position: relative;
+}
+
+.email-input,
+.password-input {
+  border-color: #ccc;
+  caret-color: #333;
+  color: #333;
+  width: 100%;
+  padding: 0;
+  border-width: 0 0 1px;
+  border-style: solid;
+  margin: 0;
+  background-color: transparent;
+  font-size: 24px;
+  line-height: 1.5;
+  outline: none;
+}
+
+.email-label,
+.password-label {
+  position: absolute;
+  pointer-events: none;
+  font-size: 24px;
+  color: #666666;
+  bottom: 0;
+  left: 0;
+  line-height: 1.75;
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.email-label_moved,
+.password-label_moved {
+  font-size: 16px;
+  transform: translateY(-40px);
+}
+
+.email-error,
+.password-error {
+  display: block;
+  box-sizing: border-box;
+  margin-top: 10px;
+  font-size: 14px;
+  color: #ca432f;
+  line-height: 1.4;
+}
+
+.button-common {
+  outline: none;
+  text-decoration: none;
+  appearance: none;
+  background-color: transparent;
+  cursor: pointer;
+  padding: 0;
+}
+
+.show-button {
+  border: 0;
+}
+
+.submit-button {
+  margin-top: 35px;
+  border-color: #333;
+  background-color: #333;
+  color: #f6f5e8;
+  max-width: 100%;
+  font-size: 14px;
+  padding: 19px 23px;
+  height: 60px;
+  border-width: 1px;
+  border-style: solid;
+  transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+  width: 100%;
+  display: inline-block;
+  min-width: 210px;
+}
+
+@media (hover: hover) {
+  .submit-button:hover {
+    background-color: #000000;
+    border-color: #000000;
+  }
+
+  .show-button:hover {
+    color: #000000;
+  }
+}
+
+.show-button {
+  box-sizing: border-box;
+  font-size: 16px;
+  position: absolute;
+  top: 25px;
+  right: 0;
+  line-height: 1.7;
+  color: #666666;
+}
