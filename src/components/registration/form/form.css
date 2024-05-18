@@ -77,3 +77,20 @@
 .form input[type="checkbox"] {
   margin-bottom: 0;
 }
+@media only screen and (min-device-width: 320px) and (max-device-width: 1024px) {
+  .form {
+    width: 80%;
+  }
+}
+@media only screen and (min-device-width: 320px) and (max-device-width: 640px) {
+  .form {
+    width: 66%;
+    padding: 40px;
+  }
+  .addresses-section {
+    flex-direction: column;
+  }
+  .address-item {
+    width: 100%;
+  }
+}
