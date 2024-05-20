@@ -1,6 +1,7 @@
 import "./styles/normalize.css";
 import "./styles/style.css";
 import "./styles/media.css";
+import { routerInit } from "./router";
 
 class App {
   id: string;
@@ -52,3 +53,4 @@ class App {
 
 const app = new App("app");
 app.start();
+routerInit();
