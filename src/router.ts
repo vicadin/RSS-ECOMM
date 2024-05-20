@@ -35,9 +35,13 @@ export function handleHash() {
     },
   };
 
+
+  const NotFoundComponent = new (await import('./app/components/404components')).NotFoundComponent();
+  const content: string = routes[path] || NotFoundComponent.render();
   if (localStorage.getItem("token") && hash === "login") {
     hash = "home";
     window.location.hash = hash;
+
   }
 
   const routeHandler = routes[hash] || routes[""];
