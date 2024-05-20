@@ -1,5 +1,7 @@
 import RegistrationPage from "./pages/registration";
 import loginPage from "./components/login-page/login-page";
+import NotFoundComponent from "./components/404components";
+
 
 type Routes = {
   [key: string]: () => void;
@@ -29,15 +31,13 @@ export function handleHash() {
     },
     "": () => {
       if (newContent) {
-        newContent.innerHTML =
-          "<h2>404 Page Not Found</h2><p>Sorry, the page you are looking for does not exist.</p>";
+        newContent.innerHTML = "";
+        new NotFoundComponent().render();
       }
     },
   };
 
 
-  const NotFoundComponent = new (await import('./app/components/404components')).NotFoundComponent();
-  const content: string = routes[path] || NotFoundComponent.render();
   if (localStorage.getItem("token") && hash === "login") {
     hash = "home";
     window.location.hash = hash;

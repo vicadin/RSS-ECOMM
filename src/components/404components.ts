@@ -1,4 +1,4 @@
-export class NotFoundComponent {
+export default class NotFoundComponent {
   render(): string {
     return `
         <h2>404 Page Not Found</h2>
