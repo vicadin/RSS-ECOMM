@@ -12,7 +12,8 @@ export function handleRouting(): void {
     "": "<h2>404 Page Not Found</h2><p>Sorry, the page you are looking for does not exist.</p>",
   };
 
-  const content: string = routes[path] || routes[""];
+  const NotFoundComponent = new (await import('./app/components/404components')).NotFoundComponent();
+  const content: string = routes[path] || NotFoundComponent.render();
   const contentElement: HTMLElement | null = document.getElementById("content");
 
   if (contentElement) {
