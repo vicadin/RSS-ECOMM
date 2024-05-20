@@ -22,6 +22,6 @@ export function handleRouting(): void {
   }
 }
 export function routerInit() {
-    addEventListener('hashchange',handleRouting);
-    handleRouting();
+  addEventListener("hashchange", handleRouting);
+  handleRouting();
 }
