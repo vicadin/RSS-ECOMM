@@ -1,7 +1,8 @@
 import "./styles/normalize.css";
 import "./styles/style.css";
 import "./styles/media.css";
-import { routerInit } from "./router";
+import { routerInit } from "./router.ts";
+import { headerEl } from "./components/header.ts";
 
 class App {
   id: string;
@@ -11,25 +12,6 @@ class App {
   }
 
   start(): void {
-    const header = document.createElement("header");
-    const nav = document.createElement("nav");
-    const navList = document.createElement("ul");
-    navList.classList.add("nav_list");
-    const navItems = ["Register", "Login", "Home"];
-
-    navItems.forEach((itemText) => {
-      const listItem = document.createElement("li");
-      const link = document.createElement("a");
-      link.href = `#${itemText.toLowerCase()}`;
-      link.textContent = itemText;
-      listItem.appendChild(link);
-      navList.appendChild(listItem);
-      listItem.classList.add("nav_list_item");
-    });
-
-    nav.appendChild(navList);
-    header.appendChild(nav);
-
     const main = document.createElement("main");
     const section = document.createElement("section");
     section.id = "content";
@@ -45,7 +27,7 @@ class App {
     const p = document.createElement("p");
     p.textContent = "© Shop Footer";
 
-    document.body.appendChild(header);
+    document.body.appendChild(headerEl.getHtml());
     document.body.appendChild(main);
     document.body.appendChild(footer);
   }
