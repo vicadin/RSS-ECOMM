@@ -16,8 +16,8 @@ footer {
 }
 #content {
   min-height: calc(100vh - 80px);
-  /*display: flex;*/
-  justify-content: center;
+  display: flex;
+  flex-direction: column;
   align-items: center;
 }
 .nav_list {

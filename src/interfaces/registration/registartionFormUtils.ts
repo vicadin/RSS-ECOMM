@@ -3,15 +3,20 @@ import { countries } from "./countriesList";
 export function createInputElement(
   type: string,
   name: string,
-  placeholder: string,
+  label: string,
   required: boolean,
-): HTMLInputElement {
-  const input = document.createElement("input");
-  input.type = type;
-  input.name = name;
-  input.placeholder = placeholder;
-  input.required = required;
-  return input;
+): { input: HTMLInputElement; labelElement: HTMLLabelElement } {
+  const inputElement = document.createElement("input");
+  inputElement.type = type;
+  inputElement.name = name;
+  inputElement.id = name;
+  inputElement.required = required;
+
+  const labelElement = document.createElement("label");
+  labelElement.htmlFor = name;
+  labelElement.textContent = label;
+
+  return { input: inputElement, labelElement };
 }
 
 export function createErrorMessageElement(id: string): HTMLElement {

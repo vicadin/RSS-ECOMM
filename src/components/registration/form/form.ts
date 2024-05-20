@@ -109,6 +109,7 @@ export default class RegistrationForm {
       this.copyDeliveryAddressToBilling();
   
       updateSubmitButtonState();
+
     }
   }
 
@@ -216,21 +217,35 @@ export default class RegistrationForm {
     container.appendChild(this.registrationSection);
 
     [
-      { type: "text", name: "email", placeholder: "Email", required: true },
-      { type: "password", name: "password", placeholder: "Password", required: true },
-      { type: "text", name: "firstName", placeholder: "First Name", required: true },
-      { type: "text", name: "lastName", placeholder: "Last Name", required: true },
-      { type: "text", name: "dateOfBirth", placeholder: "Date of Birth", required: true },
-    ].forEach(({ type, name, placeholder, required }) => {
-      const input = RegistrationFormUtils.createInputElement(type, name, placeholder, required);
+      { type: "text", name: "email", label: "Email", required: true },
+      { type: "password", name: "password", label: "Password", required: true },
+      { type: "text", name: "firstName", label: "First Name", required: true },
+      { type: "text", name: "lastName", label: "Last Name", required: true },
+      { type: "text", name: "dateOfBirth", label: "Date of Birth", required: true },
+    ].forEach(({ type, name, label, required }) => {
+      const { input, labelElement } = RegistrationFormUtils.createInputElement(type, name, label, required);
       if (name === "dateOfBirth") {
         input.addEventListener("focus", function () {
           this.type = "date";
         });
       }
       const errorElement = RegistrationFormUtils.createErrorMessageElement(`${name}-error`);
-      this.formElement.insertBefore(input, this.submitButton);
-      this.formElement.insertBefore(errorElement, this.submitButton);
+      const inputContainer = document.createElement("div");
+      inputContainer.classList.add("input-container");
+
+      inputContainer.appendChild(labelElement);
+      inputContainer.appendChild(input);
+      inputContainer.appendChild(errorElement);
+      this.formElement.appendChild(inputContainer);
+
+      input.addEventListener("focusin", () => {
+        labelElement.classList.add("label_moved");
+      });
+      input.addEventListener("focusout", () => {
+        if (input.value === "") {
+          labelElement.classList.remove("label_moved");
+        }
+      });
     });
 
     this.addressesSection.appendChild(this.createAddressSection("delivery", "Delivery Address"));
@@ -263,35 +278,50 @@ export default class RegistrationForm {
     document
       .getElementsByClassName("address-item-billing")[0]
       .append(defaultBillingAddressElement.container);
+
+    this.sameAddressCheckbox.addEventListener("change", this.copyDeliveryAddressToBilling.bind(this));
+
   }
 
   private createAddressSection(prefix: string, title: string): HTMLElement {
-    const section = document.createElement("div");
-    section.classList.add("address-item");
-    section.classList.add(`address-item-${prefix}`);
+    const sectionElement = document.createElement("section");
+    sectionElement.classList.add(`address-item-${prefix}`);
+    sectionElement.classList.add(`address-item`);
 
-    const header = document.createElement("h3");
-    header.textContent = title;
-    section.appendChild(header);
+    const headerElement = document.createElement("h3");
+    headerElement.textContent = title;
+    sectionElement.appendChild(headerElement);
 
     [
-      { type: "text", name: `${prefix}Street`, placeholder: "Street", required: true },
-      { type: "text", name: `${prefix}City`, placeholder: "City", required: true },
-      { type: "text", name: `${prefix}PostalCode`, placeholder: "Postal Code", required: true },
-    ].forEach(({ type, name, placeholder, required }) => {
-      const input = RegistrationFormUtils.createInputElement(type, name, placeholder, required);
+      { type: "text", name: `${prefix}Street`, label: "Street", required: true },
+      { type: "text", name: `${prefix}City`, label: "City", required: true },
+      { type: "text", name: `${prefix}PostalCode`, label: "Postal Code", required: true },
+    ].forEach(({ type, name, label, required }) => {
+      const inputContainer = document.createElement("div");
+    inputContainer.classList.add("input-container");
+
+      const { input, labelElement } = RegistrationFormUtils.createInputElement(type, name, label, required);
       const errorElement = RegistrationFormUtils.createErrorMessageElement(`${name}-error`);
+    
+    inputContainer.appendChild(labelElement);
+    inputContainer.appendChild(input);
+    inputContainer.appendChild(errorElement);
+    sectionElement.appendChild(inputContainer);
 
-      section.appendChild(input);
-      section.appendChild(errorElement);
+    input.addEventListener("focusin", () => {
+      labelElement.classList.add("label_moved");
     });
+    input.addEventListener("focusout", () => {
+      if (input.value === "") {
+        labelElement.classList.remove("label_moved");
+      }
+    });
+      
 
+    });
     const select = RegistrationFormUtils.createSelectElement(`${prefix}Country`, true);
-    const errorElement = RegistrationFormUtils.createErrorMessageElement(`${prefix}Country-error`);
-    section.appendChild(select);
-    section.appendChild(errorElement);
-
-    return section;
+    sectionElement.appendChild(select);
+    return sectionElement;
   }
 
   private copyDeliveryAddressToBilling(): void {
@@ -325,6 +355,14 @@ export default class RegistrationForm {
     billingCity.value = deliveryCity.value;
     billingPostalCode.value = deliveryPostalCode.value;
     billingCountry.value = deliveryCountry.value;
+    
+    const billingLabels = this.formElement.querySelectorAll<HTMLLabelElement>(
+      '.address-item-billing .input-container label',
+    )!;
+    for (let label of billingLabels) {
+      label.classList.add("label_moved")
+    }
+   
   }
 
   private validateField(fieldName: string, value: string): string | null {

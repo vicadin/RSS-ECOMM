@@ -16,7 +16,7 @@ export default class LoginPage {
     const loginWrapper = document.createElement("div");
 
     const loginHeading = document.createElement("h1");
-    loginHeading.className = "login-heading";
+    loginHeading.className = "title";
     loginHeading.textContent = "Log in to your account";
 
     const registrationHeading = createElement("h2", "login-registration-heading");
@@ -32,7 +32,9 @@ export default class LoginPage {
       "Create account",
     );
 
-    loginWrapper.append(loginHeading);
+    const contentDiv = document.getElementById("content");
+    if (contentDiv) contentDiv.append(loginHeading);
+
     loginMainContainer.append(
       loginWrapper,
       form.getHtmlElem(),
