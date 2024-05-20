@@ -1,27 +1,50 @@
+import RegistrationPage from "./pages/registration";
+import loginPage from "./components/login-page/login-page";
+
 type Routes = {
-  [key: string]: string;
+  [key: string]: () => void;
 };
 
-export function handleRouting(): void {
-  const path: string = window.location.hash.slice(1);
+export function handleHash() {
+  let hash: string = window.location.hash ? window.location.hash.slice(1) : "";
+  const newContent: HTMLElement | null = document.getElementById("content");
 
   const routes: Routes = {
-    home: "<h2>Home Page</h2><p>Welcome to the Home Page</p>",
-    login: "<h2>Login Page</h2><p>Please login to continue</p>",
-    register: "<h2>Register Page</h2><p>Create an account</p>",
-    "": "<h2>404 Page Not Found</h2><p>Sorry, the page you are looking for does not exist.</p>",
+    home: () => {
+      if (newContent) {
+        newContent.innerHTML = "<h2>Welcome!</h2>";
+      }
+    },
+    login: () => {
+      if (newContent) {
+        newContent.innerHTML = "";
+        newContent.appendChild(new loginPage().getHtmlElem());
+      }
+    },
+    register: () => {
+      if (newContent) {
+        newContent.innerHTML = "";
+        RegistrationPage();
+      }
+    },
+    "": () => {
+      if (newContent) {
+        newContent.innerHTML =
+          "<h2>404 Page Not Found</h2><p>Sorry, the page you are looking for does not exist.</p>";
+      }
+    },
   };
 
-  const content: string = routes[path] || routes[""];
-  const contentElement: HTMLElement | null = document.getElementById("content");
-
-  if (contentElement) {
-    contentElement.innerHTML = content;
-  } else {
-    console.error('Element with id "content" not found.');
+  if (localStorage.getItem("token") && hash === "login") {
+    hash = "home";
+    window.location.hash = hash;
   }
+
+  const routeHandler = routes[hash] || routes[""];
+  routeHandler();
 }
+
 export function routerInit() {
-  addEventListener("hashchange", handleRouting);
-  handleRouting();
+  window.addEventListener("hashchange", handleHash);
+  handleHash();
 }

@@ -1,7 +1,7 @@
 import "./registrationPage.css";
 import RegistrationForm from "./form/form";
 
-export default class FormPage {
+export default class RegistrationPage {
   private title: HTMLElement;
   private formContainer: HTMLElement;
   private registrationForm: RegistrationForm;
