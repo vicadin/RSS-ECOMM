@@ -1,0 +1,98 @@
+.form-registration {
+  display: flex;
+  flex-direction: column;
+  width: 660px;
+  padding: 60px;
+  background: white;
+}
+.form-registration input {
+  border: 0;
+  caret-color: #333;
+  color: #333;
+  border-bottom: 2px solid #ccc;
+  background-color: transparent;
+  margin-bottom: 8px;
+  font-size: 18px;
+  font-family: Questrial;
+  outline: none;
+  position: relative;
+}
+
+.btn-black {
+  margin-top: 20px;
+}
+.error-message {
+  color: #a50101;
+  font-size: 12px;
+  margin-bottom: 12px;
+  height: 10px;
+}
+.form-link {
+  text-decoration: none;
+  color: #333;
+  font-size: 16px;
+  margin-top: 14px;
+  text-align: center;
+}
+.address-item {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+}
+.address-item h3 {
+  margin-bottom: 18px;
+}
+.addresses-section {
+  display: flex;
+  gap: 30px;
+  order: 1;
+}
+.btn-black {
+  order: 2;
+}
+.form-link {
+  order: 3;
+}
+.form-registration select {
+  border: 0;
+  caret-color: #333;
+  color: #333;
+  border-bottom: 2px solid #ccc;
+  background-color: transparent;
+  margin-bottom: 8px;
+  font-size: 18px;
+  font-family: Questrial;
+  outline: none;
+  position: relative;
+}
+.form-checkbox {
+  color: #333;
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+.form-checkbox label {
+  margin-left: 3px;
+  font-size: 14px;
+  padding-top: 5px;
+}
+.form-registration input[type="checkbox"] {
+  margin-bottom: 0;
+}
+@media only screen and (min-device-width: 320px) and (max-device-width: 1024px) {
+  .form-registration {
+    width: 80%;
+  }
+}
+@media only screen and (min-device-width: 320px) and (max-device-width: 640px) {
+  .form-registration {
+    width: 66%;
+    padding: 40px;
+  }
+  .addresses-section {
+    flex-direction: column;
+  }
+  .address-item {
+    width: 100%;
+  }
+}
