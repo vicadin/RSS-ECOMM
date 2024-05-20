@@ -4,6 +4,11 @@ import {
   registerUser,
   getAccessToken,
 } from "../../../interfaces/registration/registrationRequests";
+import {
+  fetchAuthenticateCustomer,
+  fetchGetAccessTokenThroughPassword,
+} from "../../../interfaces/login-page-requests";
+import { AccessTokenResponse, Customer } from "../../../interfaces/login-page-types";
 
 export default class RegistrationForm {
   private formElement: HTMLFormElement;
@@ -32,7 +37,7 @@ export default class RegistrationForm {
     this.registrationSection = document.createElement("section");
     this.registrationSection.classList.add("registration-section");
     this.formElement = document.createElement("form");
-    this.formElement.classList.add("form");
+    this.formElement.classList.add("form-registration");
     this.submitButton = document.createElement("button");
     this.submitButton.type = "submit";
     this.submitButton.textContent = "Register";
@@ -40,7 +45,7 @@ export default class RegistrationForm {
     this.submitButton.classList.add("btn-black");
 
     this.logInText = document.createElement("a");
-    this.logInText.href = "#"; //add login page
+    this.logInText.href = "#login";
     this.logInText.innerHTML = "Do you already have an account?";
     this.logInText.classList.add("form-link");
 
@@ -67,17 +72,17 @@ export default class RegistrationForm {
   private handleInput(event: Event): void {
     const target = event.target as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
     if (!target || !target.name) return;
-
+  
     const value = target.value.trim();
     const fieldName = target.name;
-
+  
     const errorMessage = this.validateField(fieldName, value);
     this.updateErrorMessage(fieldName, errorMessage);
-
+  
     const hasErrors = Object.values(this.errorElements).some(
-      (errorElement) => errorElement.textContent !== "",
+      (errorElement) => errorElement.textContent !== ""
     );
-
+  
     const allFieldsFilled = (): boolean => {
       const inputElements = Array.from(this.formElement.elements).filter(
         (element) =>
@@ -85,19 +90,25 @@ export default class RegistrationForm {
             element.type !== "checkbox" &&
             element.type !== "date") ||
           element instanceof HTMLSelectElement ||
-          element instanceof HTMLTextAreaElement,
+          element instanceof HTMLTextAreaElement
       ) as (HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement)[];
       return inputElements.every((input) => input.value.trim() !== "");
     };
-
-    if (!hasErrors && allFieldsFilled()) {
-      this.submitButton.disabled = false;
-    } else {
-      this.submitButton.disabled = true;
-    }
-
+  
+    const updateSubmitButtonState = () => {
+      if (!hasErrors && allFieldsFilled()) {
+        this.submitButton.disabled = false;
+      } else {
+        this.submitButton.disabled = true;
+      }
+    };
+  
+    updateSubmitButtonState();
+  
     if (this.sameAddressCheckbox.checked) {
       this.copyDeliveryAddressToBilling();
+  
+      updateSubmitButtonState();
     }
   }
 
@@ -164,6 +175,24 @@ export default class RegistrationForm {
           if (res) {
             this.overlay.classList.add("show");
             this.registrationSection.appendChild(this.successMessage);
+            const response = fetchGetAccessTokenThroughPassword(email, password);
+            response.then((result) => {
+              let token: string;
+              if ((result as AccessTokenResponse).token_type === "Bearer") {
+                token = (result as AccessTokenResponse).access_token;
+              }
+              if (token) {
+                fetchAuthenticateCustomer(token, email, password).then((res) => {
+                  const { id } = (res as Customer).customer;
+                  localStorage.setItem("id", id);
+                  localStorage.setItem("token", JSON.stringify({ token }));
+                  window.location.hash = "#home";
+                });
+              }
+            });
+            setTimeout(() => {
+              window.location.href = "/#home";
+            }, 500);
           }
         });
       }

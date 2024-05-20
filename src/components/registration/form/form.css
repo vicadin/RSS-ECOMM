@@ -1,11 +1,11 @@
-.form {
+.form-registration {
   display: flex;
   flex-direction: column;
   width: 660px;
   padding: 60px;
   background: white;
 }
-.form input {
+.form-registration input {
   border: 0;
   caret-color: #333;
   color: #333;
@@ -53,7 +53,7 @@
 .form-link {
   order: 3;
 }
-.form select {
+.form-registration select {
   border: 0;
   caret-color: #333;
   color: #333;
@@ -76,16 +76,16 @@
   font-size: 14px;
   padding-top: 5px;
 }
-.form input[type="checkbox"] {
+.form-registration input[type="checkbox"] {
   margin-bottom: 0;
 }
 @media only screen and (min-device-width: 320px) and (max-device-width: 1024px) {
-  .form {
+  .form-registration {
     width: 80%;
   }
 }
 @media only screen and (min-device-width: 320px) and (max-device-width: 640px) {
-  .form {
+  .form-registration {
     width: 66%;
     padding: 40px;
   }
