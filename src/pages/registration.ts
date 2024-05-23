@@ -1,4 +1,4 @@
-import RegistrationForm from "../components/registration/registrationPage";
+import RegistrationForm from "../components/registration/registrationPage.ts";
 
 export default function RegistrationPage() {
   const registrationForm = new RegistrationForm();

@@ -1,4 +1,4 @@
-import { displayError } from "./registartionFormUtils";
+import { displayError } from "./registartionFormUtils.ts";
 
 export async function getAccessToken() {
   const config = {
@@ -22,6 +22,26 @@ export async function getAccessToken() {
   }
 }
 
+interface Address {
+  streetName: string;
+  city: string;
+  postalCode: string;
+  country: string;
+}
+
+interface RequestBody {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  addresses: Address[];
+  defaultShippingAddress?: number;
+  shippingAddresses: number[];
+  defaultBillingAddress?: number;
+  billingAddresses: number[];
+}
+
 export async function registerUser(
   token: string,
   email: string,
@@ -41,41 +61,41 @@ export async function registerUser(
   defaultBillingAddress: boolean,
 ): Promise<boolean> {
   try {
-    const addresses = [];
+    const addresses: Address[] = [
+      {
+        streetName: deliveryStreet,
+        city: deliveryCity,
+        postalCode: deliveryPostalCode,
+        country: deliveryCountry,
+      },
+      {
+        streetName: billingStreet,
+        city: billingCity,
+        postalCode: billingPostalCode,
+        country: billingCountry,
+      },
+    ];
 
-    const deliveryAddressIndex = addresses.length;
-    addresses.push({
-      streetName: deliveryStreet,
-      city: deliveryCity,
-      postalCode: deliveryPostalCode,
-      country: deliveryCountry,
-    });
+    const deliveryAddressIndex = 0;
+    const billingAddressIndex = 1;
 
-    const billingAddressIndex = addresses.length;
-    addresses.push({
-      streetName: billingStreet,
-      city: billingCity,
-      postalCode: billingPostalCode,
-      country: billingCountry,
-    });
-
-    const requestBody: any = {
-      email: email,
-      password: password,
-      firstName: firstName,
-      lastName: lastName,
-      dateOfBirth: dateOfBirth,
-      addresses: addresses,
+    const requestBody: RequestBody = {
+      email,
+      password,
+      firstName,
+      lastName,
+      dateOfBirth,
+      addresses,
+      shippingAddresses: [deliveryAddressIndex],
+      billingAddresses: [billingAddressIndex],
     };
 
     if (defaultDeliveryAddress) {
       requestBody.defaultShippingAddress = deliveryAddressIndex;
     }
-    requestBody.shippingAddresses = [deliveryAddressIndex];
     if (defaultBillingAddress) {
       requestBody.defaultBillingAddress = billingAddressIndex;
     }
-    requestBody.billingAddresses = [billingAddressIndex];
 
     const response = await fetch(`${process.env.HOST}/${process.env.PROJECT_KEY}/customers`, {
       method: "POST",
@@ -88,18 +108,17 @@ export async function registerUser(
 
     if (response.ok) {
       return await response.json();
-    } else {
-      const errorData = await response.json();
-      console.error("Registration error:", errorData);
-      if (errorData.statusCode === 400 && errorData.errors[0].code === "DuplicateField") {
-        console.log(errorData);
-        displayError("User with this email already exists");
-      } else if (errorData.statusCode === 500) {
-        displayError("Oops! Try again a little later.");
-      }
-
-      return false;
     }
+
+    const errorData = await response.json();
+    console.error("Registration error:", errorData);
+    if (errorData.statusCode === 400 && errorData.errors[0].code === "DuplicateField") {
+      displayError("User with this email already exists");
+    } else if (errorData.statusCode === 500) {
+      displayError("Oops! Try again a little later.");
+    }
+
+    return false;
   } catch (error) {
     console.error("Error registering user:", error);
     return false;

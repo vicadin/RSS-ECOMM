@@ -1,5 +1,5 @@
 export default class NotFoundComponent {
-  render(): string {
+  static render(): string {
     return `
         <h2>404 Page Not Found</h2>
         <p>Sorry, the page you are looking for does not exist.</p>

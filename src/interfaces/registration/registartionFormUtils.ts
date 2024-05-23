@@ -1,4 +1,4 @@
-import { countries } from "./countriesList";
+import countries from "./countriesList.ts";
 
 export function createInputElement(
   type: string,
@@ -54,14 +54,14 @@ export function validateDateOfBirth(dateString: string): string | null {
   const today = new Date();
   const birthDate = new Date(dateString);
 
-  if (isNaN(birthDate.getTime())) {
+  if (Number.isNaN(birthDate.getTime())) {
     return "Invalid date format. Please enter a valid date.";
   }
 
   let age = today.getFullYear() - birthDate.getFullYear();
   const monthDiff = today.getMonth() - birthDate.getMonth();
   if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-    age = age - 1;
+    age -= 1;
   }
   if (age < 13) {
     return "You must be at least 13 years old to register.";
