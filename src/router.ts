@@ -1,6 +1,7 @@
 import RegistrationPage from "./pages/registration";
 import loginPage from "./components/login-page/login-page";
 import NotFoundComponent from "./components/404components";
+import { profilePage } from "./pages/profile";
 
 type Routes = {
   [key: string]: () => void;
@@ -26,6 +27,12 @@ export function handleHash() {
       if (newContent) {
         newContent.innerHTML = "";
         RegistrationPage();
+      }
+    },
+    profile: () => {
+      if (newContent) {
+        newContent.innerHTML = "";
+        newContent.appendChild(profilePage.getHtml());
       }
     },
     "": () => {
