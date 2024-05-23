@@ -1,14 +1,14 @@
 import "./form.css";
-import * as RegistrationFormUtils from "../../../interfaces/registration/registartionFormUtils";
+import * as RegistrationFormUtils from "../../../interfaces/registration/registartionFormUtils.ts";
 import {
   registerUser,
   getAccessToken,
-} from "../../../interfaces/registration/registrationRequests";
+} from "../../../interfaces/registration/registrationRequests.ts";
 import {
   fetchAuthenticateCustomer,
   fetchGetAccessTokenThroughPassword,
-} from "../../../interfaces/login-page-requests";
-import { AccessTokenResponse, Customer } from "../../../interfaces/login-page-types";
+} from "../../../interfaces/login-page-requests.ts";
+import { AccessTokenResponse, Customer } from "../../../interfaces/login-page-types.ts";
 
 export default class RegistrationForm {
   private formElement: HTMLFormElement;
@@ -76,7 +76,7 @@ export default class RegistrationForm {
     const value = target.value.trim();
     const fieldName = target.name;
 
-    const errorMessage = this.validateField(fieldName, value);
+    const errorMessage = RegistrationForm.validateField(fieldName, value);
     this.updateErrorMessage(fieldName, errorMessage);
 
     const hasErrors = Object.values(this.errorElements).some(
@@ -146,16 +146,15 @@ export default class RegistrationForm {
       !billingPostalCode ||
       !billingCountry
     ) {
-      console.error("All fields are required");
       return;
     }
 
-    const response = getAccessToken();
-    response.then((result) => {
-      const token = result.access_token;
-      if (token) {
+    const responseGetAccessToken = getAccessToken();
+    responseGetAccessToken.then((result) => {
+      const accessToken = result.access_token;
+      if (accessToken) {
         registerUser(
-          token,
+          accessToken,
           email,
           password,
           firstName,
@@ -175,21 +174,32 @@ export default class RegistrationForm {
           if (res) {
             this.overlay.classList.add("show");
             this.registrationSection.appendChild(this.successMessage);
-            const response = fetchGetAccessTokenThroughPassword(email, password);
-            response.then((result) => {
-              let token: string;
-              if ((result as AccessTokenResponse).token_type === "Bearer") {
-                token = (result as AccessTokenResponse).access_token;
-              }
-              if (token) {
-                fetchAuthenticateCustomer(token, email, password).then((res) => {
-                  const { id } = (res as Customer).customer;
-                  localStorage.setItem("id", id);
-                  localStorage.setItem("token", JSON.stringify({ token }));
-                  window.location.hash = "#home";
-                });
-              }
-            });
+            const responseFetchGetAccessTokenThroughPassword = fetchGetAccessTokenThroughPassword(
+              email,
+              password,
+            );
+            responseFetchGetAccessTokenThroughPassword.then(
+              (resultFetchGetAccessTokenThroughPassword) => {
+                let authToken: string;
+                if (
+                  (resultFetchGetAccessTokenThroughPassword as AccessTokenResponse).token_type ===
+                  "Bearer"
+                ) {
+                  authToken = (resultFetchGetAccessTokenThroughPassword as AccessTokenResponse)
+                    .access_token;
+                  if (authToken) {
+                    fetchAuthenticateCustomer(authToken, email, password).then(
+                      (resfetchAuthenticateCustomer) => {
+                        const { id } = (resfetchAuthenticateCustomer as Customer).customer;
+                        localStorage.setItem("id", id);
+                        localStorage.setItem("token", JSON.stringify({ token: authToken }));
+                        window.location.hash = "#home";
+                      },
+                    );
+                  }
+                }
+              },
+            );
             setTimeout(() => {
               window.location.href = "/#home";
             }, 500);
@@ -252,7 +262,9 @@ export default class RegistrationForm {
       });
     });
 
-    this.addressesSection.appendChild(this.createAddressSection("delivery", "Delivery Address"));
+    this.addressesSection.appendChild(
+      RegistrationForm.createAddressSection("delivery", "Delivery Address"),
+    );
 
     const defaultDeliveryAddressElement = RegistrationFormUtils.createCheckboxElement(
       "defaultDeliveryAddress",
@@ -272,7 +284,9 @@ export default class RegistrationForm {
       .getElementsByClassName("address-item-delivery")[0]
       .append(sameAddressElement.container);
 
-    this.addressesSection.append(this.createAddressSection("billing", "Billing Address"));
+    this.addressesSection.append(
+      RegistrationForm.createAddressSection("billing", "Billing Address"),
+    );
 
     const defaultBillingAddressElement = RegistrationFormUtils.createCheckboxElement(
       "defaultBillingAddress",
@@ -289,7 +303,7 @@ export default class RegistrationForm {
     );
   }
 
-  private createAddressSection(prefix: string, title: string): HTMLElement {
+  private static createAddressSection(prefix: string, title: string): HTMLElement {
     const sectionElement = document.createElement("section");
     sectionElement.classList.add(`address-item-${prefix}`);
     sectionElement.classList.add(`address-item`);
@@ -368,12 +382,12 @@ export default class RegistrationForm {
     const billingLabels = this.formElement.querySelectorAll<HTMLLabelElement>(
       ".address-item-billing .input-container label",
     )!;
-    for (let label of billingLabels) {
+    billingLabels.forEach((label) => {
       label.classList.add("label_moved");
-    }
+    });
   }
 
-  private validateField(fieldName: string, value: string): string | null {
+  private static validateField(fieldName: string, value: string): string | null {
     switch (fieldName) {
       case "email":
         return RegistrationFormUtils.validateEmail(value);

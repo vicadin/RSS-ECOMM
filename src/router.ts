@@ -1,6 +1,6 @@
-import RegistrationPage from "./pages/registration";
-import loginPage from "./components/login-page/login-page";
-import NotFoundComponent from "./components/404components";
+import RegistrationPage from "./pages/registration.ts";
+import LoginPage from "./components/login-page/login-page.ts";
+import NotFoundComponent from "./components/404components.ts";
 
 type Routes = {
   [key: string]: () => void;
@@ -19,7 +19,7 @@ export function handleHash() {
     login: () => {
       if (newContent) {
         newContent.innerHTML = "";
-        newContent.appendChild(new loginPage().getHtmlElem());
+        newContent.appendChild(new LoginPage().getHtmlElem());
       }
     },
     register: () => {
@@ -31,7 +31,7 @@ export function handleHash() {
     "": () => {
       if (newContent) {
         newContent.innerHTML = "";
-        new NotFoundComponent().render();
+        NotFoundComponent.render();
       }
     },
   };

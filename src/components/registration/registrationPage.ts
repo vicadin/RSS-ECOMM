@@ -1,9 +1,11 @@
 import "./registrationPage.css";
-import RegistrationForm from "./form/form";
+import RegistrationForm from "./form/form.ts";
 
 export default class RegistrationPage {
   private title: HTMLElement;
+
   private formContainer: HTMLElement;
+
   private registrationForm: RegistrationForm;
 
   constructor() {
