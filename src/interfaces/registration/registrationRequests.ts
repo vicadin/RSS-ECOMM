@@ -5,7 +5,7 @@ export async function getAccessToken() {
     method: "POST",
     headers: {
       Authorization:
-        "Basic ZkVIRlZjM1hGM29tNXAwNHNjSncyR3pGOkNqNndxLUJKQ3JRMHh4UVQ1ZWZJRzY4Q2xKQ2JZMExU",
+        "Basic TEhfelo0VlRtN2ZtQ3BHYzJETWlPejJWOjBnRnkyVl9EbWNyTGw4NUJhUXVWU0dPYV9iYUlaT2dm",
     },
   };
   try {

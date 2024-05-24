@@ -1,6 +1,7 @@
 import { createElement } from "../utils/login-page-utils.ts";
-import { CreateNavigation, fillNavList, getListItems } from "../utils/header-utils.ts";
+import { fillNavList, getListItems } from "../utils/header-utils.ts";
 import { headerPropsForLeftNav, headerPropsForRightNav } from "../interfaces/header-types.ts";
+import CreateNavigation from "../utils/navigation.ts";
 
 export class Header {
   headerNavList: HTMLElement | HTMLUListElement;
@@ -26,10 +27,13 @@ export class Header {
   }
 
   addEventListeners() {
-    this.navList.addEventListener("click", (ev) => {
+    this.headerNavContainer.addEventListener("click", (ev) => {
       if ((ev.target as HTMLLinkElement).textContent === "Logout") {
         localStorage.clear();
         this.updateNav("navList");
+      }
+      if ((ev.target as HTMLLinkElement).textContent === "Catalog") {
+        // console.log("отрисовка страницы Catalog");
       }
     });
   }

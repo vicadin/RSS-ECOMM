@@ -1,5 +1,4 @@
 import "./form.css";
-
 import {
   AccessTokenResponse,
   buttonAttr,

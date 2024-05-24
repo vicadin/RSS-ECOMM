@@ -5,7 +5,7 @@ export type NavObj = {
   navClassNames: string;
   ulName: string;
   ulClassNames: string;
-  items: string[];
+  items: string[] | [];
 };
 
 export const headerPropsForLeftNav: NavObj = {
@@ -16,7 +16,7 @@ export const headerPropsForLeftNav: NavObj = {
   items: ["Catalog"],
 };
 
-export const headerPropsForRightNav = {
+export const headerPropsForRightNav: NavObj = {
   navName: "nav",
   navClassNames: "additional-nav",
   ulName: "navList",

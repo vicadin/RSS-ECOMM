@@ -1,0 +1,22 @@
+.catalog-container {
+  display: flex;
+  width: 100%;
+}
+
+.aside {
+  display: flex;
+  flex-direction: column;
+  width: 25%;
+}
+
+.aside-nav {
+}
+
+.aside-nav_list {
+}
+
+.catalog-main {
+  display: flex;
+  flex-direction: column;
+  width: 75%;
+}

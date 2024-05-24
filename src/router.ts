@@ -2,6 +2,8 @@ import RegistrationPage from "./pages/registration.ts";
 import LoginPage from "./components/login-page/login-page.ts";
 import NotFoundComponent from "./components/404components.ts";
 import { headerEl } from "./components/header.ts";
+import CatalogPage from "./pages/catalog/catalog.ts";
+import { asideProps, fillCategoriesNames } from "./utils/catalog-utils.ts";
 
 type Routes = {
   [key: string]: () => void;
@@ -34,6 +36,18 @@ export function handleHash() {
       if (newContent) {
         newContent.innerHTML = "";
         NotFoundComponent.render();
+      }
+    },
+    catalog: () => {
+      if (newContent) {
+        newContent.innerHTML = "";
+
+        fillCategoriesNames().then((resArray) => {
+          if (resArray.length) {
+            asideProps.items = resArray;
+            newContent.append(new CatalogPage().getHtml());
+          }
+        });
       }
     },
   };
