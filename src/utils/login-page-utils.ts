@@ -1,4 +1,8 @@
-export function createElement(tag: string, classNames: string, text?: string): HTMLElement {
+export function createElement(
+  tag: string,
+  classNames: string,
+  text?: string,
+): HTMLElement | HTMLUListElement {
   const newElem = document.createElement(tag);
   newElem.className = classNames;
   if (text) {

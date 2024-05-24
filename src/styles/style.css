@@ -10,10 +10,12 @@ body {
   padding: 20px;
   font-family: Questrial;
 }
+
 footer {
   display: flex;
   justify-content: center;
 }
+
 #content {
   min-height: calc(100vh - 80px);
   display: flex;
@@ -28,8 +30,8 @@ footer {
 
 .nav_list {
   display: flex;
-  justify-content: flex-end;
 }
+
 .nav_list_item {
   display: flex;
   align-items: center;

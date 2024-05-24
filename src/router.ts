@@ -15,7 +15,7 @@ export function handleHash() {
     home: () => {
       if (newContent) {
         newContent.innerHTML = "<h2>Welcome!</h2>";
-        headerEl.updateNav();
+        headerEl.updateNav("navList");
       }
     },
     login: () => {

@@ -101,7 +101,9 @@ export class Form {
 
   clearFormInputs() {
     this.emailInput.value = "";
+    this.emailLabel.classList.remove("email-label_moved");
     this.passwordInput.value = "";
+    this.passwordLabel.classList.remove("password-label_moved");
   }
 
   showRequestError(text: string) {
