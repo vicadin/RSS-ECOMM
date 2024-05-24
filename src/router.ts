@@ -1,6 +1,7 @@
 import RegistrationPage from "./pages/registration.ts";
 import LoginPage from "./components/login-page/login-page.ts";
 import NotFoundComponent from "./components/404components.ts";
+import { headerEl } from "./components/header.ts";
 
 type Routes = {
   [key: string]: () => void;
@@ -14,6 +15,7 @@ export function handleHash() {
     home: () => {
       if (newContent) {
         newContent.innerHTML = "<h2>Welcome!</h2>";
+        headerEl.updateNav();
       }
     },
     login: () => {

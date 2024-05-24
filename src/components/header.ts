@@ -1,3 +1,6 @@
+import createNavLink from "../utils/header-utils.ts";
+import { createElement } from "../utils/login-page-utils.ts";
+
 export class Header {
   header: HTMLElement;
 
@@ -5,29 +8,36 @@ export class Header {
 
   navList: HTMLUListElement;
 
+  headerNavContainer: HTMLElement;
+
+  headerNav: HTMLElement;
+
+  headerNavList: HTMLElement;
+
   constructor() {
     this.header = document.createElement("header");
-    this.nav = document.createElement("nav");
+    this.headerNavContainer = createElement("div", "header_nav-container");
+    this.headerNav = createElement("nav", "primary-nav");
+    this.headerNavList = createElement("ul", "primary-nav_list");
+
+    this.nav = createElement("nav", "additional-nav");
     this.navList = document.createElement("ul");
     this.navList.classList.add("nav_list");
-    this.fillNavList();
+    Header.fillNavList(
+      this.navList,
+      localStorage.getItem("token")
+        ? ["Register", "Logout", "Home"]
+        : ["Register", "Login", "Home"],
+    );
     this.nav.appendChild(this.navList);
-    this.header.appendChild(this.nav);
+    this.headerNavContainer.append(this.nav);
+    this.header.appendChild(this.headerNavContainer);
     this.addEventListeners();
   }
 
-  fillNavList() {
-    const navItems = localStorage.getItem("token")
-      ? ["Register", "Logout", "Home"]
-      : ["Register", "Login", "Home"];
-    navItems.forEach((itemText) => {
-      const listItem = document.createElement("li");
-      const link = document.createElement("a");
-      link.href = `#${itemText.toLowerCase()}`;
-      link.textContent = itemText;
-      listItem.appendChild(link);
-      this.navList.appendChild(listItem);
-      listItem.classList.add("nav_list_item");
+  static fillNavList(parentUl: HTMLUListElement, items: string[]): void {
+    items.forEach((itemText) => {
+      parentUl.appendChild(createNavLink(itemText));
     });
   }
 
@@ -44,7 +54,13 @@ export class Header {
     this.nav.innerHTML = "";
     this.navList.innerHTML = "";
 
-    this.fillNavList();
+    Header.fillNavList(
+      this.navList,
+      localStorage.getItem("token")
+        ? ["Register", "Logout", "Home"]
+        : ["Register", "Login", "Home"],
+    );
+
     this.nav.append(this.navList);
   }
 

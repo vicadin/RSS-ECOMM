@@ -98,3 +98,7 @@ export function validateEmail(): void {
     this.emailError.textContent = "";
   }
 }
+
+export function setLocalStorage(array: [string, string][]) {
+  array.forEach(([key, value]) => localStorage.setItem(key, value));
+}

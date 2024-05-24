@@ -9,19 +9,21 @@ import {
   passwordAttr,
   showButtonAttributes,
 } from "../../../interfaces/login-page-types.ts";
+
+import {
+  fetchAuthenticateCustomer,
+  fetchGetAccessTokenThroughPassword,
+} from "../../../interfaces/login-page-requests.ts";
 import {
   createButton,
   createElement,
   createForm,
   createInput,
+  setLocalStorage,
   showHidePassword,
   validateEmail,
   validatePassword,
-} from "../../../interfaces/login-page-utils.ts";
-import {
-  fetchAuthenticateCustomer,
-  fetchGetAccessTokenThroughPassword,
-} from "../../../interfaces/login-page-requests.ts";
+} from "../../../utils/login-page-utils.ts";
 
 export class Form {
   form: HTMLFormElement;
@@ -97,6 +99,11 @@ export class Form {
     }
   }
 
+  clearFormInputs() {
+    this.emailInput.value = "";
+    this.passwordInput.value = "";
+  }
+
   showRequestError(text: string) {
     this.formError.textContent = text;
   }
@@ -149,8 +156,11 @@ export class Form {
                 this.showRequestError("Sorry, something went wrong. Please, try again later.");
               } else {
                 const { id } = (res as Customer).customer;
-                localStorage.setItem("id", id);
-                localStorage.setItem("token", JSON.stringify({ token }));
+                setLocalStorage([
+                  ["id", id],
+                  ["token", JSON.stringify({ token })],
+                ]);
+                this.clearFormInputs();
                 window.location.hash = "#home";
               }
             });
