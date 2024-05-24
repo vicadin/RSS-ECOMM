@@ -111,7 +111,7 @@ export async function registerUser(
     }
 
     const errorData = await response.json();
-    console.error("Registration error:", errorData);
+    // console.error("Registration error:", errorData);
     if (errorData.statusCode === 400 && errorData.errors[0].code === "DuplicateField") {
       displayError("User with this email already exists");
     } else if (errorData.statusCode === 500) {
@@ -120,7 +120,7 @@ export async function registerUser(
 
     return false;
   } catch (error) {
-    console.error("Error registering user:", error);
+    // console.error("Error registering user:", error);
     return false;
   }
 }

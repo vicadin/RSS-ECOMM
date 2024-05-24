@@ -9,6 +9,7 @@ import {
   fetchGetAccessTokenThroughPassword,
 } from "../../../interfaces/login-page-requests.ts";
 import { AccessTokenResponse, Customer } from "../../../interfaces/login-page-types.ts";
+import { setType } from "../../../interfaces/registration/registartionFormUtils.ts";
 
 export default class RegistrationForm {
   private formElement: HTMLFormElement;
@@ -239,9 +240,7 @@ export default class RegistrationForm {
         required,
       );
       if (name === "dateOfBirth") {
-        input.addEventListener("focus", function () {
-          this.type = "date";
-        });
+        input.addEventListener("focus", setType);
       }
       const errorElement = RegistrationFormUtils.createErrorMessageElement(`${name}-error`);
       const inputContainer = document.createElement("div");
