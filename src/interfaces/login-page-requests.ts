@@ -1,9 +1,5 @@
 import { Customer, TokenThroughPassword } from "./login-page-types.ts";
 
-const authUrl = "https://auth.europe-west1.gcp.commercetools.com";
-const host = "https://api.europe-west1.gcp.commercetools.com";
-const projectKey = "commerce-app";
-
 export async function fetchGetAccessTokenThroughPassword(
   email: string,
   password: string,
@@ -18,7 +14,7 @@ export async function fetchGetAccessTokenThroughPassword(
   };
   try {
     const response = await fetch(
-      `${authUrl}/oauth/${projectKey}/customers/token?grant_type=password&username=${email}&password=${password}`,
+      `${process.env.AUTH_URL}/oauth/${process.env.PROJECT_KEY}/customers/token?grant_type=password&username=${email}&password=${password}`,
       config,
     );
     if (response.ok) {
@@ -49,7 +45,7 @@ export async function fetchAuthenticateCustomer(
   };
 
   try {
-    const response = await fetch(`${host}/${projectKey}/login`, config);
+    const response = await fetch(`${process.env.HOST}/${process.env.PROJECT_KEY}/login`, config);
     if (response.ok) {
       return await response.json();
     }
