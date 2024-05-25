@@ -1,12 +1,13 @@
 .catalog-container {
   display: flex;
   width: 100%;
+  margin-top: 40px;
 }
 
 .aside {
   display: flex;
   flex-direction: column;
-  width: 25%;
+  width: 20%;
 }
 
 .aside-nav {
