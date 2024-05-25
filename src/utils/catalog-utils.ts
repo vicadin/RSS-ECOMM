@@ -1,5 +1,5 @@
 import { NavObj } from "../interfaces/header-types.ts";
-import { fetchGetTypes } from "../pages/catalog/catalog-requests.ts";
+import { fetchGetTypes } from "../interfaces/catalog-requests.ts";
 
 export async function fillCategoriesNames(): Promise<string[] | []> {
   const tempArray = [];
@@ -68,8 +68,7 @@ export function getLocale(props) {
 
 export function getPriceBlockByLocale(props, locale) {
   const productPrices = props.masterData.current.masterVariant.prices;
-  const priceBlock = productPrices.find((item) => item.country === `${locale.split("-")[1]}`);
-  return priceBlock;
+  return productPrices.find((item) => item.country === `${locale.split("-")[1]}`);
 }
 
 function setCurrency(priceBlock, number) {
@@ -95,6 +94,3 @@ export function setBeforeDiscountPrice(props, locale: string) {
     : 0;
   return setCurrency(priceBlock, BeforeDiscountPriceNumber);
 }
-
-// [2][`${locale.split("-")[1]}`]?.discounted?.value?.centAmount ?? props.masterData.current.masterVariant.prices[2].value.centAmount;
-// this.finalPrice.textContent =

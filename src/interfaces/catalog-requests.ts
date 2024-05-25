@@ -1,5 +1,5 @@
-import { getAccessToken } from "../../interfaces/registration/registrationRequests.ts";
-import { CatalogTypesAnswer } from "../../interfaces/catalog-types.ts";
+import { CatalogTypesAnswer } from "./catalog-types.ts";
+import { getAccessToken } from "./registration/registrationRequests.ts";
 
 export async function fetchGetTypes(): Promise<CatalogTypesAnswer | boolean> {
   let token;
@@ -52,7 +52,6 @@ export async function fetchGetProducts() {
     if (response.ok) {
       const answer = await response.json();
       return answer;
-      // из ответа (answer) отрисовка карточки товара
     }
   } catch {
     return false;

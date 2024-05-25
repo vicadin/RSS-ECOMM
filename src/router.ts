@@ -8,7 +8,7 @@ import {
   setAsidePropsItems,
   setProductsArray,
 } from "./utils/catalog-utils.ts";
-import { fetchGetProducts } from "./pages/catalog/catalog-requests.ts";
+import { fetchGetProducts } from "./interfaces/catalog-requests.ts";
 
 type Routes = {
   [key: string]: () => void;
