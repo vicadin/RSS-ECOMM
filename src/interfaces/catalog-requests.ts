@@ -32,7 +32,7 @@ export async function fetchGetTypes(): Promise<CatalogTypesAnswer | boolean> {
   return false;
 }
 
-export async function fetchGetProducts() {
+export async function fetchGetProducts(id?: string) {
   let token;
   if (localStorage.getItem("token")) {
     token = JSON.parse(localStorage.getItem("token")).token;
@@ -48,7 +48,10 @@ export async function fetchGetProducts() {
     },
   };
   try {
-    const response = await fetch(`${process.env.HOST}/${process.env.PROJECT_KEY}/products`, config);
+    const fetchInput = id
+      ? `${process.env.HOST}/${process.env.PROJECT_KEY}/products/${id}`
+      : `${process.env.HOST}/${process.env.PROJECT_KEY}/products`;
+    const response = await fetch(fetchInput, config);
     if (response.ok) {
       const answer = await response.json();
       return answer;
@@ -58,5 +61,3 @@ export async function fetchGetProducts() {
   }
   return false;
 }
-
-// GET /{projectKey}/products

@@ -9,6 +9,7 @@ import {
   setProductsArray,
 } from "./utils/catalog-utils.ts";
 import { fetchGetProducts } from "./interfaces/catalog-requests.ts";
+import ProductCard from "./components/catalog/product-card.ts";
 
 type Routes = {
   [key: string]: () => void;
@@ -40,13 +41,12 @@ export function handleHash() {
     "": () => {
       if (newContent) {
         newContent.innerHTML = "";
-        NotFoundComponent.render();
+        newContent.innerHTML = NotFoundComponent.render();
       }
     },
     catalog: () => {
       if (newContent) {
         newContent.innerHTML = "";
-
         const arr = [fillCategoriesNames(), fetchGetProducts()];
         const anotherArr = [setAsidePropsItems, setProductsArray];
         Promise.all(arr).then((values) => {
@@ -57,8 +57,18 @@ export function handleHash() {
         });
       }
     },
+
+    product: () => {
+      if (newContent) {
+        newContent.innerHTML = "";
+        const prodItem = fetchGetProducts(localStorage.getItem("productId"));
+        prodItem.then((result) => {
+          // append detailed product card
+          newContent.append(new ProductCard(result, "en-US").getHtml());
+        });
+      }
+    },
   };
-  // };
 
   if (localStorage.getItem("token") && hash === "login") {
     hash = "home";
@@ -69,12 +79,19 @@ export function handleHash() {
     window.location.hash = hash;
   }
 
+  if (hash.match(/.product/s)) {
+    hash = "product";
+    const productId = window.location.hash.slice(1, -7);
+    localStorage.setItem("productId", productId);
+  }
+
   const routeHandler = routes[hash] || routes[""];
   routeHandler();
 }
 
 export function routerInit() {
   window.addEventListener("hashchange", handleHash);
-  window.location.hash = "#home";
+  const currentHash = window.location.hash;
+  window.location.hash = window.location.hash.slice(-7) === "product" ? currentHash : "#home";
   handleHash();
 }

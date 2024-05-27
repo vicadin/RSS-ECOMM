@@ -22,7 +22,6 @@ export default class CatalogPage {
     this.aside.append(asideNav);
     this.catalogMain = createElement("section", "catalog-main");
     this.catalogMain.append(new Products(products.array).getHtml());
-
     this.pageContainer.append(this.aside, this.catalogMain);
   }
 

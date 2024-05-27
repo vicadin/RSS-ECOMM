@@ -29,14 +29,12 @@ export default class ProductCard {
 
   renderCard(props, locale) {
     this.productCardItem = createElement("div", "product-card");
-
     this.productCardContent = createElement("div", "product-card_content");
     this.productCardHeading = createElement("h4", "product-card_heading");
     this.productCardDescription = createElement("p", "product-card_description");
     this.productCardPrices = createElement("div", "product-card_prices");
     this.finalPrice = createElement("span", "final-price");
     this.beforeDiscountPrice = createElement("span", "before-discount-price ");
-
     this.productImage = createElement("div", "product-card_image");
     this.setFieldsValues(props, locale);
     this.productCardPrices.append(this.finalPrice, this.beforeDiscountPrice);
@@ -53,15 +51,22 @@ export default class ProductCard {
   }
 
   setFieldsValues(props, locale) {
-    const data = props.masterData.current;
-    this.productCardHeading.textContent = data.name[locale];
-    [this.productCardDescription.textContent] = data.description[locale].split(".");
-    this.finalPrice.textContent = setFinalPrice(props, locale);
-    this.beforeDiscountPrice.textContent = setBeforeDiscountPrice(props, locale);
-    this.productImage.style.backgroundImage = `url("${data.masterVariant.images[0].url}")`;
+    try {
+      const data = props.masterData.current;
+      this.productCardHeading.textContent = data.name[locale];
+      [this.productCardDescription.textContent] = data.description[locale].split(".");
+      this.finalPrice.textContent = setFinalPrice(props, locale);
+      this.beforeDiscountPrice.textContent = setBeforeDiscountPrice(props, locale);
+      this.productImage.style.backgroundImage = `url("${data.masterVariant.images[0].url}")`;
+    } catch {
+      window.location.hash = "";
+    }
   }
 
   addEventListeners() {
-    this.productCardItem.addEventListener("click", () => {});
+    this.productCardItem.addEventListener("click", () => {
+      const pathname = `${this.id}`;
+      window.location.href = `#${pathname}product`;
+    });
   }
 }
