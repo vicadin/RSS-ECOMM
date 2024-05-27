@@ -1,0 +1,85 @@
+.tab-container {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 10px;
+  }
+  
+  .tab {
+    cursor: pointer;
+    padding: 10px 20px;
+    border: none;
+    background-color: #ddd;
+    margin: 0 5px;
+  }
+  
+  .tab-content-container {
+    padding: 10px;
+  }
+  
+  .editable-field, .address-item {
+    margin-bottom: 10px;
+  }
+  
+  .edit-button, .save-button, .delete-address-button, .edit-address-button, .save-address-button, .set-default-address-button {
+    margin-left: 10px;
+  }
+  
+  .default-address-label {
+    color: green;
+    font-weight: bold;
+  }
+  
+  .addresses-section {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .address-column {
+    flex: 1;
+    margin-right: 10px;
+  }
+  
+  .address-column:last-child {
+    margin-right: 0;
+  }
+  
+  .add-new-address-button {
+    margin-top: 10px;
+    padding: 5px 10px;
+    border: none;
+    background-color: #ddd;
+    cursor: pointer;
+  }
+  
+  .modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  }
+  
+  .modal-content {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .close-button {
+    align-self: flex-end;
+    cursor: pointer;
+  }
+  
+  .form-group {
+    margin-bottom: 10px;
+  }
+  
+  .save-new-address-button {
+    align-self: flex-end;
+    padding: 5px 10px;
+    border: none;
+    background-color: #ddd;
+    cursor: pointer;
+  }
