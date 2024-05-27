@@ -1,20 +1,25 @@
+import { profileTabs } from "../components/profile/profileTabs.ts";
+
 export class ProfilePage {
   profileSection: HTMLElement;
+  profileTitle: HTMLElement;
 
   constructor() {
-    this.profileSection = document.createElement("section");
+    this.profileSection = document.createElement("div");
     this.profileSection.classList.add("profile-section");
+    this.profileTitle = document.createElement("h1");
+    this.profileTitle.classList.add("title");
+    this.profileTitle.innerText = "Profile";
 
     this.render();
   }
 
   async render() {
-    this.profileSection.innerHTML = `
-          <h1>Profile</h1>
-          <div class="profile-info">
-         
-          </div>
-        `;
+    this.profileSection.append(this.profileTitle);
+    const profileInfoDiv = document.createElement("div");
+    profileInfoDiv.classList.add("profile-info");
+
+    this.profileSection.append(profileTabs.getHtml());
   }
 
   getHtml() {
