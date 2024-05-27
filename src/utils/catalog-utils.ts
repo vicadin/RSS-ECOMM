@@ -1,17 +1,19 @@
 import { NavObj } from "../interfaces/header-types.ts";
-import { fetchGetTypes } from "../interfaces/catalog-requests.ts";
+import { fetchGetCategories } from "../interfaces/catalog-requests.ts";
 
 export async function fillCategoriesNames(): Promise<string[] | []> {
   const tempArray = [];
   const names = [];
-  const jsonAnswer = await fetchGetTypes();
+  const jsonAnswer = await fetchGetCategories();
   if (typeof jsonAnswer !== "boolean") {
     jsonAnswer.results.forEach((item) => {
-      tempArray.push(item);
+      if (!item.parent) {
+        tempArray.push(item);
+      }
     });
   }
   tempArray.forEach((categoryObject) => {
-    names.push(categoryObject.name);
+    names.push(categoryObject.name["en-US"]);
   });
   return names;
 }

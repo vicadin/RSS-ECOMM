@@ -1,4 +1,4 @@
-import { CatalogTypesAnswer } from "./catalog-types.ts";
+import { CatalogCategoriesAnswer, CatalogTypesAnswer } from "./catalog-types.ts";
 import { getAccessToken } from "./registration/registrationRequests.ts";
 
 export async function fetchGetTypes(): Promise<CatalogTypesAnswer | boolean> {
@@ -54,6 +54,37 @@ export async function fetchGetProducts(id?: string) {
     const response = await fetch(fetchInput, config);
     if (response.ok) {
       const answer = await response.json();
+      return answer;
+    }
+  } catch {
+    return false;
+  }
+  return false;
+}
+
+export async function fetchGetCategories(): Promise<CatalogCategoriesAnswer | boolean> {
+  let token;
+  if (localStorage.getItem("token")) {
+    token = JSON.parse(localStorage.getItem("token")).token;
+  } else {
+    const answer = await getAccessToken();
+    token = answer.access_token;
+  }
+  const config = {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  };
+  try {
+    const response = await fetch(
+      `${process.env.HOST}/${process.env.PROJECT_KEY}/categories`,
+      config,
+    );
+    if (response.ok) {
+      const answer = await response.json();
+      // из ответа (answer) взять список для отрисовки списка
       return answer;
     }
   } catch {

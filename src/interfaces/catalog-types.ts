@@ -13,10 +13,45 @@ export type CatalogTypeResult = {
   versionModifiedAt: string;
 };
 
+export type CatalogCategoryResult = {
+  id: string;
+  version: number;
+  key: string;
+  externalId: string;
+  name: {
+    en: string;
+  };
+  slug: {
+    en: string;
+  };
+  description: string;
+  ancestors: [
+    {
+      typeId: "category";
+      id: string;
+    },
+  ];
+  parent: {
+    typeId: "category";
+    id: string;
+  };
+  orderHint: string;
+  createdAt: string;
+  lastModifiedAt: string;
+};
+
 export type CatalogTypesAnswer = {
   count: number;
   limit: number;
   offset: number;
   results: CatalogTypeResult[];
+  total: number;
+};
+
+export type CatalogCategoriesAnswer = {
+  count: number;
+  limit: number;
+  offset: number;
+  results: CatalogCategoryResult[];
   total: number;
 };
