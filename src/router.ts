@@ -1,6 +1,7 @@
 import RegistrationPage from "./pages/registration.ts";
 import LoginPage from "./components/login-page/login-page.ts";
 import NotFoundComponent from "./components/404components.ts";
+import {ProductDetailsPage} from "./components/pdp/pdp";
 
 type Routes = {
   [key: string]: () => void;
@@ -44,13 +45,19 @@ export function handleHash() {
     hash = "home";
     window.location.hash = hash;
   }
-
+  if (hash.includes("product=")) {
+    if(newContent) {
+      newContent.innerHTML = "";
+      newContent.appendChild(ProductDetailsPage());
+      return
+    }
+  }
   const routeHandler = routes[hash] || routes[""];
   routeHandler();
 }
 
 export function routerInit() {
   window.addEventListener("hashchange", handleHash);
-  window.location.hash = "#home";
-  handleHash();
+  // window.location.hash = "#home";
+  // handleHash();
 }
