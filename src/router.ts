@@ -3,12 +3,8 @@ import LoginPage from "./components/login-page/login-page.ts";
 import NotFoundComponent from "./components/404components.ts";
 import { headerEl } from "./components/header.ts";
 import CatalogPage from "./pages/catalog/catalog.ts";
-import {
-  fillCategoriesNames,
-  setAsidePropsItems,
-  setProductsArray,
-} from "./utils/catalog-utils.ts";
-import { fetchGetProducts } from "./interfaces/catalog-requests.ts";
+import { setCategoriesArray, setProductsArray } from "./utils/catalog-utils.ts";
+import { fetchGetCategories, fetchGetProducts } from "./interfaces/catalog-requests.ts";
 import ProductCard from "./components/catalog/product-card.ts";
 
 type Routes = {
@@ -47,8 +43,8 @@ export function handleHash() {
     catalog: () => {
       if (newContent) {
         newContent.innerHTML = "";
-        const arr = [fillCategoriesNames(), fetchGetProducts()];
-        const anotherArr = [setAsidePropsItems, setProductsArray];
+        const arr = [fetchGetCategories(), fetchGetProducts()];
+        const anotherArr = [setCategoriesArray, setProductsArray];
         Promise.all(arr).then((values) => {
           values.forEach((value, index) => {
             anotherArr[index](value);

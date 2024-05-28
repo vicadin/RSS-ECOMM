@@ -5,9 +5,13 @@
 }
 
 .aside {
+  position: relative;
   display: flex;
   flex-direction: column;
   width: 20%;
+}
+.aside > .category-container > .category-list > .category-list_item:first-child {
+  padding-top: 14px;
 }
 
 .aside-nav {

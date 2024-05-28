@@ -84,6 +84,7 @@ export async function fetchGetCategories(): Promise<CatalogCategoriesAnswer | bo
     );
     if (response.ok) {
       const answer = await response.json();
+      // console.log(answer);
       // из ответа (answer) взять список для отрисовки списка
       return answer;
     }

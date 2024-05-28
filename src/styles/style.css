@@ -37,10 +37,14 @@ footer {
   align-items: center;
   padding: 10px;
 }
-.nav_list_item:hover {
-  transform: scale(1.1);
-  transition: all 0.1s;
+@media (hover: hover) {
+  .nav_list_item:hover,
+  .category-item:hover {
+    transform: scale(1.1);
+    transition: all 0.1s;
+  }
 }
+
 .title {
   font-size: 24px;
   margin: 14px 0;

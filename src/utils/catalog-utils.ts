@@ -1,21 +1,14 @@
 import { NavObj } from "../interfaces/header-types.ts";
-import { fetchGetCategories } from "../interfaces/catalog-requests.ts";
+import { CategoryType } from "../interfaces/catalog-types.ts";
 
-export async function fillCategoriesNames(): Promise<string[] | []> {
-  const tempArray = [];
-  const names = [];
-  const jsonAnswer = await fetchGetCategories();
-  if (typeof jsonAnswer !== "boolean") {
-    jsonAnswer.results.forEach((item) => {
-      if (!item.parent) {
-        tempArray.push(item);
-      }
-    });
+export const categories: CategoryType = {
+  array: [],
+};
+
+export function setCategoriesArray(answer) {
+  if (answer.results) {
+    categories.array = answer.results;
   }
-  tempArray.forEach((categoryObject) => {
-    names.push(categoryObject.name["en-US"]);
-  });
-  return names;
 }
 
 export const asideProps: NavObj = {
@@ -36,9 +29,9 @@ export function setAsidePropsItems(array: string[]) {
   }
 }
 
-export function setProductsArray(array) {
-  if (array.results) {
-    products.array = array.results;
+export function setProductsArray(answer) {
+  if (answer.results) {
+    products.array = answer.results;
   }
 }
 

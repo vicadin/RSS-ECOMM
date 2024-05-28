@@ -55,3 +55,21 @@ export type CatalogCategoriesAnswer = {
   results: CatalogCategoryResult[];
   total: number;
 };
+
+export type CategoryType = {
+  array: CatalogCategoryResult[] | [];
+};
+
+export type LinkOfCategory = {
+  id: string;
+
+  parentID: string | undefined;
+
+  ancestors: [{ typeId: "category"; id: string }];
+
+  childrenList: LinkOfCategory[];
+
+  element: HTMLButtonElement;
+
+  subCategoryBlock: Element | null | undefined;
+};
