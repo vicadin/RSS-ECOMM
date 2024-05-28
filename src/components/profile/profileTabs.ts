@@ -2,7 +2,7 @@ import { UserProfile, getUserProfile, saveUserProfile, addAddress, updateAddress
 
 import countries from "../../interfaces/registration/countriesList.ts";
 import "./profileTabs.css";
-import { validateStreet, validateCity, validatePostalCode } from "../../interfaces/registration/registartionFormUtils.js";
+import { validateStreet, validateCity, validatePostalCode, validateDateOfBirth, validateName, validateEmail } from "../../interfaces/registration/registartionFormUtils.ts";
 
  
 
@@ -66,6 +66,7 @@ export class ProfileTabs {
         <label>${label}: </label>
         <span class="field-value">${value}</span>
         <input type="${type}" class="field-input" style="display:none" value="${value}" data-action="${action}" data-field-name="${fieldName}" data-original-value="${value}">
+        <span class="error-message" style="color: red; display: none;"></span>
         <button class="edit-button">Edit</button>
         <button class="save-button" style="display:none">Save</button>
       </div>
@@ -103,16 +104,19 @@ export class ProfileTabs {
           <label>Street: </label>
           <span class="field-value">${address.streetName}</span>
           <input type="text" class="field-input" style="display:none" value="${address.streetName}" data-field-name="streetName">
+          <span class="error-message" style="color: red; display: none;"></span>
         </div>
         <div>
           <label>City: </label>
           <span class="field-value">${address.city}</span>
           <input type="text" class="field-input" style="display:none" value="${address.city}" data-field-name="city">
+          <span class="error-message" style="color: red; display: none;"></span>
         </div>
         <div>
           <label>Postal Code: </label>
           <span class="field-value">${address.postalCode}</span>
           <input type="text" class="field-input" style="display:none" value="${address.postalCode}" data-field-name="postalCode">
+          <span class="error-message" style="color: red; display: none;"></span>
         </div>
         <div>
           <label>Country: </label>
@@ -134,7 +138,7 @@ export class ProfileTabs {
     return Object.entries(countries).map(([code, name]) => `<option value="${code}" ${selectedCountry === code ? "selected" : ""}>${name}</option>`).join("");
   }
 
-  enableEditMode(editButton: HTMLButtonElement, saveButton: HTMLButtonElement, fieldSpans: NodeListOf<HTMLElement>, fieldInputs: NodeListOf<HTMLInputElement | HTMLSelectElement>) {
+  enableEditMode(editButton: HTMLButtonElement, saveButton: HTMLButtonElement, fieldSpans: NodeListOf<HTMLElement> , fieldInputs: NodeListOf<HTMLInputElement | HTMLSelectElement>) {
     editButton.style.display = "none";
     saveButton.style.display = "inline";
     fieldSpans.forEach(span => span.style.display = "none");
@@ -150,8 +154,32 @@ export class ProfileTabs {
 
   async saveField(fieldInput: HTMLInputElement) {
     const action = fieldInput.dataset.action!;
+    console.log(action)
     const fieldName = fieldInput.dataset.fieldName!;
     const newValue = fieldInput.value;
+
+let errorMessage = null;
+switch (fieldName) {
+  case "firstName":
+  case "lastName":
+    errorMessage = validateName(newValue);
+    break;
+  case "email":
+    errorMessage = validateEmail(newValue);
+    break;
+  case "dateOfBirth":
+    errorMessage = validateDateOfBirth(newValue);
+    break;
+  default:
+    break;
+}
+
+if (errorMessage) {
+  this.displayFieldError(fieldInput, errorMessage);
+  return;
+} else {
+  this.clearFieldError(fieldInput);
+}
 
     const success = await saveUserProfile({ action, value: newValue });
 
@@ -164,17 +192,54 @@ export class ProfileTabs {
       fieldInput.value = fieldInput.dataset.originalValue!;
     }
   }
+  displayFieldError(fieldInput: HTMLInputElement | HTMLSelectElement, errorMessage: string) {
+    const errorElement = fieldInput.nextElementSibling as HTMLElement;
+    errorElement.innerText = errorMessage;
+    errorElement.style.display = "block";
+  }
 
+  clearFieldError(fieldInput: HTMLInputElement | HTMLSelectElement) {
+    const errorElement = fieldInput.nextElementSibling as HTMLElement;
+    errorElement.innerText = "";
+    errorElement.style.display = "none";
+  }
   async saveAddress(addressElement: Element) {
     const addressId = addressElement.getAttribute("data-address-id")!;
     const fieldInputs = addressElement.querySelectorAll(".field-input") as NodeListOf<HTMLInputElement | HTMLSelectElement>;
     const updatedAddress: any = {};
-
+    let hasValidationError = false;
     fieldInputs.forEach(input => {
       const fieldName = input.getAttribute("data-field-name")!;
       updatedAddress[fieldName] = input.value;
-    });
+      
+      let errorMessage = null;
+      switch (fieldName) {
+        case "streetName":
+          errorMessage = validateStreet(input.value);
+          break;
+        case "city":
+          errorMessage = validateCity(input.value);
+          break;
+        case "postalCode":
+          errorMessage = validatePostalCode(input.value);
+          break;
+      }
+      const errorElement = input.nextElementSibling as HTMLElement;
 
+      if (errorMessage) {
+        if (errorElement) {
+          errorElement.innerText = errorMessage;
+          errorElement.style.display = "block";
+        }
+        hasValidationError = true;
+      } else if (errorElement) {
+        errorElement.style.display = "none";
+        updatedAddress[fieldName] = input.value;
+      }
+    });
+    if (hasValidationError) {
+      return;
+    }
     const success = await updateAddress({ action: "changeAddress", addressId, address: updatedAddress });
 
     if (success) {
@@ -236,14 +301,21 @@ export class ProfileTabs {
     editableFields.forEach(field => {
       const editButton = field.querySelector(".edit-button") as HTMLButtonElement;
       const saveButton = field.querySelector(".save-button") as HTMLButtonElement;
-      const fieldSpan = field.querySelector(".field-value") as HTMLElement;
-      const fieldInput = field.querySelector(".field-input") as HTMLInputElement;
 
-      editButton.addEventListener("click", () => this.enableEditMode(editButton, saveButton, fieldSpan, fieldInput));
+      
+      const fieldSpans = field.querySelectorAll(".field-value") as NodeListOf<HTMLElement>;
+      
+      const fieldInputs = field.querySelectorAll(".field-input") as NodeListOf<HTMLInputElement>;
+
+
+      editButton.addEventListener("click", () => this.enableEditMode(editButton, saveButton, fieldSpans, fieldInputs));
       saveButton.addEventListener("click", () => {
-        this.saveField(fieldInput);
-        this.disableEditMode(editButton, saveButton, fieldSpan, fieldInput);
-      });
+        fieldInputs.forEach(input => {
+            this.saveField(input as HTMLInputElement);
+        });
+        this.disableEditMode(editButton, saveButton, fieldSpans, fieldInputs);
+    });
+    
     });
   }
 
@@ -256,6 +328,7 @@ export class ProfileTabs {
       const deleteButton = addressItem.querySelector(".delete-address-button") as HTMLButtonElement;
       const setDefaultButtons = addressItem.querySelectorAll(".set-default-address-button") as NodeListOf<HTMLButtonElement>;
       const fieldSpans = addressItem.querySelectorAll(".field-value") as NodeListOf<HTMLElement>;
+      
       const fieldInputs = addressItem.querySelectorAll(".field-input") as NodeListOf<HTMLInputElement | HTMLSelectElement>;
 
       editButton.addEventListener("click", () => this.enableEditMode(editButton, saveButton, fieldSpans, fieldInputs));
@@ -287,64 +360,113 @@ export class ProfileTabs {
         <h2>Add New ${addressType.charAt(0).toUpperCase() + addressType.slice(1)} Address</h2>
         <div class="form-group">
           <label for="street">Street:</label>
-          <input type="text" id="street" name="street">
+          <input type="text" id="street" name="street" class="field-input" data-field-name="streetName">
+          <span class="error-message" style="color: red; display: none;"></span>
         </div>
         <div class="form-group">
           <label for="city">City:</label>
-          <input type="text" id="city" name="city">
+          <input type="text" id="city" name="city" class="field-input" data-field-name="city">
+          <span class="error-message" style="color: red; display: none;"></span>
         </div>
         <div class="form-group">
           <label for="postalCode">Postal Code:</label>
-          <input type="text" id="postalCode" name="postalCode">
+          <input type="text" id="postalCode" name="postalCode" class="field-input" data-field-name="postalCode">
+          <span class="error-message" style="color: red; display: none;"></span>
         </div>
         <div class="form-group">
           <label for="country">Country:</label>
-          <select id="country" name="country">
+          <select id="country" name="country" class="field-input" data-field-name="country">
             ${this.renderCountryOptions("")}
           </select>
+          <span class="error-message" style="color: red; display: none;"></span>
         </div>
         <button class="submit-button">Create</button>
       </div>
     `;
-
+  
     document.body.appendChild(modal);
-
+  
     const closeButton = modal.querySelector(".close-button") as HTMLSpanElement;
     const submitButton = modal.querySelector(".submit-button") as HTMLButtonElement;
-
+  
     closeButton.addEventListener("click", () => document.body.removeChild(modal));
     submitButton.addEventListener("click", async () => {
-      const street = (modal.querySelector("#street") as HTMLInputElement).value;
-      const city = (modal.querySelector("#city") as HTMLInputElement).value;
-      const postalCode = (modal.querySelector("#postalCode") as HTMLInputElement).value;
-      const country = (modal.querySelector("#country") as HTMLSelectElement).value;
-
-      await this.addNewAddress({ streetName: street, city, postalCode, country }, addressType);
-      document.body.removeChild(modal);
+      const fieldInputs = modal.querySelectorAll(".field-input") as NodeListOf<HTMLInputElement | HTMLSelectElement>;
+      const newAddress: any = {};
+      let hasValidationError = false;
+  
+      fieldInputs.forEach(input => {
+        const fieldName = input.getAttribute("data-field-name")!;
+        const value = input.value;
+  
+        let errorMessage = null;
+        switch (fieldName) {
+          case "streetName":
+            errorMessage = validateStreet(value);
+            break;
+          case "city":
+            errorMessage = validateCity(value);
+            break;
+          case "postalCode":
+            errorMessage = validatePostalCode(value);
+            break;
+        }
+  
+        const errorElement = input.nextElementSibling as HTMLElement;
+  
+        if (errorMessage) {
+          if (errorElement) {
+            errorElement.innerText = errorMessage;
+            errorElement.style.display = "block";
+          }
+          hasValidationError = true;
+        } else if (errorElement) {
+          errorElement.style.display = "none";
+          newAddress[fieldName] = value;
+        }
+      });
+  
+      if (hasValidationError) {
+        return;
+      }
+  
+      const success = await this.addNewAddress(newAddress, addressType);
+  
+      if (success) {
+        document.body.removeChild(modal);
+        //this.render();
+      } else {
+        alert("Failed to add new address.");
+      }
     });
   }
 
-  async addNewAddress(address: any, addressType: 'billing' | 'shipping') {
+  async addNewAddress(address: any, addressType: 'billing' | 'shipping'): Promise<boolean> {
     const success = await addAddress({ action: "addAddress", address });
-
+  
     if (success) {
       const userProfile = await getUserProfile();
       if (userProfile) {
         this.userProfile = userProfile;
         const newAddressId = userProfile.addresses[userProfile.addresses.length - 1].id;
-
+  
         const linkSuccess = await updateAddress({ action: addressType === 'billing' ? "addBillingAddressId" : "addShippingAddressId", addressId: newAddressId });
-
+  
         if (linkSuccess) {
           this.userProfile[addressType === 'billing' ? 'billingAddressIds' : 'shippingAddressIds'].push(newAddressId);
           this.renderAddressesTab(this.userProfile);
+          return true;  
         } else {
           alert("Failed to link new address");
+          return false;
         }
       }
     } else {
       alert("Failed to add new address");
+      return false;
     }
+  
+    return false;
   }
 
   getHtml() {
