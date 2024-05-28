@@ -1,10 +1,23 @@
-import { UserProfile, getUserProfile, saveUserProfile, addAddress, updateAddress, setDefaultAddress, deleteAddress } from "../../interfaces/profile/profileRequests.ts";
+import {
+  UserProfile,
+  getUserProfile,
+  saveUserProfile,
+  addAddress,
+  updateAddress,
+  setDefaultAddress,
+  deleteAddress,
+} from "../../interfaces/profile/profileRequests.ts";
 
 import countries from "../../interfaces/registration/countriesList.ts";
 import "./profileTabs.css";
-import { validateStreet, validateCity, validatePostalCode, validateDateOfBirth, validateName, validateEmail } from "../../interfaces/registration/registartionFormUtils.ts";
-
- 
+import {
+  validateStreet,
+  validateCity,
+  validatePostalCode,
+  validateDateOfBirth,
+  validateName,
+  validateEmail,
+} from "../../interfaces/registration/registartionFormUtils.ts";
 
 export class ProfileTabs {
   tabContainer: HTMLElement;
@@ -60,7 +73,13 @@ export class ProfileTabs {
     this.setupFieldEventHandlers();
   }
 
-  createEditableField(label: string, value: string, action: string, fieldName: string, type: string = "text"): string {
+  createEditableField(
+    label: string,
+    value: string,
+    action: string,
+    fieldName: string,
+    type: string = "text",
+  ): string {
     return `
       <div class="editable-field">
         <label>${label}: </label>
@@ -74,21 +93,29 @@ export class ProfileTabs {
   }
 
   renderAddressesTab(userProfile: UserProfile) {
-    const { addresses, billingAddressIds, shippingAddressIds, defaultShippingAddressId, defaultBillingAddressId } = userProfile;
+    const {
+      addresses,
+      billingAddressIds,
+      shippingAddressIds,
+      defaultShippingAddressId,
+      defaultBillingAddressId,
+    } = userProfile;
 
-    const billingAddresses = addresses.filter(address => billingAddressIds.includes(address.id));
-    const shippingAddresses = addresses.filter(address => shippingAddressIds.includes(address.id));
+    const billingAddresses = addresses.filter((address) => billingAddressIds.includes(address.id));
+    const shippingAddresses = addresses.filter((address) =>
+      shippingAddressIds.includes(address.id),
+    );
 
     this.tabContentContainer.innerHTML = `
       <div class="addresses-section">
         <div class="address-column">
           <h3>Billing Addresses</h3>
-          ${billingAddresses.map(address => this.renderAddress(address, defaultBillingAddressId, 'billing')).join("")}
+          ${billingAddresses.map((address) => this.renderAddress(address, defaultBillingAddressId, "billing")).join("")}
           <button class="add-new-address-button" data-address-type="billing">Add New Billing Address</button>
         </div>
         <div class="address-column">
           <h3>Shipping Addresses</h3>
-          ${shippingAddresses.map(address => this.renderAddress(address, defaultShippingAddressId, 'shipping')).join("")}
+          ${shippingAddresses.map((address) => this.renderAddress(address, defaultShippingAddressId, "shipping")).join("")}
           <button class="add-new-address-button" data-address-type="shipping">Add New Shipping Address</button>
         </div>
       </div>
@@ -97,7 +124,11 @@ export class ProfileTabs {
     this.setupAddressEventHandlers();
   }
 
-  renderAddress(address: any, defaultAddressId: string, addressType: 'billing' | 'shipping'): string {
+  renderAddress(
+    address: any,
+    defaultAddressId: string,
+    addressType: "billing" | "shipping",
+  ): string {
     return `
       <div class="address-item ${address.id === defaultAddressId ? "default-address" : ""}" data-address-id="${address.id}">
         <div>
@@ -129,57 +160,72 @@ export class ProfileTabs {
         <button class="edit-address-button">Edit</button>
         <button class="save-address-button" style="display:none">Save</button>
         <button class="delete-address-button">Delete</button>
-        ${address.id !== defaultAddressId ? addressType === 'billing' ? '<button class="set-default-address-button" data-address-type="billing">Set as Default Billing</button>' : '<button class="set-default-address-button" data-address-type="shipping">Set as Default Shipping</button>' : ""}
+        ${address.id !== defaultAddressId ? (addressType === "billing" ? '<button class="set-default-address-button" data-address-type="billing">Set as Default Billing</button>' : '<button class="set-default-address-button" data-address-type="shipping">Set as Default Shipping</button>') : ""}
       </div>
     `;
   }
 
   renderCountryOptions(selectedCountry: string): string {
-    return Object.entries(countries).map(([code, name]) => `<option value="${code}" ${selectedCountry === code ? "selected" : ""}>${name}</option>`).join("");
+    return Object.entries(countries)
+      .map(
+        ([code, name]) =>
+          `<option value="${code}" ${selectedCountry === code ? "selected" : ""}>${name}</option>`,
+      )
+      .join("");
   }
 
-  enableEditMode(editButton: HTMLButtonElement, saveButton: HTMLButtonElement, fieldSpans: NodeListOf<HTMLElement> , fieldInputs: NodeListOf<HTMLInputElement | HTMLSelectElement>) {
+  enableEditMode(
+    editButton: HTMLButtonElement,
+    saveButton: HTMLButtonElement,
+    fieldSpans: NodeListOf<HTMLElement>,
+    fieldInputs: NodeListOf<HTMLInputElement | HTMLSelectElement>,
+  ) {
     editButton.style.display = "none";
     saveButton.style.display = "inline";
-    fieldSpans.forEach(span => span.style.display = "none");
-    fieldInputs.forEach(input => input.style.display = "inline");
+    fieldSpans.forEach((span) => (span.style.display = "none"));
+    fieldInputs.forEach((input) => (input.style.display = "inline"));
   }
 
-  disableEditMode(editButton: HTMLButtonElement, saveButton: HTMLButtonElement, fieldSpans: NodeListOf<HTMLElement>, fieldInputs: NodeListOf<HTMLInputElement | HTMLSelectElement>) {
+  disableEditMode(
+    editButton: HTMLButtonElement,
+    saveButton: HTMLButtonElement,
+    fieldSpans: NodeListOf<HTMLElement>,
+    fieldInputs: NodeListOf<HTMLInputElement | HTMLSelectElement>,
+  ) {
     editButton.style.display = "inline";
     saveButton.style.display = "none";
-    fieldSpans.forEach(span => span.style.display = "inline");
-    fieldInputs.forEach(input => input.style.display = "none");
+    fieldSpans.forEach((span) => (span.style.display = "inline"));
+    fieldInputs.forEach((input) => (input.style.display = "none"));
   }
 
   async saveField(fieldInput: HTMLInputElement) {
     const action = fieldInput.dataset.action!;
-    console.log(action)
+    console.log(action);
     const fieldName = fieldInput.dataset.fieldName!;
     const newValue = fieldInput.value;
 
-let errorMessage = null;
-switch (fieldName) {
-  case "firstName":
-  case "lastName":
-    errorMessage = validateName(newValue);
-    break;
-  case "email":
-    errorMessage = validateEmail(newValue);
-    break;
-  case "dateOfBirth":
-    errorMessage = validateDateOfBirth(newValue);
-    break;
-  default:
-    break;
-}
+    let errorMessage = null;
+    switch (fieldName) {
+      case "firstName":
+      case "lastName":
+        errorMessage = validateName(newValue);
+        break;
+      case "email":
+        errorMessage = validateEmail(newValue);
+        break;
+      case "dateOfBirth":
+        errorMessage = validateDateOfBirth(newValue);
+        break;
+      default:
+        break;
+    }
 
-if (errorMessage) {
-  this.displayFieldError(fieldInput, errorMessage);
-  return;
-} else {
-  this.clearFieldError(fieldInput);
-}
+    if (errorMessage) {
+      this.displayFieldError(fieldInput, errorMessage);
+      return;
+    } else {
+      this.clearFieldError(fieldInput);
+    }
 
     const success = await saveUserProfile({ action, value: newValue });
 
@@ -205,13 +251,15 @@ if (errorMessage) {
   }
   async saveAddress(addressElement: Element) {
     const addressId = addressElement.getAttribute("data-address-id")!;
-    const fieldInputs = addressElement.querySelectorAll(".field-input") as NodeListOf<HTMLInputElement | HTMLSelectElement>;
+    const fieldInputs = addressElement.querySelectorAll(".field-input") as NodeListOf<
+      HTMLInputElement | HTMLSelectElement
+    >;
     const updatedAddress: any = {};
     let hasValidationError = false;
-    fieldInputs.forEach(input => {
+    fieldInputs.forEach((input) => {
       const fieldName = input.getAttribute("data-field-name")!;
       updatedAddress[fieldName] = input.value;
-      
+
       let errorMessage = null;
       switch (fieldName) {
         case "streetName":
@@ -240,14 +288,18 @@ if (errorMessage) {
     if (hasValidationError) {
       return;
     }
-    const success = await updateAddress({ action: "changeAddress", addressId, address: updatedAddress });
+    const success = await updateAddress({
+      action: "changeAddress",
+      addressId,
+      address: updatedAddress,
+    });
 
     if (success) {
       this.updateAddressInMemory(addressId, updatedAddress);
       this.renderAddressesTab(this.userProfile!);
     } else {
       alert("Failed to save the address");
-      fieldInputs.forEach(input => input.value = input.dataset.originalValue!);
+      fieldInputs.forEach((input) => (input.value = input.dataset.originalValue!));
     }
   }
 
@@ -262,12 +314,13 @@ if (errorMessage) {
     }
   }
 
-  async setDefaultAddress(addressId: string, addressType: 'billing' | 'shipping') {
-    const action = addressType === 'billing' ? 'setDefaultBillingAddress' : 'setDefaultShippingAddress';
+  async setDefaultAddress(addressId: string, addressType: "billing" | "shipping") {
+    const action =
+      addressType === "billing" ? "setDefaultBillingAddress" : "setDefaultShippingAddress";
     const success = await updateAddress({ action, addressId });
 
     if (success) {
-      if (addressType === 'billing') {
+      if (addressType === "billing") {
         this.userProfile!.defaultBillingAddressId = addressId;
       } else {
         this.userProfile!.defaultShippingAddressId = addressId;
@@ -280,17 +333,28 @@ if (errorMessage) {
 
   removeAddressFromMemory(addressId: string) {
     if (this.userProfile) {
-      this.userProfile.addresses = this.userProfile.addresses.filter(address => address.id !== addressId);
-      this.userProfile.billingAddressIds = this.userProfile.billingAddressIds.filter(id => id !== addressId);
-      this.userProfile.shippingAddressIds = this.userProfile.shippingAddressIds.filter(id => id !== addressId);
+      this.userProfile.addresses = this.userProfile.addresses.filter(
+        (address) => address.id !== addressId,
+      );
+      this.userProfile.billingAddressIds = this.userProfile.billingAddressIds.filter(
+        (id) => id !== addressId,
+      );
+      this.userProfile.shippingAddressIds = this.userProfile.shippingAddressIds.filter(
+        (id) => id !== addressId,
+      );
     }
   }
 
   updateAddressInMemory(addressId: string, updatedAddress: any) {
     if (this.userProfile) {
-      const addressIndex = this.userProfile.addresses.findIndex(address => address.id === addressId);
+      const addressIndex = this.userProfile.addresses.findIndex(
+        (address) => address.id === addressId,
+      );
       if (addressIndex !== -1) {
-        this.userProfile.addresses[addressIndex] = { ...this.userProfile.addresses[addressIndex], ...updatedAddress };
+        this.userProfile.addresses[addressIndex] = {
+          ...this.userProfile.addresses[addressIndex],
+          ...updatedAddress,
+        };
       }
     }
   }
@@ -298,60 +362,73 @@ if (errorMessage) {
   setupFieldEventHandlers() {
     const editableFields = this.tabContentContainer.querySelectorAll(".editable-field");
 
-    editableFields.forEach(field => {
+    editableFields.forEach((field) => {
       const editButton = field.querySelector(".edit-button") as HTMLButtonElement;
       const saveButton = field.querySelector(".save-button") as HTMLButtonElement;
 
-      
       const fieldSpans = field.querySelectorAll(".field-value") as NodeListOf<HTMLElement>;
-      
+
       const fieldInputs = field.querySelectorAll(".field-input") as NodeListOf<HTMLInputElement>;
 
-
-      editButton.addEventListener("click", () => this.enableEditMode(editButton, saveButton, fieldSpans, fieldInputs));
+      editButton.addEventListener("click", () =>
+        this.enableEditMode(editButton, saveButton, fieldSpans, fieldInputs),
+      );
       saveButton.addEventListener("click", () => {
-        fieldInputs.forEach(input => {
-            this.saveField(input as HTMLInputElement);
+        fieldInputs.forEach((input) => {
+          this.saveField(input as HTMLInputElement);
         });
         this.disableEditMode(editButton, saveButton, fieldSpans, fieldInputs);
-    });
-    
+      });
     });
   }
 
   setupAddressEventHandlers() {
     const addressItems = this.tabContentContainer.querySelectorAll(".address-item");
 
-    addressItems.forEach(addressItem => {
+    addressItems.forEach((addressItem) => {
       const editButton = addressItem.querySelector(".edit-address-button") as HTMLButtonElement;
       const saveButton = addressItem.querySelector(".save-address-button") as HTMLButtonElement;
       const deleteButton = addressItem.querySelector(".delete-address-button") as HTMLButtonElement;
-      const setDefaultButtons = addressItem.querySelectorAll(".set-default-address-button") as NodeListOf<HTMLButtonElement>;
+      const setDefaultButtons = addressItem.querySelectorAll(
+        ".set-default-address-button",
+      ) as NodeListOf<HTMLButtonElement>;
       const fieldSpans = addressItem.querySelectorAll(".field-value") as NodeListOf<HTMLElement>;
-      
-      const fieldInputs = addressItem.querySelectorAll(".field-input") as NodeListOf<HTMLInputElement | HTMLSelectElement>;
 
-      editButton.addEventListener("click", () => this.enableEditMode(editButton, saveButton, fieldSpans, fieldInputs));
+      const fieldInputs = addressItem.querySelectorAll(".field-input") as NodeListOf<
+        HTMLInputElement | HTMLSelectElement
+      >;
+
+      editButton.addEventListener("click", () =>
+        this.enableEditMode(editButton, saveButton, fieldSpans, fieldInputs),
+      );
       saveButton.addEventListener("click", () => {
         this.saveAddress(addressItem);
         this.disableEditMode(editButton, saveButton, fieldSpans, fieldInputs);
       });
-      deleteButton.addEventListener("click", () => this.deleteAddress(addressItem.getAttribute("data-address-id")!));
-      setDefaultButtons.forEach(button => {
+      deleteButton.addEventListener("click", () =>
+        this.deleteAddress(addressItem.getAttribute("data-address-id")!),
+      );
+      setDefaultButtons.forEach((button) => {
         button.addEventListener("click", () => {
-          const addressType = button.getAttribute("data-address-type") as 'billing' | 'shipping';
+          const addressType = button.getAttribute("data-address-type") as "billing" | "shipping";
           this.setDefaultAddress(addressItem.getAttribute("data-address-id")!, addressType);
         });
       });
     });
 
-    const addNewAddressButtons = this.tabContentContainer.querySelectorAll(".add-new-address-button") as NodeListOf<HTMLButtonElement>;
-    addNewAddressButtons.forEach(button => {
-      button.addEventListener("click", () => this.showAddAddressModal(button.getAttribute("data-address-type") as 'billing' | 'shipping'));
+    const addNewAddressButtons = this.tabContentContainer.querySelectorAll(
+      ".add-new-address-button",
+    ) as NodeListOf<HTMLButtonElement>;
+    addNewAddressButtons.forEach((button) => {
+      button.addEventListener("click", () =>
+        this.showAddAddressModal(
+          button.getAttribute("data-address-type") as "billing" | "shipping",
+        ),
+      );
     });
   }
 
-  showAddAddressModal(addressType: 'billing' | 'shipping') {
+  showAddAddressModal(addressType: "billing" | "shipping") {
     const modal = document.createElement("div");
     modal.classList.add("modal");
     modal.innerHTML = `
@@ -383,22 +460,24 @@ if (errorMessage) {
         <button class="submit-button">Create</button>
       </div>
     `;
-  
+
     document.body.appendChild(modal);
-  
+
     const closeButton = modal.querySelector(".close-button") as HTMLSpanElement;
     const submitButton = modal.querySelector(".submit-button") as HTMLButtonElement;
-  
+
     closeButton.addEventListener("click", () => document.body.removeChild(modal));
     submitButton.addEventListener("click", async () => {
-      const fieldInputs = modal.querySelectorAll(".field-input") as NodeListOf<HTMLInputElement | HTMLSelectElement>;
+      const fieldInputs = modal.querySelectorAll(".field-input") as NodeListOf<
+        HTMLInputElement | HTMLSelectElement
+      >;
       const newAddress: any = {};
       let hasValidationError = false;
-  
-      fieldInputs.forEach(input => {
+
+      fieldInputs.forEach((input) => {
         const fieldName = input.getAttribute("data-field-name")!;
         const value = input.value;
-  
+
         let errorMessage = null;
         switch (fieldName) {
           case "streetName":
@@ -411,9 +490,9 @@ if (errorMessage) {
             errorMessage = validatePostalCode(value);
             break;
         }
-  
+
         const errorElement = input.nextElementSibling as HTMLElement;
-  
+
         if (errorMessage) {
           if (errorElement) {
             errorElement.innerText = errorMessage;
@@ -425,13 +504,13 @@ if (errorMessage) {
           newAddress[fieldName] = value;
         }
       });
-  
+
       if (hasValidationError) {
         return;
       }
-  
+
       const success = await this.addNewAddress(newAddress, addressType);
-  
+
       if (success) {
         document.body.removeChild(modal);
         //this.render();
@@ -441,21 +520,26 @@ if (errorMessage) {
     });
   }
 
-  async addNewAddress(address: any, addressType: 'billing' | 'shipping'): Promise<boolean> {
+  async addNewAddress(address: any, addressType: "billing" | "shipping"): Promise<boolean> {
     const success = await addAddress({ action: "addAddress", address });
-  
+
     if (success) {
       const userProfile = await getUserProfile();
       if (userProfile) {
         this.userProfile = userProfile;
         const newAddressId = userProfile.addresses[userProfile.addresses.length - 1].id;
-  
-        const linkSuccess = await updateAddress({ action: addressType === 'billing' ? "addBillingAddressId" : "addShippingAddressId", addressId: newAddressId });
-  
+
+        const linkSuccess = await updateAddress({
+          action: addressType === "billing" ? "addBillingAddressId" : "addShippingAddressId",
+          addressId: newAddressId,
+        });
+
         if (linkSuccess) {
-          this.userProfile[addressType === 'billing' ? 'billingAddressIds' : 'shippingAddressIds'].push(newAddressId);
+          this.userProfile[
+            addressType === "billing" ? "billingAddressIds" : "shippingAddressIds"
+          ].push(newAddressId);
           this.renderAddressesTab(this.userProfile);
-          return true;  
+          return true;
         } else {
           alert("Failed to link new address");
           return false;
@@ -465,7 +549,7 @@ if (errorMessage) {
       alert("Failed to add new address");
       return false;
     }
-  
+
     return false;
   }
 
