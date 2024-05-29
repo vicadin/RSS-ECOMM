@@ -11,6 +11,7 @@ import {
   setProductsArray,
 } from "./utils/catalog-utils.ts";
 import { createElement } from "./utils/login-page-utils.ts";
+import { lockBody, outsideEvtListener } from "./utils/header-utils.ts";
 
 class App {
   id: string;
@@ -26,26 +27,26 @@ class App {
 
   start(): void {
     const wrapper = createElement("div", "wrapper");
-
     const main = document.createElement("main");
     const section = document.createElement("section");
     section.id = "content";
-
     const h2 = document.createElement("h2");
     h2.textContent = "Welcome to the Shop!";
-
     section.appendChild(h2);
     main.appendChild(section);
     main.id = this.id;
-
     const footer = document.createElement("footer");
     const p = document.createElement("p");
     p.textContent = "© Shop Footer";
     footer.appendChild(p);
-
     wrapper.append(headerEl.getHtml(), main, footer);
     document.body.append(this.bodyOverlay, wrapper);
     this.getData();
+    this.addEvenListeners();
+  }
+
+  addEvenListeners() {
+    this.bodyOverlay.addEventListener("click", outsideEvtListener);
   }
 
   getData() {
@@ -58,9 +59,7 @@ class App {
       const aside = createAside(categories);
       this.bodyOverlay.after(aside);
       headerEl.burger.getHtml().addEventListener("click", () => {
-        document.body.classList.add("lock");
-        this.bodyOverlay.classList.remove("hidden");
-        aside.classList.remove("hidden");
+        lockBody();
       });
     });
   }

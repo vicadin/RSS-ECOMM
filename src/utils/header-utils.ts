@@ -19,3 +19,29 @@ export function fillNavList(parentUl: HTMLUListElement, items: string[]): void {
     parentUl.appendChild(createNavLink(itemText));
   });
 }
+
+function unlockBody() {
+  const aside = document.querySelector(".aside");
+  aside.classList.add("hidden");
+  document.body.classList.remove("lock");
+  document.body.firstElementChild.classList.add("hidden");
+}
+
+export function lockBody() {
+  const aside = document.querySelector(".aside");
+  const bodyOverlay = document.querySelector(".body-overlay");
+  document.body.classList.add("lock");
+  bodyOverlay.classList.remove("hidden");
+  aside.classList.remove("hidden");
+}
+
+export function outsideEvtListener() {
+  unlockBody();
+}
+
+export function asideHandler(event) {
+  const { target } = event;
+  if (target.classList.contains("category-container")) {
+    unlockBody();
+  }
+}

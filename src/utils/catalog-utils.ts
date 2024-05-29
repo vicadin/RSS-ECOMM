@@ -2,6 +2,7 @@ import { NavObj } from "../interfaces/header-types.ts";
 import { CategoryType } from "../interfaces/catalog-types.ts";
 import { createElement } from "./login-page-utils.ts";
 import CategoryList from "../components/catalog/category-list.ts";
+import { asideHandler } from "./header-utils.ts";
 
 export const categories: CategoryType = {
   array: [],
@@ -96,5 +97,6 @@ export function createAside(categoriesObject) {
   const asideElement = createElement("aside", "aside hidden");
   const asideNav = new CategoryList(categoriesObject.array, true);
   asideElement.append(asideNav.getHtml());
+  asideElement.addEventListener("click", asideHandler);
   return asideElement;
 }
