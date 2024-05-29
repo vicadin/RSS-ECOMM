@@ -3,13 +3,8 @@ import "./styles/style.css";
 import "./styles/media.css";
 import { routerInit } from "./router.ts";
 import { headerEl } from "./components/header.ts";
-import { fetchGetCategories, fetchGetProducts } from "./interfaces/catalog-requests.ts";
-import {
-  categories,
-  createAside,
-  setCategoriesArray,
-  setProductsArray,
-} from "./utils/catalog-utils.ts";
+import { fetchGetCategories } from "./interfaces/catalog-requests.ts";
+import { categories, createAside, setCategoriesArray } from "./utils/catalog-utils.ts";
 import { createElement } from "./utils/login-page-utils.ts";
 import { lockBody, outsideEvtListener } from "./utils/header-utils.ts";
 
@@ -50,17 +45,15 @@ class App {
   }
 
   getData() {
-    const getRequests = [fetchGetCategories(), fetchGetProducts()];
-    const mutateFunctions = [setCategoriesArray, setProductsArray];
+    const getRequests = [fetchGetCategories()];
+    const mutateFunctions = [setCategoriesArray];
     Promise.all(getRequests).then((promiseResultAsArray) => {
       promiseResultAsArray.forEach((promiseResultItem, index) => {
         mutateFunctions[index](promiseResultItem);
       });
       const aside = createAside(categories);
       this.bodyOverlay.after(aside);
-      headerEl.burger.getHtml().addEventListener("click", () => {
-        lockBody();
-      });
+      headerEl.burger.getHtml().addEventListener("click", lockBody);
     });
   }
 }

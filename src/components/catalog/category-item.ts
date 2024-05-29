@@ -25,12 +25,9 @@ export default class CategoryLink {
     this.element.textContent = categoryObj.name["en-US"];
     this.element.className = "category-item";
     this.subCategoryBlock = null;
-    this.addEventListeners();
   }
 
   addEventListeners() {
-    this.element.addEventListener("click", () => {});
-
     this.element.addEventListener("mouseover", () => {
       this.subCategoryBlock =
         this.element.parentElement?.parentElement?.parentElement.lastElementChild;

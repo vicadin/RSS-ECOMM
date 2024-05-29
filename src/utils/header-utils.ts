@@ -20,7 +20,7 @@ export function fillNavList(parentUl: HTMLUListElement, items: string[]): void {
   });
 }
 
-function unlockBody() {
+export function unlockBody() {
   const aside = document.querySelector(".aside");
   aside.classList.add("hidden");
   document.body.classList.remove("lock");

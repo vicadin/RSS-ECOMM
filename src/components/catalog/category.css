@@ -3,7 +3,7 @@
   z-index: 2;
   background-color: #ede1d5;
   height: 100vh;
-  padding: 10px;
+  min-width: 290px;
 }
 
 .category-list {
@@ -12,18 +12,35 @@
 
 .category-list_item {
   font-size: 18px;
-  margin-bottom: 14px;
+}
+
+.not-empty {
+  cursor: pointer;
+  padding: 28px 40px 30px 50px;
+  position: relative;
 }
 
 .category-item {
+  display: block;
+  box-sizing: border-box;
   font-size: 18px;
   background-color: #ede1d5;
-  padding-right: 20px;
+}
+
+.arrow {
+  width: 8px;
+  height: 18px;
+  position: absolute;
+  right: 18px;
+  top: 28px;
+  background-image: url("../../assets/icons/arrow.svg");
+  background-position: 50%;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .category-item:active {
-  font-weight: 500;
-  border-bottom: 1px solid black;
+  font-weight: 550;
 }
 
 .subcategory-container {

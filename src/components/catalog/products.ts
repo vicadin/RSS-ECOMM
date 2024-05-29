@@ -17,7 +17,7 @@ export default class Products {
 
   renderCards(productsObjectsArray) {
     productsObjectsArray.forEach((productItem) => {
-      const product = new ProductCard(productItem, this.locale);
+      const product = new ProductCard(productItem, "en-US");
       this.productContainer.append(product.getHtml());
     });
   }

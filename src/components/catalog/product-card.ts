@@ -52,13 +52,13 @@ export default class ProductCard {
 
   setFieldsValues(props, locale) {
     try {
-      const data = props.masterData.current;
+      const data = props.masterData?.current ? props.masterData.current : props;
       this.productCardHeading.textContent = data.name[locale];
       [this.productCardDescription.textContent] = data.description[locale].split(".");
       this.finalPrice.textContent = setFinalPrice(props, locale);
       this.beforeDiscountPrice.textContent = setBeforeDiscountPrice(props, locale);
       this.productImage.style.backgroundImage = `url("${data.masterVariant.images[0].url}")`;
-    } catch {
+    } catch (err) {
       window.location.hash = "";
     }
   }

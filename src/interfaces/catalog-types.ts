@@ -73,3 +73,18 @@ export type LinkOfCategory = {
 
   subCategoryBlock: Element | null | undefined;
 };
+
+export type ProductByCategory = {
+  count: number;
+  facets: object;
+  limit: number;
+  offset: number;
+  results: {
+    id: string;
+    version: number;
+    productType: object;
+    name: object;
+    description: object;
+  }[];
+  total: number;
+};

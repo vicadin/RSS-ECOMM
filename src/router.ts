@@ -3,8 +3,9 @@ import LoginPage from "./components/login-page/login-page.ts";
 import NotFoundComponent from "./components/404components.ts";
 import { headerEl } from "./components/header.ts";
 import CatalogPage from "./pages/catalog/catalog.ts";
-import { fetchGetProducts } from "./interfaces/catalog-requests.ts";
+import { fetchGetProductByCategoryId, fetchGetProducts } from "./interfaces/catalog-requests.ts";
 import ProductCard from "./components/catalog/product-card.ts";
+import { setProductsArray } from "./utils/catalog-utils.ts";
 
 type Routes = {
   [key: string]: () => void;
@@ -13,6 +14,12 @@ type Routes = {
 export function handleHash() {
   let hash: string = window.location.hash ? window.location.hash.slice(1) : "";
   const newContent: HTMLElement | null = document.getElementById("content");
+
+  if (hash.endsWith("products_by_category")) {
+    hash = "products_by_category";
+    const productsCategoryId = window.location.hash.slice(1, -20);
+    localStorage.setItem("productsCategoryId", productsCategoryId);
+  }
 
   const routes: Routes = {
     home: () => {
@@ -42,7 +49,24 @@ export function handleHash() {
     catalog: () => {
       if (newContent) {
         newContent.innerHTML = "";
-        newContent.append(new CatalogPage().getHtml());
+        const promise = fetchGetProducts();
+        promise.then((promiseResult) => {
+          setProductsArray(promiseResult);
+          newContent.append(new CatalogPage().getHtml());
+        });
+      }
+    },
+
+    products_by_category: () => {
+      if (newContent) {
+        newContent.innerHTML = "";
+        const promise = fetchGetProductByCategoryId(localStorage.getItem("productsCategoryId"));
+        promise.then((promiseResult) => {
+          if (typeof promiseResult !== "boolean") {
+            setProductsArray(promiseResult);
+            newContent.append(new CatalogPage().getHtml());
+          }
+        });
       }
     },
 
@@ -51,7 +75,6 @@ export function handleHash() {
         newContent.innerHTML = "";
         const prodItem = fetchGetProducts(localStorage.getItem("productId"));
         prodItem.then((result) => {
-          // append detailed product card
           newContent.append(new ProductCard(result, "en-US").getHtml());
         });
       }
@@ -72,7 +95,6 @@ export function handleHash() {
     const productId = window.location.hash.slice(1, -7);
     localStorage.setItem("productId", productId);
   }
-
   const routeHandler = routes[hash] || routes[""];
   routeHandler();
 }
@@ -80,6 +102,14 @@ export function handleHash() {
 export function routerInit() {
   window.addEventListener("hashchange", handleHash);
   const currentHash = window.location.hash;
-  window.location.hash = window.location.hash.slice(-7) === "product" ? currentHash : "#home";
+  if (window.location.hash.slice(-7) === "product") {
+    window.location.hash = currentHash;
+    return;
+  }
+  if (window.location.hash.slice(-20) === "products_by_category") {
+    window.location.hash = currentHash;
+    return;
+  }
+  window.location.hash = "#home";
   handleHash();
 }

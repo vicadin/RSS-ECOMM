@@ -26,12 +26,6 @@ export const products = {
   array: [],
 };
 
-export function setAsidePropsItems(array: string[]) {
-  if (array.length) {
-    asideProps.items = array;
-  }
-}
-
 export function setProductsArray(answer) {
   if (answer.results) {
     products.array = answer.results;
@@ -65,7 +59,9 @@ export function getLocale(props) {
 }
 
 export function getPriceBlockByLocale(props, locale) {
-  const productPrices = props.masterData.current.masterVariant.prices;
+  const productPrices = props.masterData?.current?.masterVariant?.prices
+    ? props.masterData.current.masterVariant.prices
+    : props.masterVariant.prices;
   return productPrices.find((item) => item.country === `${locale.split("-")[1]}`);
 }
 
