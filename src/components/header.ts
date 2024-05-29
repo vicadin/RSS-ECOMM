@@ -2,6 +2,7 @@ import { createElement } from "../utils/login-page-utils.ts";
 import { fillNavList, getListItems } from "../utils/header-utils.ts";
 import { headerPropsForLeftNav, headerPropsForRightNav } from "../interfaces/header-types.ts";
 import CreateNavigation from "../utils/navigation.ts";
+import Burger from "./catalog/burger.ts";
 
 export class Header {
   headerNavList: HTMLElement | HTMLUListElement;
@@ -16,11 +17,16 @@ export class Header {
 
   headerNav: HTMLElement | HTMLUListElement;
 
+  burger: Burger;
+
   constructor() {
     this.header = document.createElement("header");
     this.headerNavContainer = createElement("div", "header_nav-container");
     const leftNav = CreateNavigation(this, headerPropsForLeftNav);
     const rightNav = CreateNavigation(this, headerPropsForRightNav);
+    this.burger = new Burger();
+    leftNav.append(this.burger.getHtml());
+
     this.headerNavContainer.append(leftNav, rightNav);
     this.header.appendChild(this.headerNavContainer);
     this.addEventListeners();

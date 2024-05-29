@@ -4,23 +4,6 @@
   margin-top: 40px;
 }
 
-.aside {
-  position: fixed;
-  width: 290px;
-  display: flex;
-  flex-direction: column;
-}
-
-.aside > .category-container > .category-list > .category-list_item:first-child {
-  padding-top: 14px;
-}
-
-.aside-nav {
-}
-
-.aside-nav_list {
-}
-
 .catalog-main {
   display: flex;
   flex-direction: column;

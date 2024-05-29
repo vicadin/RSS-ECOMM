@@ -3,17 +3,30 @@ import "./styles/style.css";
 import "./styles/media.css";
 import { routerInit } from "./router.ts";
 import { headerEl } from "./components/header.ts";
+import { fetchGetCategories, fetchGetProducts } from "./interfaces/catalog-requests.ts";
+import {
+  categories,
+  createAside,
+  setCategoriesArray,
+  setProductsArray,
+} from "./utils/catalog-utils.ts";
+import { createElement } from "./utils/login-page-utils.ts";
 
 class App {
   id: string;
 
   aside: HTMLElement | HTMLUListElement;
 
+  bodyOverlay: HTMLElement | HTMLUListElement;
+
   constructor(id: string) {
     this.id = id;
+    this.bodyOverlay = createElement("div", "body-overlay hidden");
   }
 
   start(): void {
+    const wrapper = createElement("div", "wrapper");
+
     const main = document.createElement("main");
     const section = document.createElement("section");
     section.id = "content";
@@ -30,9 +43,26 @@ class App {
     p.textContent = "© Shop Footer";
     footer.appendChild(p);
 
-    document.body.appendChild(headerEl.getHtml());
-    document.body.appendChild(main);
-    document.body.appendChild(footer);
+    wrapper.append(headerEl.getHtml(), main, footer);
+    document.body.append(this.bodyOverlay, wrapper);
+    this.getData();
+  }
+
+  getData() {
+    const getRequests = [fetchGetCategories(), fetchGetProducts()];
+    const mutateFunctions = [setCategoriesArray, setProductsArray];
+    Promise.all(getRequests).then((promiseResultAsArray) => {
+      promiseResultAsArray.forEach((promiseResultItem, index) => {
+        mutateFunctions[index](promiseResultItem);
+      });
+      const aside = createAside(categories);
+      this.bodyOverlay.after(aside);
+      headerEl.burger.getHtml().addEventListener("click", () => {
+        document.body.classList.add("lock");
+        this.bodyOverlay.classList.remove("hidden");
+        aside.classList.remove("hidden");
+      });
+    });
   }
 }
 
