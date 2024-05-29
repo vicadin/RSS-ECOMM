@@ -1,5 +1,7 @@
 import { NavObj } from "../interfaces/header-types.ts";
 import { CategoryType } from "../interfaces/catalog-types.ts";
+import { createElement } from "./login-page-utils.ts";
+import CategoryList from "../components/catalog/category-list.ts";
 
 export const categories: CategoryType = {
   array: [],
@@ -88,4 +90,11 @@ export function setBeforeDiscountPrice(props, locale: string) {
     ? priceBlock.value.centAmount
     : 0;
   return setCurrency(priceBlock, BeforeDiscountPriceNumber);
+}
+
+export function createAside(categoriesObject) {
+  const asideElement = createElement("aside", "aside hidden");
+  const asideNav = new CategoryList(categoriesObject.array, true);
+  asideElement.append(asideNav.getHtml());
+  return asideElement;
 }

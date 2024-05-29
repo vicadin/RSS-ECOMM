@@ -1,6 +1,6 @@
 import "./catalog-page.css";
 import { createElement } from "../../utils/login-page-utils.ts";
-import { categories, products } from "../../utils/catalog-utils.ts";
+import { products } from "../../utils/catalog-utils.ts";
 import Products from "../../components/catalog/products.ts";
 import CategoryList from "../../components/catalog/category-list.ts";
 
@@ -17,12 +17,14 @@ export default class CatalogPage {
 
   constructor() {
     this.pageContainer = createElement("div", "catalog-container");
-    this.aside = createElement("aside", "aside");
-    this.asideNav = new CategoryList(categories.array, true);
-    this.aside.append(this.asideNav.getHtml());
+
+    // const aside = createElement("aside", "aside");
+    // this.asideNav = new CategoryList(categories.array, true);
+    // this.aside.append(this.asideNav.getHtml());
+
     this.catalogMain = createElement("section", "catalog-main");
     this.catalogMain.append(new Products(products.array).getHtml());
-    this.pageContainer.append(this.aside, this.catalogMain);
+    this.pageContainer.append(this.catalogMain);
   }
 
   getHtml() {

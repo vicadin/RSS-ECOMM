@@ -4,7 +4,8 @@
   align-items: center;
   justify-content: space-evenly;
   flex-wrap: wrap;
-  max-height: 1092px;
+
+  /*max-height: 1092px;*/
 }
 
 /* product card styles */
@@ -19,7 +20,7 @@
   width: 310px;
   min-width: 310px;
   height: 506px;
-  margin-bottom: 40px;
+  margin: 0 8px 40px;
 }
 
 .product-card_image {

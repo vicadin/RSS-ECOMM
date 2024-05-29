@@ -7,6 +7,8 @@ import { headerEl } from "./components/header.ts";
 class App {
   id: string;
 
+  aside: HTMLElement | HTMLUListElement;
+
   constructor(id: string) {
     this.id = id;
   }
@@ -26,6 +28,7 @@ class App {
     const footer = document.createElement("footer");
     const p = document.createElement("p");
     p.textContent = "© Shop Footer";
+    footer.appendChild(p);
 
     document.body.appendChild(headerEl.getHtml());
     document.body.appendChild(main);

@@ -3,7 +3,12 @@ import LoginPage from "./components/login-page/login-page.ts";
 import NotFoundComponent from "./components/404components.ts";
 import { headerEl } from "./components/header.ts";
 import CatalogPage from "./pages/catalog/catalog.ts";
-import { setCategoriesArray, setProductsArray } from "./utils/catalog-utils.ts";
+import {
+  categories,
+  createAside,
+  setCategoriesArray,
+  setProductsArray,
+} from "./utils/catalog-utils.ts";
 import { fetchGetCategories, fetchGetProducts } from "./interfaces/catalog-requests.ts";
 import ProductCard from "./components/catalog/product-card.ts";
 
@@ -49,6 +54,8 @@ export function handleHash() {
           values.forEach((value, index) => {
             anotherArr[index](value);
           });
+          const aside = createAside(categories);
+          document.body.prepend(aside);
           newContent.append(new CatalogPage().getHtml());
         });
       }
