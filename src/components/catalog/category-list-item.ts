@@ -3,7 +3,7 @@ import { CatalogCategoryResult } from "../../interfaces/catalog-types.ts";
 import { addArrow } from "./arrow.ts";
 import CategoryList from "./category-list.ts";
 import { categories } from "../../utils/catalog-utils.ts";
-import hasChildren from "../../utils/categories-utils.ts";
+import hasChildren, { makeVisibleAllNavs, setCategoryHash } from "../../utils/categories-utils.ts";
 import { unlockBody } from "../../utils/header-utils.ts";
 
 export default class CategoryListItem {
@@ -49,27 +49,15 @@ export default class CategoryListItem {
   addEventListeners() {
     this.categoryListItem.addEventListener("click", () => {
       if (!hasChildren(this.children)) {
-        const elem = document.querySelectorAll(".category-container_invisible");
-        if (elem) {
-          elem.forEach((item) => {
-            item.classList.remove("category-container_invisible");
-          });
-        }
-        const pathname = `${this.categorlistItemId}`;
-        window.location.hash = `#${pathname}products_by_category`;
+        makeVisibleAllNavs();
+        setCategoryHash(this.categorlistItemId);
         unlockBody();
       } else if (document.documentElement.offsetWidth < 1023) {
         const parent = this.categoryListItem.parentElement?.parentElement;
         parent.classList.add("category-container_invisible");
       } else {
-        const elem = document.querySelectorAll(".category-container_invisible");
-        if (elem) {
-          elem.forEach((item) => {
-            item.classList.remove("category-container_invisible");
-          });
-        }
-        const pathname = `${this.categorlistItemId}`;
-        window.location.hash = `#${pathname}products_by_category`;
+        makeVisibleAllNavs();
+        setCategoryHash(this.categorlistItemId);
         unlockBody();
       }
     });
