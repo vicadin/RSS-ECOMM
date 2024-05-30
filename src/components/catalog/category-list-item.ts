@@ -1,5 +1,5 @@
 import CategoryLink from "./category-item.ts";
-import { CatalogCategoryResult } from "../../interfaces/catalog-types.ts";
+import { Ancestors, CatalogCategoryResult } from "../../interfaces/catalog-types.ts";
 import { addArrow } from "./arrow.ts";
 import CategoryList from "./category-list.ts";
 import { categories } from "../../utils/catalog-utils.ts";
@@ -13,11 +13,13 @@ export default class CategoryListItem {
 
   subCategoryBlock: Element | null | undefined;
 
-  categoryListAnsestors: [{ typeId: "category"; id: string }];
+  categoryListAncestors: Ancestors;
 
   categoryListItem: HTMLLIElement;
 
   categoryListItemKey: string;
+
+  categoryListItemName: { "en-US": string; "de-DE": string; "en-GB": string };
 
   constructor(
     categoryList: CatalogCategoryResult[],
@@ -28,10 +30,10 @@ export default class CategoryListItem {
     this.categoryListItem = document.createElement("li");
     this.categoryListItem.className = "category-list_item";
     this.categorlistItemId = item.id;
+    this.categoryListItemName = item.name;
     this.categoryListItemKey = item.key;
     this.children = CategoryListItem.getChildren(categoryList, item);
     this.subCategoryBlock = null;
-    this.categoryListAnsestors = item.ancestors;
     if (isRoot) {
       if (!item.parent) {
         this.categoryListItem.append(new CategoryLink(item, this.children).getHtml());

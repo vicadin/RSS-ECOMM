@@ -3,9 +3,18 @@ import LoginPage from "./components/login-page/login-page.ts";
 import NotFoundComponent from "./components/404components.ts";
 import { headerEl } from "./components/header.ts";
 import CatalogPage from "./pages/catalog/catalog.ts";
-import { fetchGetProductByCategoryId, fetchGetProducts } from "./interfaces/catalog-requests.ts";
+import {
+  fetchGetCategories,
+  fetchGetProductByCategoryId,
+  fetchGetProducts,
+} from "./interfaces/catalog-requests.ts";
 import ProductCard from "./components/catalog/product-card.ts";
-import { setProductsArray } from "./utils/catalog-utils.ts";
+import {
+  categories,
+  setCategoriesArray,
+  setDataForBreadcrumbs,
+  setProductsArray,
+} from "./utils/catalog-utils.ts";
 
 type Routes = {
   [key: string]: () => void;
@@ -60,12 +69,19 @@ export function handleHash() {
     products_by_category: () => {
       if (newContent) {
         newContent.innerHTML = "";
-        const promise = fetchGetProductByCategoryId(localStorage.getItem("productsCategoryId"));
-        promise.then((promiseResult) => {
-          if (typeof promiseResult !== "boolean") {
-            setProductsArray(promiseResult);
-            newContent.append(new CatalogPage().getHtml());
-          }
+        const getRequests = [
+          fetchGetCategories(),
+          fetchGetProductByCategoryId(localStorage.getItem("productsCategoryId")),
+        ];
+        const mutateFunctions = [setCategoriesArray, setProductsArray];
+        Promise.all(getRequests).then((promiseResultAsArray) => {
+          promiseResultAsArray.forEach((promiseResultItem, index) => {
+            if (typeof promiseResultItem !== "boolean") {
+              mutateFunctions[index](promiseResultItem);
+            }
+          });
+          setDataForBreadcrumbs(localStorage.getItem("productsCategoryId"), categories.array);
+          newContent.append(new CatalogPage().getHtml());
         });
       }
     },
@@ -95,6 +111,7 @@ export function handleHash() {
     const productId = window.location.hash.slice(1, -7);
     localStorage.setItem("productId", productId);
   }
+
   const routeHandler = routes[hash] || routes[""];
   routeHandler();
 }
@@ -104,10 +121,12 @@ export function routerInit() {
   const currentHash = window.location.hash;
   if (window.location.hash.slice(-7) === "product") {
     window.location.hash = currentHash;
+    handleHash();
     return;
   }
   if (window.location.hash.slice(-20) === "products_by_category") {
     window.location.hash = currentHash;
+    handleHash();
     return;
   }
   window.location.hash = "#home";

@@ -19,7 +19,9 @@ export type CatalogCategoryResult = {
   key: string;
   externalId: string;
   name: {
-    en: string;
+    ["en-US"]: string;
+    ["de-DE"]: string;
+    ["en-GB"]: string;
   };
   slug: {
     en: string;
@@ -87,4 +89,18 @@ export type ProductByCategory = {
     description: object;
   }[];
   total: number;
+};
+
+export type Ancestor = { typeId: "category"; id: string; name?: string };
+
+export type Ancestors = Ancestor[] | [];
+
+export type BreadCrumb = {
+  href: string;
+  name: string;
+};
+
+export const HomeLink = {
+  href: "/#home",
+  name: "Home",
 };

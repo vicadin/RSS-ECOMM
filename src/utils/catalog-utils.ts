@@ -1,4 +1,9 @@
-import { CategoryType } from "../interfaces/catalog-types.ts";
+import {
+  Ancestor,
+  Ancestors,
+  CatalogCategoryResult,
+  CategoryType,
+} from "../interfaces/catalog-types.ts";
 import { createElement } from "./login-page-utils.ts";
 import CategoryList from "../components/catalog/category-list.ts";
 import { asideHandler } from "./header-utils.ts";
@@ -87,4 +92,31 @@ export function createAside(categoriesObject) {
   asideElement.append(asideNav.getHtml());
   asideElement.addEventListener("click", asideHandler);
   return asideElement;
+}
+
+export function setDataForBreadcrumbs(
+  categoryId: string,
+  categoriesArray: CatalogCategoryResult[],
+) {
+  if (categoriesArray.length !== 0) {
+    const currentCategory = categoriesArray.find((item) => item.id === categoryId);
+    const ancestorsArray: Ancestors = currentCategory.ancestors;
+
+    if (ancestorsArray.length && ancestorsArray !== "") {
+      ancestorsArray.forEach((ancestor) => {
+        const spreadAncestors = [];
+        const ancestorItem: Ancestor = ancestor;
+        const tempAncestor = categoriesArray.find(
+          (categoryItem) => categoryItem.id === ancestorItem.id,
+        );
+        ancestorItem.name = tempAncestor.name["en-US"];
+        spreadAncestors.push(ancestorItem);
+        localStorage.setItem("categoryListAncestors", JSON.stringify(spreadAncestors));
+      });
+    } else {
+      localStorage.setItem("categoryListAncestors", JSON.stringify([]));
+    }
+
+    localStorage.setItem("currentCategoryName", currentCategory.name["en-US"]);
+  }
 }
