@@ -1,4 +1,3 @@
-import { NavObj } from "../interfaces/header-types.ts";
 import { CategoryType } from "../interfaces/catalog-types.ts";
 import { createElement } from "./login-page-utils.ts";
 import CategoryList from "../components/catalog/category-list.ts";
@@ -13,14 +12,6 @@ export function setCategoriesArray(answer) {
     categories.array = answer.results;
   }
 }
-
-export const asideProps: NavObj = {
-  navName: "asideNav",
-  navClassNames: "aside-nav",
-  ulName: "asideNavList",
-  ulClassNames: "aside-nav_list",
-  items: [],
-};
 
 export const products = {
   array: [],
@@ -92,6 +83,7 @@ export function setBeforeDiscountPrice(props, locale: string) {
 export function createAside(categoriesObject) {
   const asideElement = createElement("aside", "aside hidden");
   const asideNav = new CategoryList(categoriesObject.array, true);
+  asideNav.getHtml().classList.add("aside_category-container");
   asideElement.append(asideNav.getHtml());
   asideElement.addEventListener("click", asideHandler);
   return asideElement;

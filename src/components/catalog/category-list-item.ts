@@ -7,8 +7,6 @@ import hasChildren from "../../utils/categories-utils.ts";
 import { unlockBody } from "../../utils/header-utils.ts";
 
 export default class CategoryListItem {
-  categorlistItem: HTMLLIElement;
-
   children: CatalogCategoryResult[];
 
   categorlistItemId: string;
@@ -17,7 +15,9 @@ export default class CategoryListItem {
 
   categoryListAnsestors: [{ typeId: "category"; id: string }];
 
-  categorlistItemKey: string;
+  categoryListItem: HTMLLIElement;
+
+  categoryListItemKey: string;
 
   constructor(
     categoryList: CatalogCategoryResult[],
@@ -25,38 +25,57 @@ export default class CategoryListItem {
     isRoot: boolean,
     subCategoryId?: string,
   ) {
-    this.categorlistItem = document.createElement("li");
-    this.categorlistItem.className = "category-list_item";
+    this.categoryListItem = document.createElement("li");
+    this.categoryListItem.className = "category-list_item";
     this.categorlistItemId = item.id;
-    this.categorlistItemKey = item.key;
+    this.categoryListItemKey = item.key;
     this.children = CategoryListItem.getChildren(categoryList, item);
     this.subCategoryBlock = null;
     this.categoryListAnsestors = item.ancestors;
     if (isRoot) {
       if (!item.parent) {
-        this.categorlistItem.append(new CategoryLink(item, this.children).getHtml());
+        this.categoryListItem.append(new CategoryLink(item, this.children).getHtml());
       }
     } else if (subCategoryId === item.parent?.id) {
-      this.categorlistItem.append(new CategoryLink(item, this.children).getHtml());
+      this.categoryListItem.append(new CategoryLink(item, this.children).getHtml());
     }
-    if (this.categorlistItem.firstElementChild) {
-      this.categorlistItem.classList.add("not-empty");
-      addArrow(this.children, this.categorlistItem);
+    if (this.categoryListItem.firstElementChild) {
+      this.categoryListItem.classList.add("not-empty");
+      addArrow(this.children, this.categoryListItem);
     }
     this.addEventListeners();
   }
 
   addEventListeners() {
-    this.categorlistItem.addEventListener("click", () => {
+    this.categoryListItem.addEventListener("click", () => {
       if (!hasChildren(this.children)) {
+        const elem = document.querySelectorAll(".category-container_invisible");
+        if (elem) {
+          elem.forEach((item) => {
+            item.classList.remove("category-container_invisible");
+          });
+        }
         const pathname = `${this.categorlistItemId}`;
         window.location.hash = `#${pathname}products_by_category`;
+        unlockBody();
+      } else if (document.documentElement.offsetWidth < 1023) {
+        const parent = this.categoryListItem.parentElement?.parentElement;
+        parent.classList.add("category-container_invisible");
+      } else {
+        const elem = document.querySelectorAll(".category-container_invisible");
+        if (elem) {
+          elem.forEach((item) => {
+            item.classList.remove("category-container_invisible");
+          });
+        }
+        const pathname = `${this.categorlistItemId}`;
+        window.location.hash = `#${pathname}products_by_category`;
+        unlockBody();
       }
-      unlockBody();
     });
 
-    this.categorlistItem.addEventListener("mouseover", () => {
-      this.subCategoryBlock = this.categorlistItem.parentElement?.parentElement.lastElementChild;
+    this.categoryListItem.addEventListener("mouseover", () => {
+      this.subCategoryBlock = this.categoryListItem.parentElement?.parentElement.lastElementChild;
       if (this.subCategoryBlock) {
         CategoryListItem.clearAndShow(this.subCategoryBlock);
         const subCategoryList = new CategoryList(categories.array, false, this.categorlistItemId);
@@ -73,7 +92,7 @@ export default class CategoryListItem {
   }
 
   getHtml() {
-    return this.categorlistItem;
+    return this.categoryListItem;
   }
 
   static clearAndShow(block: Element) {

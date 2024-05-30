@@ -1,9 +1,19 @@
 .category-container {
-  position: absolute;
+  position: fixed;
   z-index: 2;
   background-color: #ede1d5;
   height: 100vh;
   min-width: 290px;
+  transition: all 1500ms ease;
+}
+
+.aside .category-container_invisible {
+  left: -100vw;
+}
+
+.subcategory-container_shown {
+  right: -300px;
+  z-index: 30;
 }
 
 .category-list {
@@ -33,7 +43,6 @@
   position: absolute;
   right: 18px;
   top: 28px;
-  background-image: url("../../assets/icons/arrow.svg");
   background-position: 50%;
   background-repeat: no-repeat;
   background-size: cover;

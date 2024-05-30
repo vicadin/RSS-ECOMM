@@ -4,8 +4,6 @@
   align-items: center;
   justify-content: space-evenly;
   flex-wrap: wrap;
-
-  /*max-height: 1092px;*/
 }
 
 /* product card styles */
@@ -74,12 +72,12 @@
 }
 
 .final-price {
-  font-weight: 700px;
+  font-weight: 600;
   font-size: 28px;
 }
 
 .before-discount-price {
   font-size: 18px;
-  font-weight: 600px;
+  font-weight: 500;
   text-decoration: line-through;
 }
