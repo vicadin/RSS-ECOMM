@@ -16,4 +16,20 @@ export const ProductDetailsPage = async (): Promise<HTMLElement> => {
     console.error("Error fetching product data:", error);
     productData = { id: productId, name: "Not Found", description: "Not Found", price: 0 };
   }
+
+  const productDetails: HTMLElement = document.createElement("div");
+
+  const title: HTMLElement = document.createElement("h1");
+  title.textContent = productData.name;
+  productDetails.appendChild(title);
+
+  const description: HTMLElement = document.createElement("p");
+  description.textContent = productData.description;
+  productDetails.appendChild(description);
+
+  const price: HTMLElement = document.createElement("p");
+  price.textContent = `Price: $${productData.price}`;
+  productDetails.appendChild(price);
+
+  return productDetails;
 };
