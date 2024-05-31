@@ -1,18 +1,19 @@
-import Product from "/RSS-ECOMM/src/interfaces/product"
-export const ProductDetailsPage = async () => {
+import Product from "/RSS-ECOMM/src/interfaces/product";
+export const ProductDetailsPage = async (): Promise<HTMLElement> => {
+  const productId: string = document.location.href.split("product=").at(-1) || "";
 
-    const productId = document.location.href.split("product=").at(-1);
+  localStorage.setItem("productId", productId);
 
-    localStorage.setItem("productId", "9f4eb6b5-2d60-4046-aeba-be9c466b4b7e");
-
-    let productData;
-    try{
-        //const response = await fetch(`https://api.example.com/products/${productId}`);
-        // productData = await response.json();
-        productData = JSON.parse(localStorage.getItem("productData")) || { name: "PRODUCT", description: "DESCRIPTION", price: 100 };
-    } catch (error) {
-        console.error("Error fetching product data:", error);
-    }
-    return document.createTextNode(productId)
-
-}
+  let productData;
+  try {
+    //const response = await fetch(`https://api.example.com/products/${productId}`);
+    // productData = await response.json();
+    const storedData: string | null = localStorage.getItem("productData");
+    productData = storedData
+      ? (JSON.parse(storedData) as Product)
+      : { id: productId, name: "NameProduct", description: "Description", price: 100 };
+  } catch (error) {
+    console.error("Error fetching product data:", error);
+    productData = { id: productId, name: "Not Found", description: "Not Found", price: 0 };
+  }
+};
