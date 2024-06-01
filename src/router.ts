@@ -150,6 +150,11 @@ export function routerInit() {
     handleHash();
     return;
   }
+  if (window.location.hash.slice(-6) === "search") {
+    window.location.hash = currentHash;
+    handleHash();
+    return;
+  }
   window.location.hash = "#home";
   handleHash();
 }
