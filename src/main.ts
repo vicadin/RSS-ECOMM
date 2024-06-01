@@ -6,7 +6,7 @@ import { headerEl } from "./components/header.ts";
 import { fetchGetCategories } from "./interfaces/catalog-requests.ts";
 import { categories, createAside, setCategoriesArray } from "./utils/catalog-utils.ts";
 import { createElement } from "./utils/login-page-utils.ts";
-import { lockBody, outsideEvtListener } from "./utils/header-utils.ts";
+import { lockBodyAndOpenAside, outsideEvtListener } from "./utils/header-utils.ts";
 
 class App {
   id: string;
@@ -53,7 +53,7 @@ class App {
       });
       const aside = createAside(categories);
       this.bodyOverlay.after(aside);
-      headerEl.burger.getHtml().addEventListener("click", lockBody);
+      headerEl.burger.getHtml().addEventListener("click", lockBodyAndOpenAside);
     });
   }
 }

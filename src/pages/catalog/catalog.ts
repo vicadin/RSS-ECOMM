@@ -22,6 +22,9 @@ export default class CatalogPage {
 
     this.catalogBreadcrumbs = createElement("div", "catalog_breadcrumbs");
     this.catalogTitle = createElement("div", "catalog_title");
+    if (products.array.length === 0) {
+      this.catalogTitle.textContent = "Nothing was found";
+    }
     if (
       localStorage.getItem("categoryListAncestors") &&
       localStorage.getItem("currentCategoryName")

@@ -102,9 +102,9 @@ export function setDataForBreadcrumbs(
     const currentCategory = categoriesArray.find((item) => item.id === categoryId);
     const ancestorsArray: Ancestors = currentCategory.ancestors;
 
-    if (ancestorsArray.length && ancestorsArray !== "") {
+    if (ancestorsArray.length) {
+      const spreadAncestors = [];
       ancestorsArray.forEach((ancestor) => {
-        const spreadAncestors = [];
         const ancestorItem: Ancestor = ancestor;
         const tempAncestor = categoriesArray.find(
           (categoryItem) => categoryItem.id === ancestorItem.id,
@@ -118,5 +118,17 @@ export function setDataForBreadcrumbs(
     }
 
     localStorage.setItem("currentCategoryName", currentCategory.name["en-US"]);
+  }
+}
+
+export function removeCategoryData() {
+  if (localStorage.getItem("productsCategoryId")) {
+    localStorage.removeItem("productsCategoryId");
+  }
+  if (localStorage.getItem("categoryListAncestors")) {
+    localStorage.removeItem("categoryListAncestors");
+  }
+  if (localStorage.getItem("currentCategoryName")) {
+    localStorage.removeItem("currentCategoryName");
   }
 }

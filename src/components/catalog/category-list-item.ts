@@ -4,7 +4,7 @@ import { addArrow } from "./arrow.ts";
 import CategoryList from "./category-list.ts";
 import { categories } from "../../utils/catalog-utils.ts";
 import hasChildren, { makeVisibleAllNavs, setCategoryHash } from "../../utils/categories-utils.ts";
-import { unlockBody } from "../../utils/header-utils.ts";
+import { unlockBodyAndCloseAside } from "../../utils/header-utils.ts";
 
 export default class CategoryListItem {
   children: CatalogCategoryResult[];
@@ -53,14 +53,14 @@ export default class CategoryListItem {
       if (!hasChildren(this.children)) {
         makeVisibleAllNavs();
         setCategoryHash(this.categorlistItemId);
-        unlockBody();
+        unlockBodyAndCloseAside();
       } else if (document.documentElement.offsetWidth < 1023) {
         const parent = this.categoryListItem.parentElement?.parentElement;
         parent.classList.add("category-container_invisible");
       } else {
         makeVisibleAllNavs();
         setCategoryHash(this.categorlistItemId);
-        unlockBody();
+        unlockBodyAndCloseAside();
       }
     });
 

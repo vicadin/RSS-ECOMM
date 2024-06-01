@@ -12,5 +12,5 @@ export default function CreateNavigation(
   context[ulName] = createElement("ul", ulClassNames);
   fillNavList(context[ulName], items);
   context[navName].append(context[ulName]);
-  return context[navName];
+  return context[navName] as HTMLElement;
 }

@@ -7,10 +7,12 @@ import {
   fetchGetCategories,
   fetchGetProductByCategoryId,
   fetchGetProducts,
+  fetchSortProductByPrice,
 } from "./interfaces/catalog-requests.ts";
 import ProductCard from "./components/catalog/product-card.ts";
 import {
   categories,
+  removeCategoryData,
   setCategoriesArray,
   setDataForBreadcrumbs,
   setProductsArray,
@@ -28,6 +30,12 @@ export function handleHash() {
     hash = "products_by_category";
     const productsCategoryId = window.location.hash.slice(1, -20);
     localStorage.setItem("productsCategoryId", productsCategoryId);
+  }
+
+  if (hash.endsWith("search")) {
+    hash = "search";
+
+    // console.log(newParams.toString(), "newParams from router");
   }
 
   const routes: Routes = {
@@ -58,9 +66,22 @@ export function handleHash() {
     catalog: () => {
       if (newContent) {
         newContent.innerHTML = "";
+        removeCategoryData();
         const promise = fetchGetProducts();
         promise.then((promiseResult) => {
           setProductsArray(promiseResult);
+          newContent.append(new CatalogPage().getHtml());
+        });
+      }
+    },
+
+    search: () => {
+      if (newContent) {
+        newContent.innerHTML = "";
+        removeCategoryData();
+        const newParams = new URLSearchParams(window.location.hash.slice(1, -6));
+        fetchSortProductByPrice(newParams).then((res) => {
+          setProductsArray(res);
           newContent.append(new CatalogPage().getHtml());
         });
       }
