@@ -86,8 +86,8 @@ export class ProfileTabs {
         <span class="field-value">${value}</span>
         <input type="${type}" class="field-input" style="display:none" value="${value}" data-action="${action}" data-field-name="${fieldName}" data-original-value="${value}">
         <span class="error-message" style="color: red; display: none;"></span>
-        <button class="edit-button">Edit</button>
-        <button class="save-button" style="display:none">Save</button>
+        <button class="btn-edit"><img src="../assets/icons/edit.png"></button>
+        <button class="btn-save" style="display:none"><img src="../assets/icons/check.png"></button>
       </div>
     `;
   }
@@ -111,12 +111,12 @@ export class ProfileTabs {
         <div class="address-column">
           <h3>Billing Addresses</h3>
           ${billingAddresses.map((address) => this.renderAddress(address, defaultBillingAddressId, "billing")).join("")}
-          <button class="add-new-address-button" data-address-type="billing">Add New Billing Address</button>
+          <button class="add-new-address-btn" data-address-type="billing"><img src="../assets/icons/add.png">Add New Billing Address</button>
         </div>
         <div class="address-column">
           <h3>Shipping Addresses</h3>
           ${shippingAddresses.map((address) => this.renderAddress(address, defaultShippingAddressId, "shipping")).join("")}
-          <button class="add-new-address-button" data-address-type="shipping">Add New Shipping Address</button>
+          <button class="add-new-address-btn" data-address-type="shipping"><img src="../assets/icons/add.png">Add New Shipping Address</button>
         </div>
       </div>
     `;
@@ -156,12 +156,14 @@ export class ProfileTabs {
             ${this.renderCountryOptions(address.country)}
           </select>
         </div>
-        ${address.id === defaultAddressId ? "<p>(Default)</p>" : ""}
-        <button class="edit-address-button">Edit</button>
-        <button class="save-address-button" style="display:none">Save</button>
-        <button class="delete-address-button">Delete</button>
-        ${address.id !== defaultAddressId ? (addressType === "billing" ? '<button class="set-default-address-button" data-address-type="billing">Set as Default Billing</button>' : '<button class="set-default-address-button" data-address-type="shipping">Set as Default Shipping</button>') : ""}
-      </div>
+        ${address.id === defaultAddressId ? `<p class="badge">Default</p>` : ""}
+        <div class="buttons-row">
+          <button class="edit-address-btn"><img src="../assets/icons/edit.png"></button>
+          <button class="save-address-btn" style="display:none"><img src="../assets/icons/check.png"></button>
+          <button class="delete-address-btn"><img src="../assets/icons/delete.png"></button>
+          ${address.id !== defaultAddressId ? (addressType === "billing" ? '<button class="set-default-address-btn" data-address-type="billing">Set as Default Billing</button>' : '<button class="set-default-address-btn" data-address-type="shipping">Set as Default Shipping</button>') : ""}
+        </div>
+        </div>
     `;
   }
 
@@ -363,8 +365,8 @@ export class ProfileTabs {
     const editableFields = this.tabContentContainer.querySelectorAll(".editable-field");
 
     editableFields.forEach((field) => {
-      const editButton = field.querySelector(".edit-button") as HTMLButtonElement;
-      const saveButton = field.querySelector(".save-button") as HTMLButtonElement;
+      const editButton = field.querySelector(".btn-edit") as HTMLButtonElement;
+      const saveButton = field.querySelector(".btn-save") as HTMLButtonElement;
 
       const fieldSpans = field.querySelectorAll(".field-value") as NodeListOf<HTMLElement>;
 
@@ -386,11 +388,11 @@ export class ProfileTabs {
     const addressItems = this.tabContentContainer.querySelectorAll(".address-item");
 
     addressItems.forEach((addressItem) => {
-      const editButton = addressItem.querySelector(".edit-address-button") as HTMLButtonElement;
-      const saveButton = addressItem.querySelector(".save-address-button") as HTMLButtonElement;
-      const deleteButton = addressItem.querySelector(".delete-address-button") as HTMLButtonElement;
+      const editButton = addressItem.querySelector(".edit-address-btn") as HTMLButtonElement;
+      const saveButton = addressItem.querySelector(".save-address-btn") as HTMLButtonElement;
+      const deleteButton = addressItem.querySelector(".delete-address-btn") as HTMLButtonElement;
       const setDefaultButtons = addressItem.querySelectorAll(
-        ".set-default-address-button",
+        ".set-default-address-btn",
       ) as NodeListOf<HTMLButtonElement>;
       const fieldSpans = addressItem.querySelectorAll(".field-value") as NodeListOf<HTMLElement>;
 
@@ -417,7 +419,7 @@ export class ProfileTabs {
     });
 
     const addNewAddressButtons = this.tabContentContainer.querySelectorAll(
-      ".add-new-address-button",
+      ".add-new-address-btn",
     ) as NodeListOf<HTMLButtonElement>;
     addNewAddressButtons.forEach((button) => {
       button.addEventListener("click", () =>
