@@ -2,6 +2,7 @@ import RegistrationPage from "./pages/registration";
 import LoginPage from "./components/login-page/login-page";
 import NotFoundComponent from "./components/404components";
 import { ProductDetailsPage } from "./components/pdp/pdp";
+import Product from "./interfaces/product";
 
 type Routes = {
   [key: string]: () => void;
