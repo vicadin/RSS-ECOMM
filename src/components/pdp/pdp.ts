@@ -1,5 +1,6 @@
 import { Product } from "/RSS-ECOMM/src/interfaces/product";
 
+
 export const ProductDetailsPage = async (): Promise<HTMLElement> => {
   const productId: string = document.location.href.split("product=").at(-1) || "";
 
