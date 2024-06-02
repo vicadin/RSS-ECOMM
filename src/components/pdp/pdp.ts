@@ -1,20 +1,32 @@
-import Product from "/RSS-ECOMM/src/interfaces/product";
+import { Product } from "/RSS-ECOMM/src/interfaces/product";
+
 export const ProductDetailsPage = async (): Promise<HTMLElement> => {
   const productId: string = document.location.href.split("product=").at(-1) || "";
 
   localStorage.setItem("productId", productId);
 
-  let productData;
+  let productData: Product;
   try {
-    //const response = await fetch(`https://api.example.com/products/${productId}`);
-    // productData = await response.json();
     const storedData: string | null = localStorage.getItem("productData");
     productData = storedData
       ? (JSON.parse(storedData) as Product)
-      : { id: productId, name: "NameProduct", description: "Description", price: 100 };
+      : {
+          id: productId,
+          name: "Product_Name",
+          description: "Product_Description",
+          price: 100,
+          imageUrl: "",
+        };
   } catch (error) {
     console.error("Error fetching product data:", error);
-    productData = { id: productId, name: "Not Found", description: "Not Found", price: 0 };
+
+    productData = {
+      id: productId,
+      name: "Unknown_Product",
+      description: "Description ont Found",
+      price: 0,
+      imageUrl: "",
+    };
   }
 
   const productDetails: HTMLElement = document.createElement("div");
@@ -31,5 +43,18 @@ export const ProductDetailsPage = async (): Promise<HTMLElement> => {
   price.textContent = `Price: $${productData.price}`;
   productDetails.appendChild(price);
 
+  const image: HTMLImageElement = document.createElement("img");
+  image.src = productData.imageUrl;
+  image.alt = productData.name;
+  productDetails.appendChild(image);
+
   return productDetails;
 };
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const productDetails: HTMLElement = await ProductDetailsPage();
+  const container: HTMLElement | null = document.getElementById("product-details-container");
+  if (container) {
+    container.appendChild(productDetails);
+  }
+});
