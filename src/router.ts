@@ -1,8 +1,8 @@
 import RegistrationPage from "./pages/registration";
 import LoginPage from "./components/login-page/login-page";
 import NotFoundComponent from "./components/404components";
-import { ProductDetailsPage } from "./components/pdp/pdp";
-import Product from "./interfaces/product";
+import { fetchGetProducts } from "./components/pdp/fetchGetProduct";
+import DetailedCard from "./components/pdp/DetailedCard";
 
 type Routes = {
   [key: string]: () => void;
@@ -41,7 +41,7 @@ export function handleHash() {
         newContent.innerHTML = "";
         const prodItem = fetchGetProducts("9f4eb6b5-2d60-4046-aeba-be9c466b4b7e");
         prodItem.then((result) => {
-          newContent.append(new ProductDetailsPage(result, "en-US").getHtml());
+          newContent.append(new DetailedCard(result, "en-US").getHtml());
         });
       }
     },
@@ -54,13 +54,6 @@ export function handleHash() {
   if (hash === "logout") {
     hash = "home";
     window.location.hash = hash;
-  }
-  if (hash.includes("product=")) {
-    if (newContent) {
-      newContent.innerHTML = "";
-      newContent.appendChild(ProductDetailsPage());
-      return;
-    }
   }
   const routeHandler = routes[hash] || routes[""];
   routeHandler();

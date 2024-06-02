@@ -1,8 +1,16 @@
 export interface Product {
-    id: string;
-    name: string;
-    description: string;
-    price: number;
-    discountPrice?: number;
-    images: string[];
+  id: string;
+  masterData: {
+    current: {
+      name: { [locale: string]: string };
+      description: { [locale: string]: string };
+      masterVariant: {
+        images: { url: string }[];
+        prices: {
+          value: { centAmount: number; currencyCode: string };
+          discounted?: { value: { centAmount: number; currencyCode: string } };
+        }[];
+      };
+    };
+  };
 }

@@ -48,30 +48,3 @@ footer {
 .btn-black:disabled {
   background-color: #333;
 }
-
-#product-details-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-#product-details-container img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 10px;
-  margin: 20px 0;
-}
-
-#product-details-container h1 {
-  font-size: 2em;
-  margin: 20px 0;
-}
-
-#product-details-container p {
-  font-size: 1.2em;
-  margin: 10px 0;
-}
