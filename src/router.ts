@@ -3,7 +3,6 @@ import LoginPage from "./components/login-page/login-page";
 import NotFoundComponent from "./components/404components";
 import { ProductDetailsPage } from "./components/pdp/pdp";
 
-
 type Routes = {
   [key: string]: () => void;
 };
@@ -34,6 +33,15 @@ export function handleHash() {
       if (newContent) {
         newContent.innerHTML = "";
         NotFoundComponent.render();
+      }
+    },
+    product: () => {
+      if (newContent) {
+        newContent.innerHTML = "";
+        const prodItem = fetchGetProducts("9f4eb6b5-2d60-4046-aeba-be9c466b4b7e");
+        prodItem.then((result) => {
+          newContent.append(new ProductDetailsPage(result, "en-US").getHtml());
+        });
       }
     },
   };
