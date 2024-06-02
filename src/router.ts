@@ -41,6 +41,7 @@ export function handleHash() {
         newContent.innerHTML = "";
         const prodItem = fetchGetProducts("9f4eb6b5-2d60-4046-aeba-be9c466b4b7e");
         prodItem.then((result) => {
+          console.log(result);
           newContent.append(new DetailedCard(result, "en-US").getHtml());
         });
       }
@@ -62,5 +63,5 @@ export function handleHash() {
 export function routerInit() {
   window.addEventListener("hashchange", handleHash);
   // window.location.hash = "#home";
-  // handleHash();
+  handleHash();
 }

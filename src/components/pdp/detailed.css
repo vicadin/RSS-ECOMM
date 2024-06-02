@@ -1,5 +1,7 @@
 .detailed-card {
-  max-width: 1200px;
+  width: 200px;
+  height: 200px;
+  border: 10px solid black;
   margin: 0 auto;
   padding: 20px;
   display: flex;
@@ -14,6 +16,7 @@
   border-radius: 10px;
   margin: 20px 0;
   cursor: pointer;
+  border: 10px solid black;
 }
 
 .detailed-card h1 {

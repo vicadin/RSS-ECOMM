@@ -5,7 +5,7 @@ import { Product } from "../../interfaces/product";
 
 export default class DetailedCard {
   id: string;
-  detailedCardItem: HTMLElement;
+  detailedCardItem:  HTMLElement;
   detailedImage: HTMLElement;
   detailedCardContent: HTMLElement;
   detailedCardHeading: HTMLElement;
@@ -13,18 +13,18 @@ export default class DetailedCard {
   detailedCardPrices: HTMLElement;
   finalPrice: HTMLElement;
   beforeDiscountPrice: HTMLElement;
-  modal: HTMLElement;
-  modalContent: HTMLElement;
-  closeBtn: HTMLElement;
-  currentSlideIndex: number;
-  slides: string[];
+  // modal: HTMLElement;
+  // modalContent: HTMLElement;
+  // closeBtn: HTMLElement;
+  // currentSlideIndex: number;
+  // slides: string[];
 
   constructor(props: Product, locale: string) {
     this.id = props.id;
-    this.currentSlideIndex = 0;
-    this.slides = props.masterData.current.masterVariant.images.map((image) => image.url);
+    // this.currentSlideIndex = 0;
+    // this.slides = props.masterData?.current.masterVariant.images.map((image) => image.url);
     this.renderCard(props, locale);
-    this.setupModal();
+    // this.setupModal();
   }
 
   renderCard(props: Product, locale: string) {
@@ -37,7 +37,7 @@ export default class DetailedCard {
     this.beforeDiscountPrice = createElement("span", "before-discount-price");
     this.detailedImage = createElement("div", "detailed-card_image");
 
-    this.setFieldsValues(props, locale);
+    // this.setFieldsValues(props, locale);
 
     this.detailedCardPrices.append(this.finalPrice, this.beforeDiscountPrice);
     this.detailedCardContent.append(
@@ -48,79 +48,77 @@ export default class DetailedCard {
     this.detailedCardItem.append(this.detailedImage, this.detailedCardContent);
   }
 
-  setFieldsValues(props: Product, locale: string) {
-    try {
-      const data = props.masterData.current;
-      this.detailedCardHeading.textContent = data.name[locale];
-      [this.detailedCardDescription.textContent] = data.description[locale].split(".");
-      this.finalPrice.textContent = setFinalPrice(props, locale);
-      this.beforeDiscountPrice.textContent = setBeforeDiscountPrice(props, locale);
-      this.detailedImage.style.backgroundImage = `url("${this.slides[this.currentSlideIndex]}")`;
-      this.detailedImage.onclick = () => this.openModal();
-    } catch (err) {
-      window.location.hash = "";
-    }
-  }
+  // setFieldsValues(props: Product, locale: string) {
+  //   try {
+  //     const data = props.masterData.current;
+  //     this.detailedCardHeading.textContent = data.name[locale];
+  //     [this.detailedCardDescription.textContent] = data.description[locale].split(".");
+  //     this.finalPrice.textContent = setFinalPrice(props, locale);
+  //     this.beforeDiscountPrice.textContent = setBeforeDiscountPrice(props, locale);
+  //     this.detailedImage.style.backgroundImage = `url("${this.slides[this.currentSlideIndex]}")`;
+  //     this.detailedImage.onclick = () => this.openModal();
+  //   } catch (err) {
+  //     window.location.hash = "";
+  //   }
+  // }
 
-  setupModal() {
+  // setupModal() {
+  //   this.modal = createElement("div", "modal");
+  //   this.modalContent = createElement("div", "modal-content");
+  //   this.closeBtn = createElement("span", "close");
+  //   this.closeBtn.innerHTML = "&times;";
+  //   this.closeBtn.onclick = () => this.closeModal();
 
-    this.modal = createElement("div", "modal");
-    this.modalContent = createElement("div", "modal-content");
-    this.closeBtn = createElement("span", "close");
-    this.closeBtn.innerHTML = "&times;";
-    this.closeBtn.onclick = () => this.closeModal();
+  //   this.modalContent.append(this.closeBtn, this.createSlidesContainer());
+  //   this.modal.append(this.modalContent);
+  //   document.body.append(this.modal);
+  // }
 
+  // createSlidesContainer() {
+  //   const container = createElement("div", "slides-container");
+  //   this.slides.forEach((slideUrl, index) => {
+  //     const slide = createElement("div", "slide");
+  //     const img = document.createElement("img");
+  //     img.src = slideUrl;
+  //     slide.appendChild(img);
+  //     if (index === this.currentSlideIndex) {
+  //       slide.classList.add("active");
+  //     }
+  //     container.append(slide);
+  //   });
+  //   return container;
+  // }
 
-    this.modalContent.append(this.closeBtn, this.createSlidesContainer());
-    this.modal.append(this.modalContent);
-    document.body.append(this.modal);
-  }
+  // openModal() {
+  //   this.modal.style.display = "block";
+  //   document.onkeydown = (e) => {
+  //     if (e.key === "ArrowRight") this.nextSlide();
+  //     if (e.key === "ArrowLeft") this.prevSlide();
+  //     if (e.key === "Escape") this.closeModal();
+  //   };
+  // }
 
-  createSlidesContainer() {
-    const container = createElement("div", "slides-container");
-    this.slides.forEach((slideUrl, index) => {
-      const slide = createElement("div", "slide");
-      const img = document.createElement("img");
-      img.src = slideUrl;
-      slide.appendChild(img);
-      if (index === this.currentSlideIndex) {
-        slide.classList.add("active");
-      }
-      container.append(slide);
-    });
-    return container;
-  }
+  // closeModal() {
+  //   this.modal.style.display = "none";
+  //   document.onkeydown = null;
+  // }
 
-  openModal() {
-    this.modal.style.display = "block";
-    document.onkeydown = (e) => {
-      if (e.key === "ArrowRight") this.nextSlide();
-      if (e.key === "ArrowLeft") this.prevSlide();
-      if (e.key === "Escape") this.closeModal();
-    };
-  }
+  // nextSlide() {
+  //   this.currentSlideIndex = (this.currentSlideIndex + 1) % this.slides.length;
+  //   this.updateSlides();
+  // }
 
-  closeModal() {
-    this.modal.style.display = "none";
-    document.onkeydown = null;
-  }
+  // prevSlide() {
+  //   this.currentSlideIndex = (this.currentSlideIndex - 1 + this.slides.length) % this.slides.length;
+  //   this.updateSlides();
+  // }
 
-  nextSlide() {
-    this.currentSlideIndex = (this.currentSlideIndex + 1) % this.slides.length;
-    this.updateSlides();
-  }
-
-  prevSlide() {
-    this.currentSlideIndex = (this.currentSlideIndex - 1 + this.slides.length) % this.slides.length;
-    this.updateSlides();
-  }
-
-  updateSlides() {
-    const slides = this.modal.querySelectorAll(".slide");
-    slides.forEach((slide, index) => {
-      slide.classList.toggle("active", index === this.currentSlideIndex);
-    });
-  }
+  // updateSlides() {
+  //   const slides = this.modal.querySelectorAll(".slide");
+  //   slides.forEach((slide, index) => {
+  //     slide.classList.toggle("active", index === this.currentSlideIndex);
+  //   });
+  // }
 
   getHtml() {
     return this.detailedCardItem;
