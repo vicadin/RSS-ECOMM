@@ -19,7 +19,7 @@ export async function fetchGetProducts(id?: string) {
   try {
     const fetchInput = id
       ? `${process.env.HOST}/${process.env.PROJECT_KEY}/products/${id}`
-      : `${process.env.HOST}/${process.env.PROJECT_KEY}/products`;
+      : `${process.env.HOST}/${process.env.PROJECT_KEY}/products/`;
     const response = await fetch(fetchInput, config);
     if (response.ok) {
       const answer = await response.json();
@@ -48,7 +48,7 @@ export async function fetchGetCategories(): Promise<CatalogCategoriesAnswer | bo
   };
   try {
     const response = await fetch(
-      `${process.env.HOST}/${process.env.PROJECT_KEY}/categories`,
+      `${process.env.HOST}/${process.env.PROJECT_KEY}/categories/search?limit=35`,
       config,
     );
     if (response.ok) {
@@ -93,7 +93,7 @@ export async function fetchGetProductByCategoryId(
   return false;
 }
 
-export async function fetchSortProductByPrice(params: URLSearchParams) {
+export async function fetchSearchSortFilter(params: URLSearchParams) {
   let token;
   if (localStorage.getItem("token")) {
     token = JSON.parse(localStorage.getItem("token")).token;
@@ -119,7 +119,7 @@ export async function fetchSortProductByPrice(params: URLSearchParams) {
       return answer;
     }
   } catch {
-    // console.log("catch по категории");
+    // console.log("catch");
     return false;
   }
   // console.log("return false");

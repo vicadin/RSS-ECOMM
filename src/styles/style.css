@@ -41,10 +41,6 @@ body {
   z-index: 2;
 }
 
-.aside > .category-container > .category-list > .category-list_item:first-child {
-  padding-top: 26px;
-}
-
 .aside-nav {
 }
 

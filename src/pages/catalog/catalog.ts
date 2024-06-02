@@ -3,6 +3,7 @@ import { createElement } from "../../utils/login-page-utils.ts";
 import { products } from "../../utils/catalog-utils.ts";
 import Products from "../../components/catalog/products.ts";
 import Breadcrumbs from "../../components/catalog/breadcrumbs.ts";
+import { currentSearch } from "../../interfaces/header-types.ts";
 
 export default class CatalogPage {
   aside: HTMLElement;
@@ -24,14 +25,18 @@ export default class CatalogPage {
     this.catalogTitle = createElement("div", "catalog_title");
     if (products.array.length === 0) {
       this.catalogTitle.textContent = "Nothing was found";
+    } else if (currentSearch.currentText) {
+      const text = currentSearch.currentText;
+      this.catalogTitle.textContent = text.charAt(0).toUpperCase() + text.slice(1);
     }
+
     if (
       localStorage.getItem("categoryListAncestors") &&
       localStorage.getItem("currentCategoryName")
     ) {
       const currentBreadcrumbs = new Breadcrumbs(
-        JSON.parse(localStorage.getItem("categoryListAncestors")),
-        localStorage.getItem("currentCategoryName"),
+        JSON.parse(localStorage.getItem("categoryListAncestors")!),
+        localStorage.getItem("currentCategoryName")!,
       );
       this.catalogTitle.textContent = localStorage.getItem("currentCategoryName");
       this.catalogBreadcrumbs.append(currentBreadcrumbs.getHtml());

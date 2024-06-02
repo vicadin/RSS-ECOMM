@@ -1,4 +1,4 @@
-import { Search } from "../interfaces/header-types.ts";
+import { currentSearch, SearchObject } from "../interfaces/header-types.ts";
 
 export function createNavLink(itemText): HTMLLIElement {
   const listItem = document.createElement("li");
@@ -94,6 +94,19 @@ export function setLocationForSearching(searchParamsFinalString: string) {
   window.location.hash = `#?${searchParamsFinalString}search`;
 }
 
-export const searchObject: Search = {
+export const searchObject: SearchObject = {
   search: undefined,
 };
+
+export function setCurrentSearch(params: URLSearchParams) {
+  params.forEach((p) => {
+    const [key, value] = p;
+    if (key === "text.en-US") {
+      currentSearch.currentText = value;
+    }
+  });
+}
+
+export function clearCurrentSearch() {
+  currentSearch.currentText = undefined;
+}

@@ -43,9 +43,17 @@ export const searchButtonAttr: [string, string][] = [
 ];
 
 export type Search = {
-  search: undefined | string;
+  currentText: undefined | string;
 };
 
 export const paramString: { stringOfParam: string } = {
   stringOfParam: "",
+};
+
+export type SearchObject = {
+  search: undefined | string;
+};
+
+export const currentSearch: Search = {
+  currentText: undefined,
 };

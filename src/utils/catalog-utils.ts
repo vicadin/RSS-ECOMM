@@ -58,7 +58,10 @@ export function getPriceBlockByLocale(props, locale) {
   const productPrices = props.masterData?.current?.masterVariant?.prices
     ? props.masterData.current.masterVariant.prices
     : props.masterVariant.prices;
-  return productPrices.find((item) => item.country === `${locale.split("-")[1]}`);
+  const priceblock = productPrices.find((item) => item.country === `${locale.split("-")[1]}`)
+    ? productPrices.find((item) => item.country === `${locale.split("-")[1]}`)
+    : productPrices[0];
+  return priceblock;
 }
 
 function setCurrency(priceBlock, number) {
@@ -73,15 +76,16 @@ function setCurrency(priceBlock, number) {
 
 export function setFinalPrice(props, locale: string) {
   const priceBlock = getPriceBlockByLocale(props, locale);
-  const finalPriceNumber = priceBlock.discounted?.value?.centAmount ?? priceBlock.value.centAmount;
+  const finalPriceNumber = priceBlock?.discounted?.value?.centAmount ?? priceBlock.value.centAmount;
   return setCurrency(priceBlock, finalPriceNumber);
 }
 
 export function setBeforeDiscountPrice(props, locale: string) {
   const priceBlock = getPriceBlockByLocale(props, locale);
-  const BeforeDiscountPriceNumber = priceBlock.discounted?.value?.centAmount
-    ? priceBlock.value.centAmount
+  const BeforeDiscountPriceNumber = priceBlock?.discounted?.value?.centAmount
+    ? priceBlock?.value?.centAmount
     : 0;
+  // console.log(BeforeDiscountPriceNumber,"BeforeDiscountPriceNumber")
   return setCurrency(priceBlock, BeforeDiscountPriceNumber);
 }
 

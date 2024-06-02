@@ -7,7 +7,7 @@ import {
   fetchGetCategories,
   fetchGetProductByCategoryId,
   fetchGetProducts,
-  fetchSortProductByPrice,
+  fetchSearchSortFilter,
 } from "./interfaces/catalog-requests.ts";
 import ProductCard from "./components/catalog/product-card.ts";
 import {
@@ -17,6 +17,7 @@ import {
   setDataForBreadcrumbs,
   setProductsArray,
 } from "./utils/catalog-utils.ts";
+import { clearCurrentSearch, setCurrentSearch } from "./utils/header-utils.ts";
 
 type Routes = {
   [key: string]: () => void;
@@ -42,6 +43,7 @@ export function handleHash() {
     home: () => {
       if (newContent) {
         newContent.innerHTML = "<h2>Welcome!</h2>";
+        clearCurrentSearch();
         headerEl.updateNav("navList");
       }
     },
@@ -67,6 +69,7 @@ export function handleHash() {
       if (newContent) {
         newContent.innerHTML = "";
         removeCategoryData();
+        clearCurrentSearch();
         const promise = fetchGetProducts();
         promise.then((promiseResult) => {
           setProductsArray(promiseResult);
@@ -80,7 +83,8 @@ export function handleHash() {
         newContent.innerHTML = "";
         removeCategoryData();
         const newParams = new URLSearchParams(window.location.hash.slice(1, -6));
-        fetchSortProductByPrice(newParams).then((res) => {
+        setCurrentSearch(newParams);
+        fetchSearchSortFilter(newParams).then((res) => {
           setProductsArray(res);
           newContent.append(new CatalogPage().getHtml());
         });
