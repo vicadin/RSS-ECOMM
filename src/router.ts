@@ -1,7 +1,8 @@
-import RegistrationPage from "./pages/registration.ts";
-import LoginPage from "./components/login-page/login-page.ts";
-import NotFoundComponent from "./components/404components.ts";
-import {ProductDetailsPage} from "./components/pdp/pdp";
+import RegistrationPage from "./pages/registration";
+import LoginPage from "./components/login-page/login-page";
+import NotFoundComponent from "./components/404components";
+import { ProductDetailsPage } from "./components/pdp/pdp";
+
 
 type Routes = {
   [key: string]: () => void;
@@ -46,10 +47,10 @@ export function handleHash() {
     window.location.hash = hash;
   }
   if (hash.includes("product=")) {
-    if(newContent) {
+    if (newContent) {
       newContent.innerHTML = "";
       newContent.appendChild(ProductDetailsPage());
-      return
+      return;
     }
   }
   const routeHandler = routes[hash] || routes[""];
