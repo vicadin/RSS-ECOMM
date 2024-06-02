@@ -1,0 +1,29 @@
+@media (min-width: 768px) {
+  #product-details-container {
+    flex-direction: row;
+    text-align: left;
+  }
+
+  #product-details-container img {
+    max-width: 50%;
+    margin: 0 20px 0 0;
+  }
+
+  #product-details-container div {
+    flex: 1;
+  }
+}
+
+@media (min-width: 1024px) {
+  #product-details-container {
+    padding: 40px;
+  }
+
+  #product-details-container h1 {
+    font-size: 2.5em;
+  }
+
+  #product-details-container p {
+    font-size: 1.5em;
+  }
+}
