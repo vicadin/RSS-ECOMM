@@ -163,6 +163,7 @@ export class Form {
                 ]);
                 this.clearFormInputs();
                 window.location.hash = "#home";
+                window.location.reload();
               }
             });
           } else if ((result as Response).status === 400) {

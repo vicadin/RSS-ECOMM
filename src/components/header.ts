@@ -94,10 +94,20 @@ export class Header {
       lockBody();
     });
 
+
+  addEventListeners() {
+    this.navList.addEventListener("click", (ev) => {
+      if ((ev.target as HTMLLinkElement).textContent === "Logout") {
+        if (localStorage.getItem("token")) {
+          localStorage.removeItem("token");
+        }
+        window.location.reload();
+
     this.searchProductInput.addEventListener("keydown", (ev) => {
       if (ev.code === "Enter") {
         unlockBodyAndCloseElem(this.findContainer);
         this.setSearchParams();
+
       }
     });
 
