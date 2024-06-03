@@ -60,7 +60,7 @@ export class ProfileTabs {
     if (this.userProfile) {
       this.createTabs(this.userProfile);
     } else {
-      this.tabContentContainer.innerHTML = "<p>Error loading user profile.</p>";
+      this.tabContentContainer.innerHTML = "<p>Error loading user profile. Please log in</p>";
     }
   }
 

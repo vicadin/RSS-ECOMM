@@ -51,6 +51,7 @@ export class Header {
       if ((ev.target as HTMLLinkElement).textContent === "Logout") {
         localStorage.clear();
         this.updateNav();
+        window.location.reload();
       }
     });
   }
