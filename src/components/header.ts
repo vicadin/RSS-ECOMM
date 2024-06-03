@@ -18,6 +18,7 @@ import {
 } from "../interfaces/header-types.ts";
 import CreateNavigation from "../utils/navigation.ts";
 import Burger from "./catalog/burger.ts";
+import { sortObject } from "../interfaces/catalog-types.ts";
 
 export class Header {
   headerNavList: HTMLElement | HTMLUListElement;
@@ -53,12 +54,9 @@ export class Header {
     this.searchProductInput = createInput("main-search", searchInputAttr);
     this.searchButton = createButton("search-button", searchButtonAttr, "");
     insertFindIco(this.searchButton, svgIcoBig);
-
     this.searchIco = this.searchButton.lastElementChild;
     this.findInputContainer.append(this.searchProductInput, this.searchButton);
-
     this.findContainer.append(this.findInputContainer);
-
     this.headerNavContainer = createElement("div", "header_nav-container");
     const leftNav = CreateNavigation(this, headerPropsForLeftNav);
     const rightNav = CreateNavigation(this, headerPropsForRightNav);
@@ -66,7 +64,6 @@ export class Header {
     leftNav.append(this.burger.getHtml());
     insertFindIco(leftNav, svgIco);
     this.findElem = leftNav.lastElementChild;
-
     this.headerNavContainer.append(leftNav, rightNav);
     this.header.append(this.findContainer, this.headerNavContainer);
     this.addEventListeners();
@@ -126,6 +123,10 @@ export class Header {
         finalParamString.push(`&${searchParam}`);
       } else {
         finalParamString.push(`${searchParam}`);
+      }
+
+      if (sortObject.sorting) {
+        sortObject.sorting = undefined;
       }
 
       setLocationForSearching(finalParamString.join(",").replace(",", ""));

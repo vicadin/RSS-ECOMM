@@ -3,7 +3,7 @@ import { createElement } from "../../utils/login-page-utils.ts";
 import { setBeforeDiscountPrice, setFinalPrice } from "../../utils/catalog-utils.ts";
 
 export default class ProductCard {
-  private id: string;
+  id: string;
 
   productCardItem: HTMLElement | HTMLUListElement;
 

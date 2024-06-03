@@ -1,14 +1,21 @@
-import { CatalogCategoriesAnswer, ProductByCategory } from "./catalog-types.ts";
+import {
+  AccessToken,
+  CatalogCategoriesAnswer,
+  Product,
+  ProductByCategory,
+  ProductsResult,
+} from "./catalog-types.ts";
 import { getAccessToken } from "./registration/registrationRequests.ts";
 
-export async function fetchGetProducts(id?: string) {
-  let token;
+export async function fetchGetProducts(id?: string): Promise<ProductsResult | Product | boolean> {
+  let token: string;
   if (localStorage.getItem("token")) {
-    token = JSON.parse(localStorage.getItem("token")).token;
+    token = JSON.parse(<string>localStorage.getItem("token")).token;
   } else {
     const answer = await getAccessToken();
-    token = answer.access_token;
+    token = (answer as AccessToken).access_token;
   }
+
   const config = {
     method: "GET",
     headers: {
@@ -22,7 +29,7 @@ export async function fetchGetProducts(id?: string) {
       : `${process.env.HOST}/${process.env.PROJECT_KEY}/products/`;
     const response = await fetch(fetchInput, config);
     if (response.ok) {
-      const answer = await response.json();
+      const answer: Promise<ProductsResult | Product> = await response.json();
       return answer;
     }
   } catch {
@@ -37,7 +44,7 @@ export async function fetchGetCategories(): Promise<CatalogCategoriesAnswer | bo
     token = JSON.parse(localStorage.getItem("token")).token;
   } else {
     const answer = await getAccessToken();
-    token = answer.access_token;
+    token = (answer as AccessToken).access_token;
   }
   const config = {
     method: "GET",
@@ -48,7 +55,7 @@ export async function fetchGetCategories(): Promise<CatalogCategoriesAnswer | bo
   };
   try {
     const response = await fetch(
-      `${process.env.HOST}/${process.env.PROJECT_KEY}/categories/search?limit=35`,
+      `${process.env.HOST}/${process.env.PROJECT_KEY}/categories/search?limit=40`,
       config,
     );
     if (response.ok) {
@@ -69,7 +76,7 @@ export async function fetchGetProductByCategoryId(
     token = JSON.parse(localStorage.getItem("token")).token;
   } else {
     const answer = await getAccessToken();
-    token = answer.access_token;
+    token = (answer as AccessToken).access_token;
   }
   const config = {
     method: "GET",
@@ -99,7 +106,7 @@ export async function fetchSearchSortFilter(params: URLSearchParams) {
     token = JSON.parse(localStorage.getItem("token")).token;
   } else {
     const answer = await getAccessToken();
-    token = answer.access_token;
+    token = (answer as AccessToken).access_token;
   }
   const config = {
     method: "GET",
@@ -115,13 +122,10 @@ export async function fetchSearchSortFilter(params: URLSearchParams) {
     );
     if (response.ok) {
       const answer = await response.json();
-      // console.log("сортировка по поиску", answer);
       return answer;
     }
   } catch {
-    // console.log("catch");
     return false;
   }
-  // console.log("return false");
   return false;
 }

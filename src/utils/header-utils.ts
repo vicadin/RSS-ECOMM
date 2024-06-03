@@ -1,4 +1,6 @@
 import { currentSearch, SearchObject } from "../interfaces/header-types.ts";
+import { categories, removeCategoryData } from "./catalog-utils.ts";
+import { currentFilter } from "../interfaces/catalog-types.ts";
 
 export function createNavLink(itemText): HTMLLIElement {
   const listItem = document.createElement("li");
@@ -64,8 +66,10 @@ export function lockBody(): void {
 }
 
 export function lockBodyAndOpenAside() {
-  openAside();
-  lockBody();
+  if (categories.array.length !== 0) {
+    openAside();
+    lockBody();
+  }
 }
 
 export function outsideEvtListener(): void {
@@ -99,10 +103,12 @@ export const searchObject: SearchObject = {
 };
 
 export function setCurrentSearch(params: URLSearchParams) {
-  params.forEach((p) => {
-    const [key, value] = p;
+  const paramsArray = Array.from(params.entries());
+  paramsArray.forEach(([key, value]) => {
     if (key === "text.en-US") {
       currentSearch.currentText = value;
+      removeCategoryData();
+      currentFilter.filter = undefined;
     }
   });
 }

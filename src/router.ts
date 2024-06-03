@@ -12,8 +12,12 @@ import {
 import ProductCard from "./components/catalog/product-card.ts";
 import {
   categories,
+  clearCurrentFilter,
+  clearCurrentSort,
   removeCategoryData,
   setCategoriesArray,
+  setCurrentFilter,
+  setCurrentSort,
   setDataForBreadcrumbs,
   setProductsArray,
 } from "./utils/catalog-utils.ts";
@@ -26,7 +30,6 @@ type Routes = {
 export function handleHash() {
   let hash: string = window.location.hash ? window.location.hash.slice(1) : "";
   const newContent: HTMLElement | null = document.getElementById("content");
-
   if (hash.endsWith("products_by_category")) {
     hash = "products_by_category";
     const productsCategoryId = window.location.hash.slice(1, -20);
@@ -35,8 +38,6 @@ export function handleHash() {
 
   if (hash.endsWith("search")) {
     hash = "search";
-
-    // console.log(newParams.toString(), "newParams from router");
   }
 
   const routes: Routes = {
@@ -44,6 +45,8 @@ export function handleHash() {
       if (newContent) {
         newContent.innerHTML = "<h2>Welcome!</h2>";
         clearCurrentSearch();
+        clearCurrentSort();
+        removeCategoryData();
         headerEl.updateNav("navList");
       }
     },
@@ -70,6 +73,8 @@ export function handleHash() {
         newContent.innerHTML = "";
         removeCategoryData();
         clearCurrentSearch();
+        clearCurrentSort();
+        clearCurrentFilter();
         const promise = fetchGetProducts();
         promise.then((promiseResult) => {
           setProductsArray(promiseResult);
@@ -81,12 +86,13 @@ export function handleHash() {
     search: () => {
       if (newContent) {
         newContent.innerHTML = "";
-        removeCategoryData();
         const newParams = new URLSearchParams(window.location.hash.slice(1, -6));
         setCurrentSearch(newParams);
         fetchSearchSortFilter(newParams).then((res) => {
           setProductsArray(res);
+          setCurrentFilter(newParams);
           newContent.append(new CatalogPage().getHtml());
+          setCurrentSort(newParams);
         });
       }
     },
@@ -116,6 +122,7 @@ export function handleHash() {
         newContent.innerHTML = "";
         const prodItem = fetchGetProducts(localStorage.getItem("productId"));
         prodItem.then((result) => {
+          // append detailed card instead of product card
           newContent.append(new ProductCard(result, "en-US").getHtml());
         });
       }
@@ -159,6 +166,13 @@ export function routerInit() {
     handleHash();
     return;
   }
+
+  if (window.location.hash.slice(-7) === "catalog") {
+    window.location.hash = currentHash;
+    handleHash();
+    return;
+  }
+
   window.location.hash = "#home";
   handleHash();
 }

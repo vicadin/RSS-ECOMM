@@ -3,6 +3,8 @@ import {
   Ancestors,
   CatalogCategoryResult,
   CategoryType,
+  currentFilter,
+  sortObject,
 } from "../interfaces/catalog-types.ts";
 import { createElement } from "./login-page-utils.ts";
 import CategoryList from "../components/catalog/category-list.ts";
@@ -85,7 +87,6 @@ export function setBeforeDiscountPrice(props, locale: string) {
   const BeforeDiscountPriceNumber = priceBlock?.discounted?.value?.centAmount
     ? priceBlock?.value?.centAmount
     : 0;
-  // console.log(BeforeDiscountPriceNumber,"BeforeDiscountPriceNumber")
   return setCurrency(priceBlock, BeforeDiscountPriceNumber);
 }
 
@@ -135,4 +136,49 @@ export function removeCategoryData() {
   if (localStorage.getItem("currentCategoryName")) {
     localStorage.removeItem("currentCategoryName");
   }
+}
+
+export function setCurrentSort(params: URLSearchParams) {
+  const paramsArray = Array.from(params.entries());
+  paramsArray.forEach(([key, value]) => {
+    if (key === "sort") {
+      const sortButton = document.querySelector(".dropdown__button");
+      if (sortButton) {
+        switch (value) {
+          case "price asc":
+            sortButton.textContent = "Sort by price ↑";
+            break;
+          case "price desc":
+            sortButton.textContent = "Sort by price ↓";
+            break;
+          case "name.en-US asc":
+            sortButton.textContent = "Sort by name ↑";
+            break;
+          case "name.en-US desc":
+            sortButton.textContent = "Sort by name ↓";
+            break;
+          default:
+            sortButton.textContent = "Sort by default";
+            break;
+        }
+      }
+    }
+  });
+}
+
+export function setCurrentFilter(params: URLSearchParams) {
+  const paramsArray = Array.from(params.entries());
+  paramsArray.forEach(([key, value]) => {
+    if (key === "filter") {
+      currentFilter.filter = value;
+    }
+  });
+}
+
+export function clearCurrentSort() {
+  sortObject.sorting = undefined;
+}
+
+export function clearCurrentFilter() {
+  currentFilter.filter = undefined;
 }

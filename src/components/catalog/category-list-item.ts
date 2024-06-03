@@ -5,6 +5,7 @@ import CategoryList from "./category-list.ts";
 import { categories } from "../../utils/catalog-utils.ts";
 import hasChildren, { makeVisibleAllNavs, setCategoryHash } from "../../utils/categories-utils.ts";
 import { unlockBodyAndCloseAside } from "../../utils/header-utils.ts";
+import { currentSearch } from "../../interfaces/header-types.ts";
 
 export default class CategoryListItem {
   children: CatalogCategoryResult[];
@@ -50,6 +51,7 @@ export default class CategoryListItem {
 
   addEventListeners() {
     this.categoryListItem.addEventListener("click", () => {
+      currentSearch.currentText = undefined;
       if (!hasChildren(this.children)) {
         makeVisibleAllNavs();
         setCategoryHash(this.categorlistItemId);

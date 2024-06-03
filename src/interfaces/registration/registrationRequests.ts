@@ -1,6 +1,7 @@
 import { displayError } from "./registartionFormUtils.ts";
+import { AccessToken } from "../catalog-types.ts";
 
-export async function getAccessToken() {
+export async function getAccessToken(): Promise<AccessToken | Error | Response> {
   const config = {
     method: "POST",
     headers: {
