@@ -10,13 +10,14 @@
   text-align: center;
 }
 
-.detailed-card img {
+.detailed-card_image {
   max-width: 100%;
-  height: auto;
+  height: 300px;
   border-radius: 10px;
+  background-size: cover;
   margin: 20px 0;
   cursor: pointer;
-  border: 10px solid black;
+  background-position: center;
 }
 
 .detailed-card h1 {
