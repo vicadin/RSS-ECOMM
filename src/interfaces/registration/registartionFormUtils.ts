@@ -142,3 +142,7 @@ export function createSelectElement(name: string, required: boolean): HTMLSelect
 
   return select;
 }
+
+export function setType() {
+  this.type = "date";
+}

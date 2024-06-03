@@ -1,4 +1,8 @@
-export function createElement(tag: string, classNames: string, text?: string): HTMLElement {
+export function createElement(
+  tag: string,
+  classNames: string,
+  text?: string,
+): HTMLElement | HTMLUListElement {
   const newElem = document.createElement(tag);
   newElem.className = classNames;
   if (text) {
@@ -97,4 +101,8 @@ export function validateEmail(): void {
   } else {
     this.emailError.textContent = "";
   }
+}
+
+export function setLocalStorage(array: [string, string][]) {
+  array.forEach(([key, value]) => localStorage.setItem(key, value));
 }

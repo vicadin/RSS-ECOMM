@@ -2,6 +2,7 @@ import { profileTabs } from "../components/profile/profileTabs.ts";
 
 export class ProfilePage {
   profileSection: HTMLElement;
+
   profileTitle: HTMLElement;
 
   constructor() {
