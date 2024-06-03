@@ -71,16 +71,16 @@ export class Header {
     this.addEventListeners();
   }
 
-  fillNavList() {}
-
   addEventListeners() {
     this.headerNavContainer.addEventListener("click", (ev) => {
       if ((ev.target as HTMLLinkElement).textContent === "Logout") {
         if (localStorage.getItem("token")) {
           localStorage.removeItem("token");
+
         }
-        this.updateNav("navList");
+        window.location.reload();
       }
+
 
       this.findContainer.addEventListener("mousedown", (event) => {
         if ((event.target as HTMLElement).classList.contains("find-container")) {
@@ -94,60 +94,46 @@ export class Header {
       lockBody();
     });
 
-
-  addEventListeners() {
-    this.navList.addEventListener("click", (ev) => {
-      if ((ev.target as HTMLLinkElement).textContent === "Logout") {
-        if (localStorage.getItem("token")) {
-          localStorage.removeItem("token");
-        }
-        window.location.reload();
-
     this.searchProductInput.addEventListener("keydown", (ev) => {
       if (ev.code === "Enter") {
         unlockBodyAndCloseElem(this.findContainer);
         this.setSearchParams();
-
       }
     });
-
-    this.searchButton.addEventListener("click", () => {
-      unlockBodyAndCloseElem(this.findContainer);
-      this.setSearchParams();
-    });
   }
+    updateNav(item:string)
+    {
+      (this[item] as HTMLUListElement).innerHTML = "";
+      fillNavList(this[item] as HTMLUListElement, getListItems());
+    }
 
-  updateNav(item: string) {
-    (this[item] as HTMLUListElement).innerHTML = "";
-    fillNavList(this[item] as HTMLUListElement, getListItems());
-  }
+    getHtml()
+    {
+      return this.header;
+    }
 
-  getHtml() {
-    return this.header;
-  }
+    setSearchParams() {
+      let searchParam;
+      const finalParamString = [];
+      if (this.searchProductInput.value.trim()) {
+        searchObject.search = this.searchProductInput.value.trim();
+        searchParam = new URLSearchParams(`text.en-US=${searchObject.search}`);
+        finalParamString.push("fuzzy=true");
+        if (finalParamString.length !== 0) {
+          finalParamString.push(`&${searchParam}`);
+        } else {
+          finalParamString.push(`${searchParam}`);
+        }
 
-  setSearchParams() {
-    let searchParam;
-    const finalParamString = [];
-    if (this.searchProductInput.value.trim()) {
-      searchObject.search = this.searchProductInput.value.trim();
-      searchParam = new URLSearchParams(`text.en-US=${searchObject.search}`);
-      finalParamString.push("fuzzy=true");
-      if (finalParamString.length !== 0) {
-        finalParamString.push(`&${searchParam}`);
+        if (sortObject.sorting) {
+          sortObject.sorting = undefined;
+        }
+
+        setLocationForSearching(finalParamString.join(",").replace(",", ""));
       } else {
-        finalParamString.push(`${searchParam}`);
+        searchObject.search = undefined;
       }
-
-      if (sortObject.sorting) {
-        sortObject.sorting = undefined;
-      }
-
-      setLocationForSearching(finalParamString.join(",").replace(",", ""));
-    } else {
-      searchObject.search = undefined;
     }
   }
-}
 
-export const headerEl = new Header();
+  export const headerEl = new Header();
