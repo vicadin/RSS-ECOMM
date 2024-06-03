@@ -19,6 +19,7 @@ import {
 import CreateNavigation from "../utils/navigation.ts";
 import Burger from "./catalog/burger.ts";
 import { sortObject } from "../interfaces/catalog-types.ts";
+import { addProfileIco } from "../utils/catalog-utils";
 
 export class Header {
   headerNavList: HTMLElement | HTMLUListElement;
@@ -60,6 +61,7 @@ export class Header {
     this.headerNavContainer = createElement("div", "header_nav-container");
     const leftNav = CreateNavigation(this, headerPropsForLeftNav);
     const rightNav = CreateNavigation(this, headerPropsForRightNav);
+    addProfileIco(rightNav);
     this.burger = new Burger();
     leftNav.append(this.burger.getHtml());
     insertFindIco(leftNav, svgIco);
@@ -68,6 +70,8 @@ export class Header {
     this.header.append(this.findContainer, this.headerNavContainer);
     this.addEventListeners();
   }
+
+  fillNavList() {}
 
   addEventListeners() {
     this.headerNavContainer.addEventListener("click", (ev) => {

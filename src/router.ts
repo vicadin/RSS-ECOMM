@@ -1,6 +1,7 @@
 import RegistrationPage from "./pages/registration.ts";
 import LoginPage from "./components/login-page/login-page.ts";
 import NotFoundComponent from "./components/404components.ts";
+import { profilePage } from "./pages/profile.ts";
 import { headerEl } from "./components/header.ts";
 import CatalogPage from "./pages/catalog/catalog.ts";
 import {
@@ -60,6 +61,12 @@ export function handleHash() {
       if (newContent) {
         newContent.innerHTML = "";
         RegistrationPage();
+      }
+    },
+    profile: () => {
+      if (newContent) {
+        newContent.innerHTML = "";
+        newContent.appendChild(profilePage.getHtml());
       }
     },
     "": () => {

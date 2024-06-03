@@ -44,6 +44,10 @@ body {
 .aside-nav {
 }
 
+.additional-nav {
+  display: flex;
+}
+
 .aside-nav_list {
 }
 
@@ -218,4 +222,7 @@ footer {
 
 .btn-black:disabled {
   background-color: #333;
+}
+.profile-link img {
+  width: 24px;
 }

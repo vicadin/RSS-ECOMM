@@ -182,3 +182,21 @@ export function clearCurrentSort() {
 export function clearCurrentFilter() {
   currentFilter.filter = undefined;
 }
+
+export function addProfileIco(where: HTMLElement) {
+  const profileListItem = document.createElement("li");
+  profileListItem.classList.add("nav_list_item");
+
+  const profileLink = document.createElement("a");
+  profileLink.href = "#profile";
+  profileLink.classList.add("profile-link");
+
+  const profileIcon = document.createElement("img");
+  profileIcon.src = "../assets/icons/user.png";
+  profileIcon.alt = "Profile";
+  profileIcon.classList.add("profile-icon");
+
+  profileLink.appendChild(profileIcon);
+  profileListItem.appendChild(profileLink);
+  where.appendChild(profileListItem);
+}
