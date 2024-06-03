@@ -307,12 +307,14 @@ export async function deleteAddress(update: UpdateAddress): Promise<boolean> {
   }
 }
 
-export async function changePassword(change: ChangePassword): Promise<{ success: boolean, message?: string }> {
+export async function changePassword(
+  change: ChangePassword,
+): Promise<{ success: boolean; message?: string }> {
   const userProfile = await getUserProfile();
   if (!userProfile) {
     return { success: false, message: "Failed to fetch user profile" };
   }
-  
+
   try {
     const userId = localStorage.getItem("id");
     const tokenData = localStorage.getItem("token");
@@ -352,7 +354,7 @@ export async function changePassword(change: ChangePassword): Promise<{ success:
 
       return { success: false, message: "Failed to change password" };
     }
-    
+
     return { success: true };
   } catch (error) {
     console.error("Error changing password:", error);

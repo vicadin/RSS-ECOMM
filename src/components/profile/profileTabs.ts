@@ -4,9 +4,7 @@ import {
   saveUserProfile,
   addAddress,
   updateAddress,
-  setDefaultAddress,
-  deleteAddress,
-  changePassword
+  changePassword,
 } from "../../interfaces/profile/profileRequests.ts";
 
 import countries from "../../interfaces/registration/countriesList.ts";
@@ -18,7 +16,7 @@ import {
   validateDateOfBirth,
   validateName,
   validateEmail,
-  validatePassword
+  validatePassword,
 } from "../../interfaces/registration/registartionFormUtils.ts";
 
 import {
@@ -29,14 +27,16 @@ import { AccessTokenResponse, Customer } from "../../interfaces/login-page-types
 
 export class ProfileTabs {
   tabContainer: HTMLElement;
+
   tabContentContainer: HTMLElement;
+
   userProfile: UserProfile | null = null;
+
   version: number;
+
   private successMessage: HTMLElement;
 
   private overlay: HTMLElement;
-
- 
 
   constructor() {
     this.tabContainer = document.createElement("div");
@@ -50,7 +50,6 @@ export class ProfileTabs {
     this.successMessage = document.createElement("div");
     this.successMessage.innerHTML = "Registration was successful!";
     this.successMessage.classList.add("alert");
-    
 
     this.render();
   }
@@ -73,7 +72,9 @@ export class ProfileTabs {
     this.tabContentContainer.innerHTML = "";
     this.renderInfoTab(userProfile);
 
-    const changePasswordBtn = this.tabContentContainer.querySelector("#change-password-btn") as HTMLButtonElement;
+    const changePasswordBtn = this.tabContentContainer.querySelector(
+      "#change-password-btn",
+    ) as HTMLButtonElement;
     changePasswordBtn.addEventListener("click", () => this.showChangePasswordModal());
   }
 
@@ -117,7 +118,6 @@ export class ProfileTabs {
     `;
   }
 
-
   showChangePasswordModal() {
     const modal = document.createElement("div");
     modal.classList.add("modal");
@@ -143,19 +143,19 @@ export class ProfileTabs {
         <button class="submit-button">Save</button>
       </div>
     `;
-  
+
     document.body.appendChild(modal);
-  
+
     const closeButton = modal.querySelector(".close-button") as HTMLSpanElement;
     const submitButton = modal.querySelector(".submit-button") as HTMLButtonElement;
-  
+
     closeButton.addEventListener("click", () => document.body.removeChild(modal));
 
     const formInputs = modal.querySelectorAll(".field-input");
-    formInputs.forEach(input => {
+    formInputs.forEach((input) => {
       input.addEventListener("focusin", () => {
         const label = input.previousElementSibling as HTMLLabelElement;
-      label.classList.add("label_moved");
+        label.classList.add("label_moved");
       });
       input.addEventListener("focusout", () => {
         if (input.value === "") {
@@ -164,83 +164,80 @@ export class ProfileTabs {
         }
       });
     });
-   
 
     submitButton.addEventListener("click", async () => {
       const currentPasswordInput = modal.querySelector("#current-password") as HTMLInputElement;
       const newPasswordInput = modal.querySelector("#new-password") as HTMLInputElement;
-      const confirmNewPasswordInput = modal.querySelector("#confirm-new-password") as HTMLInputElement;
-      
+      const confirmNewPasswordInput = modal.querySelector(
+        "#confirm-new-password",
+      ) as HTMLInputElement;
+
       const currentPassword = currentPasswordInput.value;
       const newPassword = newPasswordInput.value;
       const confirmNewPassword = confirmNewPasswordInput.value;
-  
+
       let errorMessage = null;
       if (newPassword !== confirmNewPassword) {
         errorMessage = "The new password and the new password confirmation do not match.";
         this.displayFieldError(confirmNewPasswordInput, errorMessage);
         return;
       }
-  
+
       errorMessage = validatePassword(newPassword);
       if (errorMessage) {
         this.displayFieldError(newPasswordInput, errorMessage);
         return;
       }
-  
+
       const id = localStorage.getItem("id");
       if (id) {
         const result = await changePassword({
           currentPassword,
-          newPassword
+          newPassword,
         });
-  
+
         if (result.success) {
           document.body.removeChild(modal);
-          const profileSection = document.querySelector(".profile-section")
+          const profileSection = document.querySelector(".profile-section");
           if (profileSection) {
-          profileSection.appendChild(this.overlay);
-          this.overlay.classList.add("show");
-          profileSection.appendChild(this.successMessage);
-          setTimeout(() => {
-            profileSection.removeChild(this.overlay);
-          this.overlay.classList.remove("show");
-          profileSection.removeChild(this.successMessage);
-          }, 500);
+            profileSection.appendChild(this.overlay);
+            this.overlay.classList.add("show");
+            profileSection.appendChild(this.successMessage);
+            setTimeout(() => {
+              profileSection.removeChild(this.overlay);
+              this.overlay.classList.remove("show");
+              profileSection.removeChild(this.successMessage);
+            }, 500);
           }
 
-
-          /*  */if (this.userProfile){
-
-      
-          const responseFetchGetAccessTokenThroughPassword = fetchGetAccessTokenThroughPassword(
-            this.userProfile.email,
-            newPassword,
-          );
-          responseFetchGetAccessTokenThroughPassword.then(
-            (resultFetchGetAccessTokenThroughPassword) => {
-              let authToken: string;
-              if (
-                (resultFetchGetAccessTokenThroughPassword as AccessTokenResponse).token_type ===
-                "Bearer"
-              ) {
-                authToken = (resultFetchGetAccessTokenThroughPassword as AccessTokenResponse)
-                  .access_token;
-                if (authToken && this.userProfile) {
-                  fetchAuthenticateCustomer(authToken, this.userProfile.email, newPassword).then(
-                    (resfetchAuthenticateCustomer) => {
-                      const { id } = (resfetchAuthenticateCustomer as Customer).customer;
-                      localStorage.setItem("id", id);
-                      localStorage.setItem("token", JSON.stringify({ token: authToken }));
-                      window.location.hash = "#home";
-                    },
-                  );
+          /*  */ if (this.userProfile) {
+            const responseFetchGetAccessTokenThroughPassword = fetchGetAccessTokenThroughPassword(
+              this.userProfile.email,
+              newPassword,
+            );
+            responseFetchGetAccessTokenThroughPassword.then(
+              (resultFetchGetAccessTokenThroughPassword) => {
+                let authToken: string;
+                if (
+                  (resultFetchGetAccessTokenThroughPassword as AccessTokenResponse).token_type ===
+                  "Bearer"
+                ) {
+                  authToken = (resultFetchGetAccessTokenThroughPassword as AccessTokenResponse)
+                    .access_token;
+                  if (authToken && this.userProfile) {
+                    fetchAuthenticateCustomer(authToken, this.userProfile.email, newPassword).then(
+                      (resfetchAuthenticateCustomer) => {
+                        const { id } = (resfetchAuthenticateCustomer as Customer).customer;
+                        localStorage.setItem("id", id);
+                        localStorage.setItem("token", JSON.stringify({ token: authToken }));
+                        window.location.hash = "#home";
+                      },
+                    );
+                  }
                 }
-              }
-            },
-          );
-        }
-
+              },
+            );
+          }
         } else {
           this.displayFieldError(currentPasswordInput, result.message);
         }
@@ -625,10 +622,10 @@ export class ProfileTabs {
     const submitButton = modal.querySelector(".submit-button") as HTMLButtonElement;
 
     const formInputs = modal.querySelectorAll(".field-input");
-    formInputs.forEach(input => {
+    formInputs.forEach((input) => {
       input.addEventListener("focusin", () => {
         const label = input.previousElementSibling as HTMLLabelElement;
-      label.classList.add("label_moved");
+        label.classList.add("label_moved");
       });
       input.addEventListener("focusout", () => {
         if (input.value === "") {
@@ -650,8 +647,6 @@ export class ProfileTabs {
         const fieldName = input.getAttribute("data-field-name")!;
         const value = input.value;
 
-       
-          
         let errorMessage = null;
         switch (fieldName) {
           case "streetName":

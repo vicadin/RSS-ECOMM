@@ -1,8 +1,8 @@
 .tab-container {
   display: flex;
-    height: fit-content;
-    flex-direction: column;
-    gap: 20px;
+  height: fit-content;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .tab {
@@ -15,26 +15,26 @@
 }
 
 .tab-content-container {
-width: 100%;}
+  width: 100%;
+}
 
-.editable-field{
- margin-bottom: 10px;
+.editable-field {
+  margin-bottom: 10px;
 }
 .address-item {
   margin-bottom: 32px;
   width: 100%;
   padding: 18px;
-    background: #ffffff6e;
- }
- .tab-content-container .address-item  div{
+  background: #ffffff6e;
+}
+.tab-content-container .address-item div {
   display: flex;
   margin-bottom: 8px;
   align-items: center;
   width: fit-content;
   gap: 16px;
-  
- }
-.address-item label{
+}
+.address-item label {
   text-transform: lowercase;
   font-size: 20px;
   margin-right: 16px;
@@ -47,7 +47,7 @@ width: 100%;}
 .set-default-address-btn {
   background: transparent;
 }
-.buttons-row{
+.buttons-row {
   display: flex;
   justify-content: space-between;
 }
@@ -61,16 +61,16 @@ width: 100%;}
   display: flex;
   justify-content: space-between;
 }
-.address-column .field-input{
+.address-column .field-input {
   width: 100%;
 }
 .address-column {
   flex: 1;
   margin-right: 10px;
 }
-.address-column h3{
+.address-column h3 {
   text-transform: uppercase;
-    margin-bottom: 24px;
+  margin-bottom: 24px;
 }
 
 .address-column:last-child {
@@ -87,7 +87,6 @@ width: 100%;}
   align-items: center;
   gap: 12px;
   text-decoration: underline;
-
 }
 
 .modal {
@@ -128,50 +127,51 @@ width: 100%;}
   align-items: center;
   font-size: 20px;
 }
-.editable-field label{
+.editable-field label {
   text-transform: lowercase;
 }
-.editable-field span{
+.editable-field span {
   font-weight: 900;
-    margin: 0 18px;
-    text-transform: uppercase;
+  margin: 0 18px;
+  text-transform: uppercase;
 }
-.editable-field input{
+.editable-field input {
   font-weight: 900;
-    margin: 0 18px;
-    text-transform: uppercase;
+  margin: 0 18px;
+  text-transform: uppercase;
 }
-.btn-edit, .btn-save{
-background: transparent;
+.btn-edit,
+.btn-save {
+  background: transparent;
 }
-.field-input{   
+.field-input {
   border: 0;
-    caret-color: #333;
-    border-bottom: 2px solid #ccc;
-    background-color: transparent;
-    font-size: 20px;
-    font-family: Questrial;
-    outline: none;
-    position: relative;
-    text-transform: uppercase;
-    font-weight: 800;
-    text-align: center;
+  caret-color: #333;
+  border-bottom: 2px solid #ccc;
+  background-color: transparent;
+  font-size: 20px;
+  font-family: Questrial;
+  outline: none;
+  position: relative;
+  text-transform: uppercase;
+  font-weight: 800;
+  text-align: center;
 }
-.profile-section{
+.profile-section {
   width: 80%;
 }
-.profile-section>div{
+.profile-section > div {
   display: flex;
   justify-content: space-between;
-  gap:50px
+  gap: 50px;
 }
-.field-value{
+.field-value {
   font-weight: 900;
-    margin: 0 18px;
-    text-transform: uppercase;
-    font-size: 20px;
+  margin: 0 18px;
+  text-transform: uppercase;
+  font-size: 20px;
 }
-.badge{
+.badge {
   color: white;
   border: 1px solid #333;
   width: fit-content;
@@ -180,19 +180,19 @@ background: transparent;
   font-size: 14px;
   margin: 12px 0;
 }
-.tab-content-container .submit-button{
+.tab-content-container .submit-button {
   padding: 20px;
   width: fit-content;
 }
-.modal-content .input-container{
+.modal-content .input-container {
   margin-bottom: 30px;
 }
-.modal-content h2{
+.modal-content h2 {
   margin-bottom: 44px;
   font-size: 24px;
 }
-@media only screen and (min-device-width : 320px) and (max-device-width : 1024px) {
-  .profile-section>div {
+@media only screen and (min-device-width: 320px) and (max-device-width: 1024px) {
+  .profile-section > div {
     flex-direction: column;
   }
 }
