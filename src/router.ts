@@ -1,6 +1,7 @@
 import RegistrationPage from "./pages/registration.ts";
 import LoginPage from "./components/login-page/login-page.ts";
 import NotFoundComponent from "./components/404components.ts";
+import { profilePage } from "./pages/profile.ts";
 
 type Routes = {
   [key: string]: () => void;
@@ -26,6 +27,12 @@ export function handleHash() {
       if (newContent) {
         newContent.innerHTML = "";
         RegistrationPage();
+      }
+    },
+    profile: () => {
+      if (newContent) {
+        newContent.innerHTML = "";
+        newContent.appendChild(profilePage.getHtml());
       }
     },
     "": () => {
