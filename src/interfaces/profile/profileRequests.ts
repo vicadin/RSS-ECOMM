@@ -232,7 +232,7 @@ export async function setDefaultAddress(update: UpdateAddress): Promise<boolean>
       throw new Error("User is not authenticated");
     }
 
-    const actionBody: any = { action: update.action, addressId: update.addressId };
+    const actionBody = { action: update.action, addressId: update.addressId };
 
     const response = await fetch(
       `${process.env.HOST}/${process.env.PROJECT_KEY}/customers/${userId}`,
@@ -277,7 +277,7 @@ export async function deleteAddress(update: UpdateAddress): Promise<boolean> {
       throw new Error("User is not authenticated");
     }
 
-    const actionBody: any = { action: update.action, addressId: update.addressId };
+    const actionBody = { action: update.action, addressId: update.addressId };
 
     const response = await fetch(
       `${process.env.HOST}/${process.env.PROJECT_KEY}/customers/${userId}`,
