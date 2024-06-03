@@ -6,6 +6,7 @@ import {
   updateAddress,
   setDefaultAddress,
   deleteAddress,
+  changePassword
 } from "../../interfaces/profile/profileRequests.ts";
 
 import countries from "../../interfaces/registration/countriesList.ts";
@@ -17,12 +18,25 @@ import {
   validateDateOfBirth,
   validateName,
   validateEmail,
+  validatePassword
 } from "../../interfaces/registration/registartionFormUtils.ts";
+
+import {
+  fetchAuthenticateCustomer,
+  fetchGetAccessTokenThroughPassword,
+} from "../../interfaces/login-page-requests.ts";
+import { AccessTokenResponse, Customer } from "../../interfaces/login-page-types.ts";
 
 export class ProfileTabs {
   tabContainer: HTMLElement;
   tabContentContainer: HTMLElement;
   userProfile: UserProfile | null = null;
+  version: number;
+  private successMessage: HTMLElement;
+
+  private overlay: HTMLElement;
+
+ 
 
   constructor() {
     this.tabContainer = document.createElement("div");
@@ -30,6 +44,13 @@ export class ProfileTabs {
 
     this.tabContentContainer = document.createElement("div");
     this.tabContentContainer.classList.add("tab-content-container");
+
+    this.overlay = document.createElement("div");
+    this.overlay.classList.add("overlay");
+    this.successMessage = document.createElement("div");
+    this.successMessage.innerHTML = "Registration was successful!";
+    this.successMessage.classList.add("alert");
+    
 
     this.render();
   }
@@ -51,6 +72,9 @@ export class ProfileTabs {
     this.tabContainer.append(infoTab, addressesTab);
     this.tabContentContainer.innerHTML = "";
     this.renderInfoTab(userProfile);
+
+    const changePasswordBtn = this.tabContentContainer.querySelector("#change-password-btn") as HTMLButtonElement;
+    changePasswordBtn.addEventListener("click", () => this.showChangePasswordModal());
   }
 
   createTab(tabName: string, onClick: () => void): HTMLElement {
@@ -68,6 +92,7 @@ export class ProfileTabs {
         ${this.createEditableField("Last name", userProfile.lastName, "setLastName", "lastName")}
         ${this.createEditableField("Email", userProfile.email, "changeEmail", "email")}
         ${this.createEditableField("Date of Birth", userProfile.dateOfBirth, "setDateOfBirth", "dateOfBirth", "date")}
+        <button class="submit-button" id="change-password-btn">Change password</button>
       </div>
     `;
     this.setupFieldEventHandlers();
@@ -90,6 +115,137 @@ export class ProfileTabs {
         <button class="btn-save" style="display:none"><img src="../assets/icons/check.png"></button>
       </div>
     `;
+  }
+
+
+  showChangePasswordModal() {
+    const modal = document.createElement("div");
+    modal.classList.add("modal");
+    modal.innerHTML = `
+      <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2>Change password</h2>
+        <div class="input-container">
+          <label for="current-password">Current password</label>
+          <input type="password" id="current-password" name="currentPassword" class="field-input">
+          <span class="error-message" style="color: red; display: none;"></span>
+        </div>
+        <div class="input-container">
+          <label for="new-password">New password</label>
+          <input type="password" id="new-password" name="newPassword" class="field-input">
+          <span class="error-message" style="color: red; display: none;"></span>
+        </div>
+        <div class="input-container">
+          <label for="confirm-new-password">Confirm new password</label>
+          <input type="password" id="confirm-new-password" name="confirmNewPassword" class="field-input">
+          <span class="error-message" style="color: red; display: none;"></span>
+        </div>
+        <button class="submit-button">Save</button>
+      </div>
+    `;
+  
+    document.body.appendChild(modal);
+  
+    const closeButton = modal.querySelector(".close-button") as HTMLSpanElement;
+    const submitButton = modal.querySelector(".submit-button") as HTMLButtonElement;
+  
+    closeButton.addEventListener("click", () => document.body.removeChild(modal));
+
+    const formInputs = modal.querySelectorAll(".field-input");
+    formInputs.forEach(input => {
+      input.addEventListener("focusin", () => {
+        const label = input.previousElementSibling as HTMLLabelElement;
+      label.classList.add("label_moved");
+      });
+      input.addEventListener("focusout", () => {
+        if (input.value === "") {
+          const label = input.previousElementSibling as HTMLLabelElement;
+          label.classList.remove("label_moved");
+        }
+      });
+    });
+   
+
+    submitButton.addEventListener("click", async () => {
+      const currentPasswordInput = modal.querySelector("#current-password") as HTMLInputElement;
+      const newPasswordInput = modal.querySelector("#new-password") as HTMLInputElement;
+      const confirmNewPasswordInput = modal.querySelector("#confirm-new-password") as HTMLInputElement;
+      
+      const currentPassword = currentPasswordInput.value;
+      const newPassword = newPasswordInput.value;
+      const confirmNewPassword = confirmNewPasswordInput.value;
+  
+      let errorMessage = null;
+      if (newPassword !== confirmNewPassword) {
+        errorMessage = "The new password and the new password confirmation do not match.";
+        this.displayFieldError(confirmNewPasswordInput, errorMessage);
+        return;
+      }
+  
+      errorMessage = validatePassword(newPassword);
+      if (errorMessage) {
+        this.displayFieldError(newPasswordInput, errorMessage);
+        return;
+      }
+  
+      const id = localStorage.getItem("id");
+      if (id) {
+        const result = await changePassword({
+          currentPassword,
+          newPassword
+        });
+  
+        if (result.success) {
+          document.body.removeChild(modal);
+          const profileSection = document.querySelector(".profile-section")
+          if (profileSection) {
+          profileSection.appendChild(this.overlay);
+          this.overlay.classList.add("show");
+          profileSection.appendChild(this.successMessage);
+          setTimeout(() => {
+            profileSection.removeChild(this.overlay);
+          this.overlay.classList.remove("show");
+          profileSection.removeChild(this.successMessage);
+          }, 500);
+          }
+
+
+          /*  */if (this.userProfile){
+
+      
+          const responseFetchGetAccessTokenThroughPassword = fetchGetAccessTokenThroughPassword(
+            this.userProfile.email,
+            newPassword,
+          );
+          responseFetchGetAccessTokenThroughPassword.then(
+            (resultFetchGetAccessTokenThroughPassword) => {
+              let authToken: string;
+              if (
+                (resultFetchGetAccessTokenThroughPassword as AccessTokenResponse).token_type ===
+                "Bearer"
+              ) {
+                authToken = (resultFetchGetAccessTokenThroughPassword as AccessTokenResponse)
+                  .access_token;
+                if (authToken && this.userProfile) {
+                  fetchAuthenticateCustomer(authToken, this.userProfile.email, newPassword).then(
+                    (resfetchAuthenticateCustomer) => {
+                      const { id } = (resfetchAuthenticateCustomer as Customer).customer;
+                      localStorage.setItem("id", id);
+                      localStorage.setItem("token", JSON.stringify({ token: authToken }));
+                      window.location.hash = "#home";
+                    },
+                  );
+                }
+              }
+            },
+          );
+        }
+
+        } else {
+          this.displayFieldError(currentPasswordInput, result.message);
+        }
+      }
+    });
   }
 
   renderAddressesTab(userProfile: UserProfile) {
@@ -437,17 +593,17 @@ export class ProfileTabs {
       <div class="modal-content">
         <span class="close-button">&times;</span>
         <h2>Add New ${addressType.charAt(0).toUpperCase() + addressType.slice(1)} Address</h2>
-        <div class="form-group">
+        <div class="input-container">
           <label for="street">Street:</label>
           <input type="text" id="street" name="street" class="field-input" data-field-name="streetName">
           <span class="error-message" style="color: red; display: none;"></span>
         </div>
-        <div class="form-group">
+        <div class="input-container">
           <label for="city">City:</label>
           <input type="text" id="city" name="city" class="field-input" data-field-name="city">
           <span class="error-message" style="color: red; display: none;"></span>
         </div>
-        <div class="form-group">
+        <div class="input-container">
           <label for="postalCode">Postal Code:</label>
           <input type="text" id="postalCode" name="postalCode" class="field-input" data-field-name="postalCode">
           <span class="error-message" style="color: red; display: none;"></span>
@@ -468,6 +624,20 @@ export class ProfileTabs {
     const closeButton = modal.querySelector(".close-button") as HTMLSpanElement;
     const submitButton = modal.querySelector(".submit-button") as HTMLButtonElement;
 
+    const formInputs = modal.querySelectorAll(".field-input");
+    formInputs.forEach(input => {
+      input.addEventListener("focusin", () => {
+        const label = input.previousElementSibling as HTMLLabelElement;
+      label.classList.add("label_moved");
+      });
+      input.addEventListener("focusout", () => {
+        if (input.value === "") {
+          const label = input.previousElementSibling as HTMLLabelElement;
+          label.classList.remove("label_moved");
+        }
+      });
+    });
+
     closeButton.addEventListener("click", () => document.body.removeChild(modal));
     submitButton.addEventListener("click", async () => {
       const fieldInputs = modal.querySelectorAll(".field-input") as NodeListOf<
@@ -480,6 +650,8 @@ export class ProfileTabs {
         const fieldName = input.getAttribute("data-field-name")!;
         const value = input.value;
 
+       
+          
         let errorMessage = null;
         switch (fieldName) {
           case "streetName":

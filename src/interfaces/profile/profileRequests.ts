@@ -29,7 +29,10 @@ interface UpdateAddress {
   addressId: string;
   address?: Address;
 }
-
+interface ChangePassword {
+  currentPassword: string;
+  newPassword: string;
+}
 export async function getUserProfile(): Promise<UserProfile | null> {
   try {
     const userId = localStorage.getItem("id");
@@ -301,5 +304,58 @@ export async function deleteAddress(update: UpdateAddress): Promise<boolean> {
   } catch (error) {
     console.error("Error deleting address:", error);
     return false;
+  }
+}
+
+export async function changePassword(change: ChangePassword): Promise<{ success: boolean, message?: string }> {
+  const userProfile = await getUserProfile();
+  if (!userProfile) {
+    return { success: false, message: "Failed to fetch user profile" };
+  }
+  
+  try {
+    const userId = localStorage.getItem("id");
+    const tokenData = localStorage.getItem("token");
+    const token = tokenData ? JSON.parse(tokenData).token : null;
+
+    if (!userId || !token) {
+      return { success: false, message: "User is not authenticated" };
+    }
+
+    const response = await fetch(
+      `${process.env.HOST}/${process.env.PROJECT_KEY}/customers/password`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: userId,
+          version: userProfile.version,
+          currentPassword: change.currentPassword,
+          newPassword: change.newPassword,
+        }),
+      },
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Failed to change password. Response:", errorText);
+
+      if (response.status === 400) {
+        const errorJson = JSON.parse(errorText);
+        if (errorJson.errors && errorJson.errors[0].code === "InvalidCurrentPassword") {
+          return { success: false, message: "The current password is incorrect." };
+        }
+      }
+
+      return { success: false, message: "Failed to change password" };
+    }
+    
+    return { success: true };
+  } catch (error) {
+    console.error("Error changing password:", error);
+    return { success: false, message: "Error changing password" };
   }
 }
