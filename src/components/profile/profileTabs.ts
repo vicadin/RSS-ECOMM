@@ -65,8 +65,10 @@ export class ProfileTabs {
   }
 
   createTabs(userProfile: UserProfile) {
-    const infoTab = this.createTab("Info", () => this.renderInfoTab(userProfile));
-    const addressesTab = this.createTab("Addresses", () => this.renderAddressesTab(userProfile));
+    const infoTab = ProfileTabs.createTab("Info", () => this.renderInfoTab(userProfile));
+    const addressesTab = ProfileTabs.createTab("Addresses", () =>
+      this.renderAddressesTab(userProfile),
+    );
 
     this.tabContainer.append(infoTab, addressesTab);
     this.tabContentContainer.innerHTML = "";
@@ -78,7 +80,7 @@ export class ProfileTabs {
     changePasswordBtn.addEventListener("click", () => this.showChangePasswordModal());
   }
 
-  createTab(tabName: string, onClick: () => void): HTMLElement {
+  static createTab(tabName: string, onClick: () => void): HTMLElement {
     const tab = document.createElement("button");
     tab.classList.add("tab");
     tab.innerText = tabName;
@@ -89,17 +91,17 @@ export class ProfileTabs {
   renderInfoTab(userProfile: UserProfile) {
     this.tabContentContainer.innerHTML = `
       <div>
-        ${this.createEditableField("First name", userProfile.firstName, "setFirstName", "firstName")}
-        ${this.createEditableField("Last name", userProfile.lastName, "setLastName", "lastName")}
-        ${this.createEditableField("Email", userProfile.email, "changeEmail", "email")}
-        ${this.createEditableField("Date of Birth", userProfile.dateOfBirth, "setDateOfBirth", "dateOfBirth", "date")}
+        ${ProfileTabs.createEditableField("First name", userProfile.firstName, "setFirstName", "firstName")}
+        ${ProfileTabs.createEditableField("Last name", userProfile.lastName, "setLastName", "lastName")}
+        ${ProfileTabs.createEditableField("Email", userProfile.email, "changeEmail", "email")}
+        ${ProfileTabs.createEditableField("Date of Birth", userProfile.dateOfBirth, "setDateOfBirth", "dateOfBirth", "date")}
         <button class="submit-button" id="change-password-btn">Change password</button>
       </div>
     `;
     this.setupFieldEventHandlers();
   }
 
-  createEditableField(
+  static createEditableField(
     label: string,
     value: string,
     action: string,
@@ -179,13 +181,13 @@ export class ProfileTabs {
       let errorMessage = null;
       if (newPassword !== confirmNewPassword) {
         errorMessage = "The new password and the new password confirmation do not match.";
-        this.displayFieldError(confirmNewPasswordInput, errorMessage);
+        ProfileTabs.displayFieldError(confirmNewPasswordInput, errorMessage);
         return;
       }
 
       errorMessage = validatePassword(newPassword);
       if (errorMessage) {
-        this.displayFieldError(newPasswordInput, errorMessage);
+        ProfileTabs.displayFieldError(newPasswordInput, errorMessage);
         return;
       }
 
@@ -210,7 +212,7 @@ export class ProfileTabs {
             }, 500);
           }
 
-          /*  */ if (this.userProfile) {
+          if (this.userProfile) {
             const responseFetchGetAccessTokenThroughPassword = fetchGetAccessTokenThroughPassword(
               this.userProfile.email,
               newPassword,
@@ -239,7 +241,7 @@ export class ProfileTabs {
             );
           }
         } else {
-          this.displayFieldError(currentPasswordInput, result.message);
+          ProfileTabs.displayFieldError(currentPasswordInput, result.message);
         }
       }
     });
@@ -263,12 +265,12 @@ export class ProfileTabs {
       <div class="addresses-section">
         <div class="address-column">
           <h3>Billing Addresses</h3>
-          ${billingAddresses.map((address) => this.renderAddress(address, defaultBillingAddressId, "billing")).join("")}
+          ${billingAddresses.map((address) => ProfileTabs.renderAddress(address, defaultBillingAddressId, "billing")).join("")}
           <button class="add-new-address-btn" data-address-type="billing"><img src="../assets/icons/add.png">Add New Billing Address</button>
         </div>
         <div class="address-column">
           <h3>Shipping Addresses</h3>
-          ${shippingAddresses.map((address) => this.renderAddress(address, defaultShippingAddressId, "shipping")).join("")}
+          ${shippingAddresses.map((address) => ProfileTabs.renderAddress(address, defaultShippingAddressId, "shipping")).join("")}
           <button class="add-new-address-btn" data-address-type="shipping"><img src="../assets/icons/add.png">Add New Shipping Address</button>
         </div>
       </div>
@@ -277,7 +279,7 @@ export class ProfileTabs {
     this.setupAddressEventHandlers();
   }
 
-  renderAddress(
+  static renderAddress(
     address: any,
     defaultAddressId: string,
     addressType: "billing" | "shipping",
@@ -306,7 +308,7 @@ export class ProfileTabs {
           <label>Country: </label>
           <span class="field-value">${address.country}</span>
           <select class="field-input" style="display:none" data-field-name="country">
-            ${this.renderCountryOptions(address.country)}
+            ${ProfileTabs.renderCountryOptions(address.country)}
           </select>
         </div>
         ${address.id === defaultAddressId ? `<p class="badge">Default</p>` : ""}
@@ -320,7 +322,7 @@ export class ProfileTabs {
     `;
   }
 
-  renderCountryOptions(selectedCountry: string): string {
+  static renderCountryOptions(selectedCountry: string): string {
     return Object.entries(countries)
       .map(
         ([code, name]) =>
@@ -329,33 +331,38 @@ export class ProfileTabs {
       .join("");
   }
 
-  enableEditMode(
+  static enableEditMode(
     editButton: HTMLButtonElement,
     saveButton: HTMLButtonElement,
     fieldSpans: NodeListOf<HTMLElement>,
     fieldInputs: NodeListOf<HTMLInputElement | HTMLSelectElement>,
   ) {
-    editButton.style.display = "none";
-    saveButton.style.display = "inline";
+    const editBtn = editButton;
+    const saveBtn = saveButton;
+
+    editBtn.style.display = "none";
+    saveBtn.style.display = "inline";
     fieldSpans.forEach((span) => (span.style.display = "none"));
     fieldInputs.forEach((input) => (input.style.display = "inline"));
   }
 
-  disableEditMode(
+  static disableEditMode(
     editButton: HTMLButtonElement,
     saveButton: HTMLButtonElement,
     fieldSpans: NodeListOf<HTMLElement>,
     fieldInputs: NodeListOf<HTMLInputElement | HTMLSelectElement>,
   ) {
-    editButton.style.display = "inline";
-    saveButton.style.display = "none";
+    const editBtn = editButton;
+    const saveBtn = saveButton;
+
+    editBtn.style.display = "inline";
+    saveBtn.style.display = "none";
     fieldSpans.forEach((span) => (span.style.display = "inline"));
     fieldInputs.forEach((input) => (input.style.display = "none"));
   }
 
-  async saveField(fieldInput: HTMLInputElement) {
+  static async saveField(fieldInput: HTMLInputElement) {
     const action = fieldInput.dataset.action!;
-    console.log(action);
     const fieldName = fieldInput.dataset.fieldName!;
     const newValue = fieldInput.value;
 
@@ -376,10 +383,10 @@ export class ProfileTabs {
     }
 
     if (errorMessage) {
-      this.displayFieldError(fieldInput, errorMessage);
+      ProfileTabs.displayFieldError(fieldInput, errorMessage);
       return;
     } else {
-      this.clearFieldError(fieldInput);
+      ProfileTabs.clearFieldError(fieldInput);
     }
 
     const success = await saveUserProfile({ action, value: newValue });
@@ -393,17 +400,19 @@ export class ProfileTabs {
       fieldInput.value = fieldInput.dataset.originalValue!;
     }
   }
-  displayFieldError(fieldInput: HTMLInputElement | HTMLSelectElement, errorMessage: string) {
+
+  static displayFieldError(fieldInput: HTMLInputElement | HTMLSelectElement, errorMessage: string) {
     const errorElement = fieldInput.nextElementSibling as HTMLElement;
     errorElement.innerText = errorMessage;
     errorElement.style.display = "block";
   }
 
-  clearFieldError(fieldInput: HTMLInputElement | HTMLSelectElement) {
+  static clearFieldError(fieldInput: HTMLInputElement | HTMLSelectElement) {
     const errorElement = fieldInput.nextElementSibling as HTMLElement;
     errorElement.innerText = "";
     errorElement.style.display = "none";
   }
+
   async saveAddress(addressElement: Element) {
     const addressId = addressElement.getAttribute("data-address-id")!;
     const fieldInputs = addressElement.querySelectorAll(".field-input") as NodeListOf<
@@ -426,6 +435,8 @@ export class ProfileTabs {
         case "postalCode":
           errorMessage = validatePostalCode(input.value);
           break;
+        default:
+          errorMessage = "";
       }
       const errorElement = input.nextElementSibling as HTMLElement;
 
@@ -526,13 +537,13 @@ export class ProfileTabs {
       const fieldInputs = field.querySelectorAll(".field-input") as NodeListOf<HTMLInputElement>;
 
       editButton.addEventListener("click", () =>
-        this.enableEditMode(editButton, saveButton, fieldSpans, fieldInputs),
+        ProfileTabs.enableEditMode(editButton, saveButton, fieldSpans, fieldInputs),
       );
       saveButton.addEventListener("click", () => {
         fieldInputs.forEach((input) => {
-          this.saveField(input as HTMLInputElement);
+          ProfileTabs.saveField(input as HTMLInputElement);
         });
-        this.disableEditMode(editButton, saveButton, fieldSpans, fieldInputs);
+        ProfileTabs.disableEditMode(editButton, saveButton, fieldSpans, fieldInputs);
       });
     });
   }
@@ -554,11 +565,11 @@ export class ProfileTabs {
       >;
 
       editButton.addEventListener("click", () =>
-        this.enableEditMode(editButton, saveButton, fieldSpans, fieldInputs),
+        ProfileTabs.enableEditMode(editButton, saveButton, fieldSpans, fieldInputs),
       );
       saveButton.addEventListener("click", () => {
         this.saveAddress(addressItem);
-        this.disableEditMode(editButton, saveButton, fieldSpans, fieldInputs);
+        ProfileTabs.disableEditMode(editButton, saveButton, fieldSpans, fieldInputs);
       });
       deleteButton.addEventListener("click", () =>
         this.deleteAddress(addressItem.getAttribute("data-address-id")!),
@@ -608,7 +619,7 @@ export class ProfileTabs {
         <div class="form-group">
           <label for="country">Country:</label>
           <select id="country" name="country" class="field-input" data-field-name="country">
-            ${this.renderCountryOptions("")}
+            ${ProfileTabs.renderCountryOptions("")}
           </select>
           <span class="error-message" style="color: red; display: none;"></span>
         </div>
@@ -658,6 +669,8 @@ export class ProfileTabs {
           case "postalCode":
             errorMessage = validatePostalCode(value);
             break;
+          default:
+            errorMessage = "";
         }
 
         const errorElement = input.nextElementSibling as HTMLElement;
@@ -682,7 +695,6 @@ export class ProfileTabs {
 
       if (success) {
         document.body.removeChild(modal);
-        //this.render();
       } else {
         alert("Failed to add new address.");
       }
