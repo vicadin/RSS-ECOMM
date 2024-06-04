@@ -19,7 +19,7 @@ import {
 import CreateNavigation from "../utils/navigation.ts";
 import Burger from "./catalog/burger.ts";
 import { sortObject } from "../interfaces/catalog-types.ts";
-import { addProfileIco } from "../utils/catalog-utils";
+import { addProfileIco } from "../utils/catalog-utils.ts";
 
 export class Header {
   headerNavList: HTMLElement | HTMLUListElement;
@@ -99,6 +99,7 @@ export class Header {
       }
     });
   }
+
   updateNav(item: string) {
     (this[item] as HTMLUListElement).innerHTML = "";
     fillNavList(this[item] as HTMLUListElement, getListItems());

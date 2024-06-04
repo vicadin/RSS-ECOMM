@@ -5,6 +5,7 @@ import {
   addAddress,
   updateAddress,
   changePassword,
+  Address,
 } from "../../interfaces/profile/profileRequests.ts";
 
 import countries from "../../interfaces/registration/countriesList.ts";
@@ -280,10 +281,21 @@ export class ProfileTabs {
   }
 
   static renderAddress(
-    address: any,
+    address: Address,
     defaultAddressId: string,
     addressType: "billing" | "shipping",
   ): string {
+    let defaultButton = "";
+
+    if (address.id !== defaultAddressId) {
+      if (addressType === "billing") {
+        defaultButton =
+          '<button class="set-default-address-btn" data-address-type="billing">Set as Default Billing</button>';
+      } else {
+        defaultButton =
+          '<button class="set-default-address-btn" data-address-type="shipping">Set as Default Shipping</button>';
+      }
+    }
     return `
       <div class="address-item ${address.id === defaultAddressId ? "default-address" : ""}" data-address-id="${address.id}">
         <div>
@@ -316,7 +328,8 @@ export class ProfileTabs {
           <button class="edit-address-btn"><img src="../assets/icons/edit.png"></button>
           <button class="save-address-btn" style="display:none"><img src="../assets/icons/check.png"></button>
           <button class="delete-address-btn"><img src="../assets/icons/delete.png"></button>
-          ${address.id !== defaultAddressId ? (addressType === "billing" ? '<button class="set-default-address-btn" data-address-type="billing">Set as Default Billing</button>' : '<button class="set-default-address-btn" data-address-type="shipping">Set as Default Shipping</button>') : ""}
+          ${defaultButton}
+
         </div>
         </div>
     `;
@@ -342,8 +355,14 @@ export class ProfileTabs {
 
     editBtn.style.display = "none";
     saveBtn.style.display = "inline";
-    fieldSpans.forEach((span) => (span.style.display = "none"));
-    fieldInputs.forEach((input) => (input.style.display = "inline"));
+    fieldSpans.forEach((span) => {
+      const tempSpan = span;
+      tempSpan.style.display = "none";
+    });
+    fieldInputs.forEach((input) => {
+      const tempInput = input;
+      tempInput.style.display = "inline";
+    });
   }
 
   static disableEditMode(
@@ -357,8 +376,14 @@ export class ProfileTabs {
 
     editBtn.style.display = "inline";
     saveBtn.style.display = "none";
-    fieldSpans.forEach((span) => (span.style.display = "inline"));
-    fieldInputs.forEach((input) => (input.style.display = "none"));
+    fieldSpans.forEach((span) => {
+      const tempSpan = span;
+      tempSpan.style.display = "inline";
+    });
+    fieldInputs.forEach((input) => {
+      const tempInput = input;
+      tempInput.style.display = "none";
+    });
   }
 
   static async saveField(fieldInput: HTMLInputElement) {
@@ -385,9 +410,8 @@ export class ProfileTabs {
     if (errorMessage) {
       ProfileTabs.displayFieldError(fieldInput, errorMessage);
       return;
-    } else {
-      ProfileTabs.clearFieldError(fieldInput);
     }
+    ProfileTabs.clearFieldError(fieldInput);
 
     const success = await saveUserProfile({ action, value: newValue });
 
@@ -701,7 +725,7 @@ export class ProfileTabs {
     });
   }
 
-  async addNewAddress(address: any, addressType: "billing" | "shipping"): Promise<boolean> {
+  async addNewAddress(address: Address, addressType: "billing" | "shipping"): Promise<boolean> {
     const success = await addAddress({ action: "addAddress", address });
 
     if (success) {
@@ -721,10 +745,10 @@ export class ProfileTabs {
           ].push(newAddressId);
           this.renderAddressesTab(this.userProfile);
           return true;
-        } else {
-          alert("Failed to link new address");
-          return false;
         }
+
+        alert("Failed to link new address");
+        return false;
       }
     } else {
       alert("Failed to add new address");
