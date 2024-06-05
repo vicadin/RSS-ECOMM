@@ -27,7 +27,8 @@
   transition: all 0.5s ease;
   background-position: center;
   background-repeat: no-repeat;
-  background-size: contain;}
+  background-size: contain;
+}
 
 @media (hover: hover) {
   .product-card:hover {
