@@ -1,0 +1,21 @@
+.breadcrumbs {
+  margin-bottom: 20px;
+}
+
+.breadcrumbs_list {
+  display: flex;
+  color: #868695;
+  font-size: 14px;
+  line-height: 16px;
+}
+
+.breadcrumbs_item {
+  display: flex;
+  flex-shrink: 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  max-width: 100%;
+  align-items: baseline;
+  margin-right: 8px;
+  padding: 4px 0;
+}

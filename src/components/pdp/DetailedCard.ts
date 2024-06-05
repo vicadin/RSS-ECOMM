@@ -1,6 +1,6 @@
 import "./detailed.css";
-import { createElement } from "../../interfaces/login-page-utils";
-import { setBeforeDiscountPrice, setFinalPrice } from "../../interfaces/utils/catalog-utils";
+import { createElement } from "../../utils/login-page-utils";
+import { setBeforeDiscountPrice, setFinalPrice } from "../../../src/utils/catalog-utils";
 import { Product } from "../../interfaces/product";
 
 export default class DetailedCard {
@@ -13,7 +13,7 @@ export default class DetailedCard {
   detailedCardPrices: HTMLElement | undefined;
   finalPrice: HTMLElement | undefined;
   beforeDiscountPrice: HTMLElement | undefined;
-  image: HTMLImageElement | undefined;
+  image: HTMLImageElement;
   modal: HTMLElement | undefined;
   modalContent: HTMLElement | undefined;
   closeBtn: HTMLElement | undefined;
@@ -23,6 +23,7 @@ export default class DetailedCard {
   constructor(props: Product, locale: string) {
     this.detailedCardItem = createElement("div", "detailed-card");
     this.slides = props.masterData?.current.masterVariant.images.map((image) => image.url)  || [];
+    this.image = new Image();
     this.currentSlideIndex = 0;
     this.setupModal();
     this.id = props.id;
@@ -36,14 +37,15 @@ export default class DetailedCard {
     this.detailedCardDescription = createElement("p", "detailed-card_description");
     this.detailedCardDescription.textContent = props.masterData.current.description["en-US"];
     this.detailedCardPrices = createElement("div", "detailed-card_prices");
-    this.finalPrice = createElement("span", "final-price");
     this.beforeDiscountPrice = createElement("span", "before-discount-price");
+    this.beforeDiscountPrice.textContent = setBeforeDiscountPrice(props, locale);
+    this.finalPrice = createElement("span", "final-price");
+    this.finalPrice.textContent = setFinalPrice(props, locale);
     this.detailedImage = createElement("div", "detailed-card_image");
-    this.image = new Image();
     this.image.src = props.masterData.current.masterVariant.images[0].url;
     this.image.onclick = this.openModal;
 
-    // this.setFieldsValues(props, locale);
+    this.setFieldsValues(props, locale);
 
     this.detailedCardPrices.append(this.finalPrice, this.beforeDiscountPrice);
     this.detailedCardContent.append(
@@ -55,19 +57,17 @@ export default class DetailedCard {
     this.detailedImage.append(this.image);
   }
 
-  // setFieldsValues(props: Product, locale: string) {
-  //   try {
-  //     const data = props.masterData.current;
-  //     this.detailedCardHeading.textContent = data.name[locale];
-  //     [this.detailedCardDescription.textContent] = data.description[locale].split(".");
-  //     this.finalPrice.textContent = setFinalPrice(props, locale);
-  //     this.beforeDiscountPrice.textContent = setBeforeDiscountPrice(props, locale);
-  //     this.detailedImage.style.backgroundImage = `url("${this.slides[this.currentSlideIndex]}")`;
-  //     this.detailedImage.onclick = () => this.openModal();
-  //   } catch (err) {
-  //     window.location.hash = "";
-  //   }
-  // }
+  setFieldsValues(props: Product, locale: string)  {
+    try {
+      if (!this.detailedCardHeading) return;
+      this.detailedCardHeading.textContent = props.masterData.current.name["en-US"];
+      if (!this.detailedCardDescription) return;
+      this.detailedCardDescription.textContent = props.masterData.current.description["en-US"];
+      this.image.style.backgroundImage = `url("${this.slides[this.currentSlideIndex]}")`;
+    } catch (err) {
+      window.location.hash = "";
+    }
+  }
 
   setupModal = () => {
     this.modal = createElement("div", "modal");

@@ -1,11 +1,12 @@
 import { displayError } from "./registartionFormUtils.ts";
+import { AccessToken } from "../catalog-types.ts";
 
-export async function getAccessToken() {
+export async function getAccessToken(): Promise<AccessToken | Error | Response> {
   const config = {
     method: "POST",
     headers: {
       Authorization:
-        "Basic ZkVIRlZjM1hGM29tNXAwNHNjSncyR3pGOkNqNndxLUJKQ3JRMHh4UVQ1ZWZJRzY4Q2xKQ2JZMExU",
+        "Basic TEhfelo0VlRtN2ZtQ3BHYzJETWlPejJWOjBnRnkyVl9EbWNyTGw4NUJhUXVWU0dPYV9iYUlaT2dm",
     },
   };
   try {
@@ -111,7 +112,7 @@ export async function registerUser(
     }
 
     const errorData = await response.json();
-    console.error("Registration error:", errorData);
+    // console.error("Registration error:", errorData);
     if (errorData.statusCode === 400 && errorData.errors[0].code === "DuplicateField") {
       displayError("User with this email already exists");
     } else if (errorData.statusCode === 500) {
@@ -120,7 +121,7 @@ export async function registerUser(
 
     return false;
   } catch (error) {
-    console.error("Error registering user:", error);
+    // console.error("Error registering user:", error);
     return false;
   }
 }
