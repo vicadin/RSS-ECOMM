@@ -19,6 +19,7 @@ import {
 import CreateNavigation from "../utils/navigation.ts";
 import Burger from "./catalog/burger.ts";
 import { sortObject } from "../interfaces/catalog-types.ts";
+import { addProfileIco } from "../utils/catalog-utils";
 
 export class Header {
   headerNavList: HTMLElement | HTMLUListElement;
@@ -60,6 +61,7 @@ export class Header {
     this.headerNavContainer = createElement("div", "header_nav-container");
     const leftNav = CreateNavigation(this, headerPropsForLeftNav);
     const rightNav = CreateNavigation(this, headerPropsForRightNav);
+    addProfileIco(rightNav);
     this.burger = new Burger();
     leftNav.append(this.burger.getHtml());
     insertFindIco(leftNav, svgIco);
@@ -75,7 +77,7 @@ export class Header {
         if (localStorage.getItem("token")) {
           localStorage.removeItem("token");
         }
-        this.updateNav("navList");
+        window.location.reload();
       }
 
       this.findContainer.addEventListener("mousedown", (event) => {
@@ -102,7 +104,6 @@ export class Header {
       this.setSearchParams();
     });
   }
-
   updateNav(item: string) {
     (this[item] as HTMLUListElement).innerHTML = "";
     fillNavList(this[item] as HTMLUListElement, getListItems());
@@ -118,7 +119,7 @@ export class Header {
     if (this.searchProductInput.value.trim()) {
       searchObject.search = this.searchProductInput.value.trim();
       searchParam = new URLSearchParams(`text.en-US=${searchObject.search}`);
-      finalParamString.push("fuzzy=true");
+      finalParamString.push("fuzzy=true&fuzzyLevel=2");
       if (finalParamString.length !== 0) {
         finalParamString.push(`&${searchParam}`);
       } else {

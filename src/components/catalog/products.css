@@ -38,6 +38,7 @@
   .product-card:hover .product-card_content {
     background-color: rgba(51, 51, 51, 0.05);
   }
+
   .product-card:hover .product-card_image {
     background-color: rgba(51, 51, 51, 0.05);
   }
