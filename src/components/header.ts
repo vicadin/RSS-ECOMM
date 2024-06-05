@@ -94,12 +94,20 @@ export class Header {
       lockBody();
     });
 
+
     this.searchProductInput.addEventListener("keydown", (ev) => {
       if (ev.code === "Enter") {
         unlockBodyAndCloseElem(this.findContainer);
         this.setSearchParams();
       }
     });
+
+    this.searchButton.addEventListener("click", () => {
+      unlockBodyAndCloseElem(this.findContainer);
+      this.setSearchParams();
+    });
+
+
   }
     updateNav(item:string)
     {
