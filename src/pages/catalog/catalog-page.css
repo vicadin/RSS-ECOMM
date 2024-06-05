@@ -20,6 +20,8 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
+  margin-bottom: 20px;
+  justify-content: space-between;
 }
 
 .catalog-main {
@@ -112,4 +114,44 @@
   .dropdown__list-item:hover {
     background-color: rgba(51, 51, 51, 0.05);
   }
+}
+
+.filter-button {
+  position: relative;
+  max-width: 100%;
+  background-color: #ede1d5;
+  border: 1px solid rgba(51, 51, 51, 0.2);
+  outline: none;
+  color: #848494;
+  letter-spacing: 0.05em;
+  font-size: 14px;
+  line-height: 17px;
+  box-sizing: border-box;
+  padding: 6px 34px 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+@media (hover: hover) {
+  .filter-button:hover {
+    background-color: rgba(51, 51, 51, 0.05);
+  }
+}
+
+.filter-button__ico {
+  vertical-align: text-bottom;
+  padding-bottom: 2px;
+}
+
+.filter-container {
+  padding: 10px;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  transition: all 0.5s ease;
+  background-color: #ede1d5;
+}
+
+.filter-container_closed {
+  right: -100vw;
 }

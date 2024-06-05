@@ -14,6 +14,7 @@ import {
   categories,
   clearCurrentFilter,
   clearCurrentSort,
+  getAttributes,
   removeCategoryData,
   setCategoriesArray,
   setCurrentFilter,
@@ -78,6 +79,7 @@ export function handleHash() {
         const promise = fetchGetProducts();
         promise.then((promiseResult) => {
           setProductsArray(promiseResult);
+          getAttributes(promiseResult);
           newContent.append(new CatalogPage().getHtml());
         });
       }

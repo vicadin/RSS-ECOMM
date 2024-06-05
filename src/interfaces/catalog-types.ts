@@ -216,3 +216,24 @@ export type FilterType = {
 export const currentFilter: FilterType = {
   filter: undefined,
 };
+
+export const priceInputAttributes: [string, string][] = [
+  ["type", "range"],
+  ["autocomplete", "off"],
+  ["min", "20"],
+];
+
+export const svgFilter = `<svg class="filter-button__ico" width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M5.56254 9.71128H3.93758V11.9613H0.666748L0.666748 13.5862H3.93758L3.93758 15.8362H5.56254L5.56254 9.71128ZM15.3334 11.9613L7.06258 11.9613V13.5862L15.3334 13.5862V11.9613ZM15.3334 5.41962H12.0625V3.16962L10.4376 3.16962V9.29457H12.0625V7.04457H15.3334V5.41962ZM8.93754 5.41962H0.666748L0.666748 7.04457H8.93754V5.41962Z" fill="currentColor"/>
+    </svg>`;
+
+export type StringArray = string[];
+export type Attributes = [string, StringArray];
+
+export type FiltersArray = {
+  filter: string[] | [];
+};
+
+export const currentFilterArray: FiltersArray = {
+  filter: [],
+};

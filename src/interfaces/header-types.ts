@@ -57,3 +57,5 @@ export type SearchObject = {
 export const currentSearch: Search = {
   currentText: undefined,
 };
+
+export const closeButtonAttr: [string, string][] = [["type", "button"]];

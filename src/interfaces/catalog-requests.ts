@@ -26,7 +26,7 @@ export async function fetchGetProducts(id?: string): Promise<ProductsResult | Pr
   try {
     const fetchInput = id
       ? `${process.env.HOST}/${process.env.PROJECT_KEY}/products/${id}`
-      : `${process.env.HOST}/${process.env.PROJECT_KEY}/products/`;
+      : `${process.env.HOST}/${process.env.PROJECT_KEY}/product-projections/search?limit=50`;
     const response = await fetch(fetchInput, config);
     if (response.ok) {
       const answer: Promise<ProductsResult | Product> = await response.json();

@@ -1,9 +1,10 @@
 import "./catalog-page.css";
+import "../../styles/style.css";
 import { createButton, createElement, createInput } from "../../utils/login-page-utils.ts";
-import { products } from "../../utils/catalog-utils.ts";
+import { filtersHandler, products, showFilters } from "../../utils/catalog-utils.ts";
 import Products from "../../components/catalog/products.ts";
 import Breadcrumbs from "../../components/catalog/breadcrumbs.ts";
-import { currentSearch } from "../../interfaces/header-types.ts";
+import { closeButtonAttr, currentSearch } from "../../interfaces/header-types.ts";
 import {
   currentFilter,
   datasets,
@@ -12,8 +13,9 @@ import {
   dropdownItemListAttributes,
   dropdownItems,
   sortObject,
+  svgFilter,
 } from "../../interfaces/catalog-types.ts";
-import { setLocationForSearching } from "../../utils/header-utils.ts";
+import { lockBody, setLocationForSearching } from "../../utils/header-utils.ts";
 
 export default class CatalogPage {
   aside: HTMLElement;
@@ -36,6 +38,10 @@ export default class CatalogPage {
 
   dropdownInput: HTMLInputElement;
 
+  filterButton: HTMLElement;
+
+  filterContainer: HTMLElement | HTMLUListElement;
+
   constructor() {
     this.pageContainer = createElement("div", "catalog-container");
     this.catalogBreadcrumbs = createElement("div", "catalog_breadcrumbs");
@@ -44,25 +50,10 @@ export default class CatalogPage {
     this.catalogFilterBlock.classList.remove("hidden");
     this.setTitle();
     this.setBreadcrumbs();
-
-    this.sortWrapper = createElement("div", "sort-wrapper");
-    this.sortButton = createButton("dropdown__button", dropdownButtonAttributes, dropdownItems[0]);
-    this.dropdownList = createElement("div", "dropdown__list hidden");
-    this.dropdownInput = createInput("dropdown__input_hidden", dropdownInputAttributes);
-    this.sortWrapper.append(this.sortButton, this.dropdownList, this.dropdownInput);
-
-    dropdownItems.forEach((item, index) => {
-      const button = createButton("dropdown__list-item", dropdownItemListAttributes, item);
-      button.dataset.value = datasets[index];
-      button.addEventListener("click", () => {
-        this.sortButton.textContent = button.textContent;
-        this.dropdownList.classList.add("hidden");
-        CatalogPage.setSearchParams(button);
-      });
-      this.dropdownList.append(button);
-    });
-
-    this.catalogFilterBlock.append(this.sortWrapper);
+    this.createSorting();
+    this.createFilterButton();
+    this.createFilterBlock();
+    this.catalogFilterBlock.append(this.sortWrapper, this.filterButton);
 
     this.catalogMain = createElement("section", "catalog-main");
     this.catalogMain.append(new Products(products.array).getHtml());
@@ -142,6 +133,53 @@ export default class CatalogPage {
     this.sortButton.addEventListener("click", () => {
       this.dropdownList.classList.toggle("hidden");
     });
+
+    this.filterButton.addEventListener("click", () => {
+      showFilters();
+      lockBody();
+    });
+  }
+
+  createSorting() {
+    this.sortWrapper = createElement("div", "sort-wrapper");
+    this.sortButton = createButton("dropdown__button", dropdownButtonAttributes, dropdownItems[0]);
+    this.dropdownList = createElement("div", "dropdown__list hidden");
+    this.dropdownInput = createInput("dropdown__input_hidden", dropdownInputAttributes);
+    this.sortWrapper.append(this.sortButton, this.dropdownList, this.dropdownInput);
+    dropdownItems.forEach((item, index) => {
+      const button = createButton("dropdown__list-item", dropdownItemListAttributes, item);
+      button.dataset.value = datasets[index];
+      button.addEventListener("click", () => {
+        this.sortButton.textContent = button.textContent;
+        this.dropdownList.classList.add("hidden");
+        CatalogPage.setSearchParams(button);
+      });
+      this.dropdownList.append(button);
+    });
+  }
+
+  createFilterButton() {
+    this.filterButton = document.createElement("button");
+    this.filterButton.className = "filter-button";
+    const span = document.createElement("span");
+    span.className = "button-text-container";
+    const svgToSpan = svgFilter;
+    const textToSpan = document.createElement("span");
+    textToSpan.className = "filter-button__text";
+    textToSpan.textContent = "Filters";
+    span.insertAdjacentHTML("afterbegin", svgToSpan);
+    span.append(textToSpan);
+    this.filterButton.append(span);
+  }
+
+  createFilterBlock() {
+    this.filterContainer = createElement("div", "filter-container filter-container_closed");
+    const closeButton = createButton("close-button", closeButtonAttr, "Apply filters");
+    this.filterContainer.textContent = "A wide range of skin types";
+    this.filterContainer.append(closeButton);
+    this.catalogFilterBlock.append(this.filterContainer);
+
+    this.filterContainer.addEventListener("click", filtersHandler);
   }
 
   getHtml() {

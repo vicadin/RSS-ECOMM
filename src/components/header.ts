@@ -128,7 +128,6 @@ export class Header {
       if (sortObject.sorting) {
         sortObject.sorting = undefined;
       }
-
       setLocationForSearching(finalParamString.join(",").replace(",", ""));
     } else {
       searchObject.search = undefined;
