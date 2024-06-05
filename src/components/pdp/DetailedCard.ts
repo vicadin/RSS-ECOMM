@@ -17,6 +17,8 @@ export default class DetailedCard {
   modal: HTMLElement | undefined;
   modalContent: HTMLElement | undefined;
   closeBtn: HTMLElement | undefined;
+  prevArrow: HTMLElement | undefined;
+  nextArrow: HTMLElement | undefined;
   currentSlideIndex: number;
   slides: string[];
 
@@ -76,7 +78,15 @@ export default class DetailedCard {
     this.closeBtn.innerHTML = "&times;";
     this.closeBtn.onclick = this.closeModal;
 
-    this.modalContent.append(this.closeBtn, this.createSlidesContainer());
+    this.prevArrow = createElement("span", "prev-arrow");
+    this.prevArrow.innerHTML = "&#10094;";
+    this.prevArrow.onclick = this.prevSlide;
+
+    this.nextArrow = createElement("span", "next-arrow");
+    this.nextArrow.innerHTML = "&#10095;";
+    this.nextArrow.onclick = this.nextSlide;
+
+    this.modalContent.append(this.closeBtn, this.prevArrow, this.nextArrow, this.createSlidesContainer());
     this.modal.append(this.modalContent);
     document.body.append(this.modal);
   }

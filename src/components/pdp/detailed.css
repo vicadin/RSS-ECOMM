@@ -65,6 +65,11 @@
   margin-right: 10px;
   border-radius: 10px;
   background-repeat: no-repeat;
+  cursor: pointer;
+}
+
+.detailed-card_prices {
+  padding-top: 20px;
 }
 
 .modal {
@@ -88,8 +93,9 @@
 .close {
   color: #aaa;
   float: right;
-  font-size: 28px;
+  font-size: 40px;
   font-weight: bold;
+  text-align: end;
 }
 
 .close:hover,
@@ -119,4 +125,33 @@
 
 .slide.active {
   display: flex;
+}
+
+.modal .prev-arrow,
+.modal .next-arrow {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  padding: 16px;
+  margin-top: -22px;
+  color: white;
+  font-weight: bold;
+  font-size: 24px;
+  transition: 0.6s ease;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.modal .prev-arrow {
+  left: 0;
+}
+
+.modal .next-arrow {
+  right: 0;
+}
+
+.modal .prev-arrow:hover,
+.modal .next-arrow:hover {
+  background-color: rgba(0, 0, 0, 0.8);
 }
