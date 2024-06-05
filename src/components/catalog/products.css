@@ -25,9 +25,9 @@
   width: 100%;
   height: 310px;
   transition: all 0.5s ease;
-  background-size: 340px 340px;
-  background-position: -15px -15px;
+  background-position: center;
   background-repeat: no-repeat;
+  background-size: contain;
 }
 
 @media (hover: hover) {
@@ -38,6 +38,10 @@
   .product-card:hover .product-card_content {
     background-color: rgba(51, 51, 51, 0.05);
   }
+
+  . .product-card:hover .product-card_image {
+    background-color: rgba(51, 51, 51, 0.05);
+  }
 }
 
 .product-card_content {
@@ -45,7 +49,7 @@
   flex-direction: column;
   box-sizing: border-box;
   width: 100%;
-  height: 196px;
+  height: 210px;
   padding: 20px;
   align-items: flex-start;
   justify-content: flex-start;
