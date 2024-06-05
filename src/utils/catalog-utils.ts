@@ -187,7 +187,7 @@ export function setCurrentFiltersArray(params: URLSearchParams) {
     }
   });
   currentFilterArray.filter = array;
-  console.log(currentFilterArray, "currentFilterArray");
+  // console.log(currentFilterArray, "currentFilterArray");
 }
 
 export function clearCurrentSort() {

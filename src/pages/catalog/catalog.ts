@@ -18,7 +18,7 @@ import {
 } from "../../interfaces/catalog-types.ts";
 import { lockBody, setLocationForSearching } from "../../utils/header-utils.ts";
 import { filtersCloseButton } from "../../components/catalog/filters-close-button.ts";
-
+import { AttributeBlock } from "../../components/catalog/attribute-block.ts";
 
 export default class CatalogPage {
   aside: HTMLElement;
@@ -188,7 +188,11 @@ export default class CatalogPage {
     this.filterContainerHeader.append(filterContainerHeading, closeButton.getHtml());
 
     this.filterAttributesContainer = createElement("div", "attributes-container");
-    console.log(attributesForFilters.attributes, "this is from creating filterAside");
+    attributesForFilters.attributes.forEach(([key, value]) => {
+      const attributeBlock = new AttributeBlock(key, value);
+      this.filterAttributesContainer.append(attributeBlock.getHtml());
+    });
+    // console.log(attributesForFilters.attributes, "this is from creating filterAside");
     this.filterContainer.append(this.filterContainerHeader, this.filterAttributesContainer);
     this.catalogFilterBlock.append(this.filterContainer);
   }

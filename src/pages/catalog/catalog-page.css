@@ -226,3 +226,8 @@
   height: 85vh;
   width: 100%;
 }
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #666 #ede1d5;
+}

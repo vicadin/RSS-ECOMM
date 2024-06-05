@@ -69,13 +69,11 @@ export function handleHash() {
     profile: () => {
       if (newContent) {
         newContent.innerHTML = "";
-        if(localStorage.getItem("token")){
+        if (localStorage.getItem("token")) {
           newContent.appendChild(profilePage.getHtml());
+        } else {
+          window.location.hash = "login";
         }
-        else {
-          window.location.hash="login";
-        }
-
       }
     },
     "": () => {
