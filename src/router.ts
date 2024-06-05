@@ -1,16 +1,16 @@
-import RegistrationPage from "./pages/registration.ts";
-import LoginPage from "./components/login-page/login-page.ts";
-import NotFoundComponent from "./components/404components.ts";
-import { profilePage } from "./pages/profile.ts";
-import { headerEl } from "./components/header.ts";
-import CatalogPage from "./pages/catalog/catalog.ts";
+import RegistrationPage from "./pages/registration";
+import LoginPage from "./components/login-page/login-page";
+import NotFoundComponent from "./components/404components";
+import { profilePage } from "./pages/profile";
+import { headerEl } from "./components/header";
+import CatalogPage from "./pages/catalog/catalog";
 import {
   fetchGetCategories,
   fetchGetProductByCategoryId,
   fetchGetProducts,
   fetchSearchSortFilter,
-} from "./interfaces/catalog-requests.ts";
-import ProductCard from "./components/catalog/product-card.ts";
+} from "./interfaces/catalog-requests";
+import ProductCard from "./components/catalog/product-card";
 import {
   categories,
   clearCurrentFilter,
@@ -21,8 +21,9 @@ import {
   setCurrentSort,
   setDataForBreadcrumbs,
   setProductsArray,
-} from "./utils/catalog-utils.ts";
-import { clearCurrentSearch, setCurrentSearch } from "./utils/header-utils.ts";
+} from "./utils/catalog-utils";
+import { clearCurrentSearch, setCurrentSearch } from "./utils/header-utils";
+import DetailedCard from "./components/pdp/DetailedCard";
 
 type Routes = {
   [key: string]: () => void;
@@ -136,7 +137,7 @@ export function handleHash() {
         const prodItem = fetchGetProducts(localStorage.getItem("productId"));
         prodItem.then((result) => {
           // append detailed card instead of product card
-          newContent.append(new ProductCard(result, "en-US").getHtml());
+          newContent.append(new DetailedCard(result, "en-US").getHtml());
         });
       }
     },
@@ -187,5 +188,6 @@ export function routerInit() {
   }
 
   window.location.hash = "#home";
+  // window.location.hash = "#home";
   handleHash();
 }
