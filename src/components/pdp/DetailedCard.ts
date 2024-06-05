@@ -1,30 +1,47 @@
 import "./detailed.css";
-import { createElement } from "../../utils/login-page-utils";
-import { setBeforeDiscountPrice, setFinalPrice } from "../../../src/utils/catalog-utils";
-import { Product } from "../../interfaces/product";
+import "../../pages/catalog/catalog-page.css";
+import { createElement } from "../../utils/login-page-utils.ts";
+import { setBeforeDiscountPrice, setFinalPrice } from "../../utils/catalog-utils.ts";
+import { Product } from "../../interfaces/product.ts";
 
 export default class DetailedCard {
   id: string;
+
   detailedCardItem: HTMLElement;
+
   detailedImage: HTMLElement | undefined;
+
   detailedCardContent: HTMLElement | undefined;
+
   detailedCardHeading: HTMLElement | undefined;
+
   detailedCardDescription: HTMLElement | undefined;
+
   detailedCardPrices: HTMLElement | undefined;
+
   finalPrice: HTMLElement | undefined;
+
   beforeDiscountPrice: HTMLElement | undefined;
+
   image: HTMLImageElement;
+
   modal: HTMLElement | undefined;
+
   modalContent: HTMLElement | undefined;
+
   closeBtn: HTMLElement | undefined;
+
   prevArrow: HTMLElement | undefined;
+
   nextArrow: HTMLElement | undefined;
+
   currentSlideIndex: number;
+
   slides: string[];
 
   constructor(props: Product, locale: string) {
     this.detailedCardItem = createElement("div", "detailed-card");
-    this.slides = props.masterData?.current.masterVariant.images.map((image) => image.url)  || [];
+    this.slides = props.masterData?.current.masterVariant.images.map((image) => image.url) || [];
     this.image = new Image();
     this.currentSlideIndex = 0;
     this.setupModal();
@@ -57,9 +74,9 @@ export default class DetailedCard {
     );
     this.detailedCardItem.append(this.detailedImage, this.detailedCardContent);
     this.detailedImage.append(this.image);
-  }
+  };
 
-  setFieldsValues(props: Product, locale: string)  {
+  setFieldsValues(props: Product) {
     try {
       if (!this.detailedCardHeading) return;
       this.detailedCardHeading.textContent = props.masterData.current.name["en-US"];
@@ -72,8 +89,8 @@ export default class DetailedCard {
   }
 
   setupModal = () => {
-    this.modal = createElement("div", "modal");
-    this.modalContent = createElement("div", "modal-content");
+    this.modal = createElement("div", "modal-window");
+    this.modalContent = createElement("div", "modal--window-content");
     this.closeBtn = createElement("span", "close");
     this.closeBtn.innerHTML = "&times;";
     this.closeBtn.onclick = this.closeModal;
@@ -86,13 +103,19 @@ export default class DetailedCard {
     this.nextArrow.innerHTML = "&#10095;";
     this.nextArrow.onclick = this.nextSlide;
 
-    this.modalContent.append(this.closeBtn, this.prevArrow, this.nextArrow, this.createSlidesContainer());
+    this.modalContent.append(
+      this.closeBtn,
+      this.prevArrow,
+      this.nextArrow,
+      this.createSlidesContainer(),
+    );
     this.modal.append(this.modalContent);
     document.body.append(this.modal);
-  }
+  };
 
   createSlidesContainer = () => {
     const container = createElement("div", "slides-container");
+
     [...this.slides, ...this.slides].forEach((slideUrl, index) => {
       const slide = createElement("div", "slide");
       const img = new Image();
@@ -104,7 +127,7 @@ export default class DetailedCard {
       container.append(slide);
     });
     return container;
-  }
+  };
 
   openModal = () => {
     if (!this.modal) return;
@@ -114,31 +137,31 @@ export default class DetailedCard {
       if (e.key === "ArrowLeft") this.prevSlide();
       if (e.key === "Escape") this.closeModal();
     };
-  }
+  };
 
   closeModal = () => {
     if (!this.modal) return;
     this.modal.style.display = "none";
     document.onkeydown = null;
-  }
+  };
 
   nextSlide = () => {
     this.currentSlideIndex = (this.currentSlideIndex + 1) % this.slides.length;
     this.updateSlides();
-  }
+  };
 
   prevSlide = () => {
     this.currentSlideIndex = (this.currentSlideIndex - 1 + this.slides.length) % this.slides.length;
     this.updateSlides();
-  }
+  };
 
-  updateSlides= () => {
+  updateSlides = () => {
     if (!this.modal) return;
     const slides = this.modal.querySelectorAll(".slide");
     slides.forEach((slide, index) => {
       slide.classList.toggle("active", index === this.currentSlideIndex);
     });
-  }
+  };
 
   getHtml() {
     return this.detailedCardItem;

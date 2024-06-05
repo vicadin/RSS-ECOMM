@@ -1,16 +1,16 @@
-import RegistrationPage from "./pages/registration";
-import LoginPage from "./components/login-page/login-page";
-import NotFoundComponent from "./components/404components";
-import { profilePage } from "./pages/profile";
-import { headerEl } from "./components/header";
-import CatalogPage from "./pages/catalog/catalog";
+import RegistrationPage from "./pages/registration.ts";
+import LoginPage from "./components/login-page/login-page.ts";
+import NotFoundComponent from "./components/404components.ts";
+import { profilePage } from "./pages/profile.ts";
+import { headerEl } from "./components/header.ts";
+import CatalogPage from "./pages/catalog/catalog.ts";
 import {
   fetchGetCategories,
   fetchGetProductByCategoryId,
   fetchGetProducts,
   fetchSearchSortFilter,
-} from "./interfaces/catalog-requests";
-import ProductCard from "./components/catalog/product-card";
+} from "./interfaces/catalog-requests.ts";
+
 import {
   categories,
   clearCurrentFilter,
@@ -21,9 +21,9 @@ import {
   setCurrentSort,
   setDataForBreadcrumbs,
   setProductsArray,
-} from "./utils/catalog-utils";
-import { clearCurrentSearch, setCurrentSearch } from "./utils/header-utils";
-import DetailedCard from "./components/pdp/DetailedCard";
+} from "./utils/catalog-utils.ts";
+import { clearCurrentSearch, setCurrentSearch } from "./utils/header-utils.ts";
+import DetailedCard from "./components/pdp/DetailedCard.ts";
 
 type Routes = {
   [key: string]: () => void;
@@ -67,13 +67,11 @@ export function handleHash() {
     profile: () => {
       if (newContent) {
         newContent.innerHTML = "";
-        if(localStorage.getItem("token")){
+        if (localStorage.getItem("token")) {
           newContent.appendChild(profilePage.getHtml());
+        } else {
+          window.location.hash = "login";
         }
-        else {
-          window.location.hash="login";
-        }
-
       }
     },
     "": () => {
@@ -137,7 +135,9 @@ export function handleHash() {
         const prodItem = fetchGetProducts(localStorage.getItem("productId"));
         prodItem.then((result) => {
           // append detailed card instead of product card
-          newContent.append(new DetailedCard(result, "en-US").getHtml());
+          if (typeof result !== "boolean") {
+            newContent.append(new DetailedCard(result, "en-US").getHtml());
+          }
         });
       }
     },
