@@ -10,7 +10,7 @@ import {
   fetchGetProducts,
   fetchSearchSortFilter,
 } from "./interfaces/catalog-requests.ts";
-import ProductCard from "./components/catalog/product-card.ts";
+
 import {
   categories,
   clearCurrentFilter,
@@ -26,6 +26,7 @@ import {
   setProductsArray,
 } from "./utils/catalog-utils.ts";
 import { clearCurrentSearch, setCurrentSearch } from "./utils/header-utils.ts";
+import DetailedCard from "./components/pdp/DetailedCard.ts";
 
 type Routes = {
   [key: string]: () => void;
@@ -145,7 +146,9 @@ export function handleHash() {
         const prodItem = fetchGetProducts(localStorage.getItem("productId"));
         prodItem.then((result) => {
           // append detailed card instead of product card
-          newContent.append(new ProductCard(result, "en-US").getHtml());
+          if (typeof result !== "boolean") {
+            newContent.append(new DetailedCard(result, "en-US").getHtml());
+          }
         });
       }
     },
@@ -196,5 +199,6 @@ export function routerInit() {
   }
 
   window.location.hash = "#home";
+  // window.location.hash = "#home";
   handleHash();
 }
