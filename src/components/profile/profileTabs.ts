@@ -5,6 +5,8 @@ import {
   addAddress,
   updateAddress,
   changePassword,
+  Address,
+  AddressUpdateParams,
 } from "../../interfaces/profile/profileRequests.ts";
 
 import countries from "../../interfaces/registration/countriesList.ts";
@@ -58,26 +60,19 @@ export class ProfileTabs {
     this.userProfile = await getUserProfile();
 
     if (this.userProfile) {
-      this.createTabs(this.userProfile);
+      this.createTabs();
     } else {
-      this.tabContentContainer.innerHTML = "<p>Error loading user profile. Please log in</p>";
+      window.location.hash = "login";
     }
   }
 
-  createTabs(userProfile: UserProfile) {
-    const infoTab = ProfileTabs.createTab("Info", () => this.renderInfoTab(userProfile));
-    const addressesTab = ProfileTabs.createTab("Addresses", () =>
-      this.renderAddressesTab(userProfile),
-    );
+  createTabs() {
+    const infoTab = ProfileTabs.createTab("Info", () => this.renderInfoTab());
+    const addressesTab = ProfileTabs.createTab("Addresses", () => this.renderAddressesTab());
 
     this.tabContainer.append(infoTab, addressesTab);
     this.tabContentContainer.innerHTML = "";
-    this.renderInfoTab(userProfile);
-
-    const changePasswordBtn = this.tabContentContainer.querySelector(
-      "#change-password-btn",
-    ) as HTMLButtonElement;
-    changePasswordBtn.addEventListener("click", () => this.showChangePasswordModal());
+    this.renderInfoTab();
   }
 
   static createTab(tabName: string, onClick: () => void): HTMLElement {
@@ -88,16 +83,22 @@ export class ProfileTabs {
     return tab;
   }
 
-  renderInfoTab(userProfile: UserProfile) {
+  async renderInfoTab() {
+    this.userProfile = await getUserProfile();
+    if (!this.userProfile) return;
     this.tabContentContainer.innerHTML = `
       <div>
-        ${ProfileTabs.createEditableField("First name", userProfile.firstName, "setFirstName", "firstName")}
-        ${ProfileTabs.createEditableField("Last name", userProfile.lastName, "setLastName", "lastName")}
-        ${ProfileTabs.createEditableField("Email", userProfile.email, "changeEmail", "email")}
-        ${ProfileTabs.createEditableField("Date of Birth", userProfile.dateOfBirth, "setDateOfBirth", "dateOfBirth", "date")}
+        ${ProfileTabs.createEditableField("First name", this.userProfile.firstName, "setFirstName", "firstName")}
+        ${ProfileTabs.createEditableField("Last name", this.userProfile.lastName, "setLastName", "lastName")}
+        ${ProfileTabs.createEditableField("Email", this.userProfile.email, "changeEmail", "email")}
+        ${ProfileTabs.createEditableField("Date of Birth", this.userProfile.dateOfBirth, "setDateOfBirth", "dateOfBirth", "date")}
         <button class="submit-button" id="change-password-btn">Change password</button>
       </div>
     `;
+    const changePasswordBtn = this.tabContentContainer.querySelector(
+      "#change-password-btn",
+    ) as HTMLButtonElement;
+    changePasswordBtn.addEventListener("click", () => this.showChangePasswordModal());
     this.setupFieldEventHandlers();
   }
 
@@ -229,8 +230,9 @@ export class ProfileTabs {
                   if (authToken && this.userProfile) {
                     fetchAuthenticateCustomer(authToken, this.userProfile.email, newPassword).then(
                       (resfetchAuthenticateCustomer) => {
-                        const { id } = (resfetchAuthenticateCustomer as Customer).customer;
-                        localStorage.setItem("id", id);
+                        const { id: customerId } = (resfetchAuthenticateCustomer as Customer)
+                          .customer;
+                        localStorage.setItem("id", customerId);
                         localStorage.setItem("token", JSON.stringify({ token: authToken }));
                         window.location.hash = "#home";
                       },
@@ -247,14 +249,16 @@ export class ProfileTabs {
     });
   }
 
-  renderAddressesTab(userProfile: UserProfile) {
+  renderAddressesTab() {
+    if (!this.userProfile) return;
+
     const {
       addresses,
       billingAddressIds,
       shippingAddressIds,
       defaultShippingAddressId,
       defaultBillingAddressId,
-    } = userProfile;
+    } = this.userProfile;
 
     const billingAddresses = addresses.filter((address) => billingAddressIds.includes(address.id));
     const shippingAddresses = addresses.filter((address) =>
@@ -280,10 +284,21 @@ export class ProfileTabs {
   }
 
   static renderAddress(
-    address: any,
+    address: Address,
     defaultAddressId: string,
     addressType: "billing" | "shipping",
   ): string {
+    let defaultButton = "";
+
+    if (address.id !== defaultAddressId) {
+      if (addressType === "billing") {
+        defaultButton =
+          '<button class="set-default-address-btn" data-address-type="billing">Set as Default Billing</button>';
+      } else {
+        defaultButton =
+          '<button class="set-default-address-btn" data-address-type="shipping">Set as Default Shipping</button>';
+      }
+    }
     return `
       <div class="address-item ${address.id === defaultAddressId ? "default-address" : ""}" data-address-id="${address.id}">
         <div>
@@ -316,7 +331,8 @@ export class ProfileTabs {
           <button class="edit-address-btn"><img src="../assets/icons/edit.png"></button>
           <button class="save-address-btn" style="display:none"><img src="../assets/icons/check.png"></button>
           <button class="delete-address-btn"><img src="../assets/icons/delete.png"></button>
-          ${address.id !== defaultAddressId ? (addressType === "billing" ? '<button class="set-default-address-btn" data-address-type="billing">Set as Default Billing</button>' : '<button class="set-default-address-btn" data-address-type="shipping">Set as Default Shipping</button>') : ""}
+          ${defaultButton}
+
         </div>
         </div>
     `;
@@ -342,8 +358,14 @@ export class ProfileTabs {
 
     editBtn.style.display = "none";
     saveBtn.style.display = "inline";
-    fieldSpans.forEach((span) => (span.style.display = "none"));
-    fieldInputs.forEach((input) => (input.style.display = "inline"));
+    fieldSpans.forEach((span) => {
+      const tempSpan = span;
+      tempSpan.style.display = "none";
+    });
+    fieldInputs.forEach((input) => {
+      const tempInput = input;
+      tempInput.style.display = "inline";
+    });
   }
 
   static disableEditMode(
@@ -357,8 +379,14 @@ export class ProfileTabs {
 
     editBtn.style.display = "inline";
     saveBtn.style.display = "none";
-    fieldSpans.forEach((span) => (span.style.display = "inline"));
-    fieldInputs.forEach((input) => (input.style.display = "none"));
+    fieldSpans.forEach((span) => {
+      const tempSpan = span;
+      tempSpan.style.display = "inline";
+    });
+    fieldInputs.forEach((input) => {
+      const tempInput = input;
+      tempInput.style.display = "none";
+    });
   }
 
   static async saveField(fieldInput: HTMLInputElement) {
@@ -385,13 +413,13 @@ export class ProfileTabs {
     if (errorMessage) {
       ProfileTabs.displayFieldError(fieldInput, errorMessage);
       return;
-    } else {
-      ProfileTabs.clearFieldError(fieldInput);
     }
+    ProfileTabs.clearFieldError(fieldInput);
 
     const success = await saveUserProfile({ action, value: newValue });
 
     if (success) {
+      /* eslint no-param-reassign: "error" */
       fieldInput.dataset.originalValue = newValue;
       const fieldSpan = fieldInput.previousElementSibling as HTMLElement;
       fieldSpan.innerText = newValue;
@@ -418,7 +446,7 @@ export class ProfileTabs {
     const fieldInputs = addressElement.querySelectorAll(".field-input") as NodeListOf<
       HTMLInputElement | HTMLSelectElement
     >;
-    const updatedAddress: any = {};
+    const updatedAddress: AddressUpdateParams = {};
     let hasValidationError = false;
     fieldInputs.forEach((input) => {
       const fieldName = input.getAttribute("data-field-name")!;
@@ -462,10 +490,13 @@ export class ProfileTabs {
 
     if (success) {
       this.updateAddressInMemory(addressId, updatedAddress);
-      this.renderAddressesTab(this.userProfile!);
+      this.renderAddressesTab();
     } else {
       alert("Failed to save the address");
-      fieldInputs.forEach((input) => (input.value = input.dataset.originalValue!));
+      fieldInputs.forEach((input) => {
+        const tempInput = input;
+        tempInput.value = tempInput.dataset.originalValue!;
+      });
     }
   }
 
@@ -474,7 +505,7 @@ export class ProfileTabs {
 
     if (success) {
       this.removeAddressFromMemory(addressId);
-      this.renderAddressesTab(this.userProfile!);
+      this.renderAddressesTab();
     } else {
       alert("Failed to delete the address");
     }
@@ -491,7 +522,7 @@ export class ProfileTabs {
       } else {
         this.userProfile!.defaultShippingAddressId = addressId;
       }
-      this.renderAddressesTab(this.userProfile!);
+      this.renderAddressesTab();
     } else {
       alert("Failed to set default address");
     }
@@ -511,7 +542,7 @@ export class ProfileTabs {
     }
   }
 
-  updateAddressInMemory(addressId: string, updatedAddress: any) {
+  updateAddressInMemory(addressId: string, updatedAddress: AddressUpdateParams) {
     if (this.userProfile) {
       const addressIndex = this.userProfile.addresses.findIndex(
         (address) => address.id === addressId,
@@ -651,12 +682,12 @@ export class ProfileTabs {
       const fieldInputs = modal.querySelectorAll(".field-input") as NodeListOf<
         HTMLInputElement | HTMLSelectElement
       >;
-      const newAddress: any = {};
+      const newAddress: Address = {};
       let hasValidationError = false;
 
       fieldInputs.forEach((input) => {
         const fieldName = input.getAttribute("data-field-name")!;
-        const value = input.value;
+        const { value } = input;
 
         let errorMessage = null;
         switch (fieldName) {
@@ -701,7 +732,7 @@ export class ProfileTabs {
     });
   }
 
-  async addNewAddress(address: any, addressType: "billing" | "shipping"): Promise<boolean> {
+  async addNewAddress(address: Address, addressType: "billing" | "shipping"): Promise<boolean> {
     const success = await addAddress({ action: "addAddress", address });
 
     if (success) {
@@ -719,12 +750,12 @@ export class ProfileTabs {
           this.userProfile[
             addressType === "billing" ? "billingAddressIds" : "shippingAddressIds"
           ].push(newAddressId);
-          this.renderAddressesTab(this.userProfile);
+          this.renderAddressesTab();
           return true;
-        } else {
-          alert("Failed to link new address");
-          return false;
         }
+
+        alert("Failed to link new address");
+        return false;
       }
     } else {
       alert("Failed to add new address");

@@ -24,15 +24,39 @@ interface UpdateUserProfile {
   value: string;
 }
 
-interface UpdateAddress {
+export interface UpdateAddress {
   action: string;
   addressId: string;
   address?: Address;
 }
+export interface AddressUpdateParams {
+  id: string;
+  streetName: string;
+  city: string;
+  postalCode: string;
+  country: string;
+}
+
+export interface PasswordChangeParams {
+  currentPassword: string;
+  newPassword: string;
+}
+
 interface ChangePassword {
   currentPassword: string;
   newPassword: string;
 }
+
+interface ActionBody {
+  action: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  dateOfBirth?: string;
+  addressId?: string;
+  address?: Address;
+}
+
 export async function getUserProfile(): Promise<UserProfile | null> {
   try {
     const userId = localStorage.getItem("id");
@@ -80,7 +104,7 @@ export async function saveUserProfile(update: UpdateUserProfile): Promise<boolea
       throw new Error("User is not authenticated");
     }
 
-    const actionBody: any = { action: update.action };
+    const actionBody: ActionBody = { action: update.action };
 
     if (update.action === "setFirstName") {
       actionBody.firstName = update.value;
@@ -135,7 +159,7 @@ export async function addAddress(update: UpdateAddress): Promise<boolean> {
       throw new Error("User is not authenticated");
     }
 
-    const actionBody: any = { action: update.action, address: update.address };
+    const actionBody: ActionBody = { action: update.action, address: update.address };
 
     const response = await fetch(
       `${process.env.HOST}/${process.env.PROJECT_KEY}/customers/${userId}`,
@@ -180,7 +204,7 @@ export async function updateAddress(update: UpdateAddress): Promise<boolean> {
       throw new Error("User is not authenticated");
     }
 
-    const actionBody: any = { action: update.action };
+    const actionBody: ActionBody = { action: update.action };
 
     if (update.action === "changeAddress") {
       actionBody.addressId = update.addressId;
@@ -232,7 +256,7 @@ export async function setDefaultAddress(update: UpdateAddress): Promise<boolean>
       throw new Error("User is not authenticated");
     }
 
-    const actionBody = { action: update.action, addressId: update.addressId };
+    const actionBody: ActionBody = { action: update.action, addressId: update.addressId };
 
     const response = await fetch(
       `${process.env.HOST}/${process.env.PROJECT_KEY}/customers/${userId}`,
@@ -277,7 +301,7 @@ export async function deleteAddress(update: UpdateAddress): Promise<boolean> {
       throw new Error("User is not authenticated");
     }
 
-    const actionBody = { action: update.action, addressId: update.addressId };
+    const actionBody: ActionBody = { action: update.action, addressId: update.addressId };
 
     const response = await fetch(
       `${process.env.HOST}/${process.env.PROJECT_KEY}/customers/${userId}`,
