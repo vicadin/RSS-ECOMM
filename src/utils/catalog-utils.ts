@@ -2,6 +2,7 @@ import {
   Ancestor,
   Ancestors,
   Attributes,
+  attributesForFilters,
   CatalogCategoryResult,
   CategoryType,
   currentFilter,
@@ -186,6 +187,7 @@ export function setCurrentFiltersArray(params: URLSearchParams) {
     }
   });
   currentFilterArray.filter = array;
+  console.log(currentFilterArray, "currentFilterArray");
 }
 
 export function clearCurrentSort() {
@@ -195,7 +197,6 @@ export function clearCurrentSort() {
 export function clearCurrentFilter() {
   currentFilter.filter = undefined;
 }
-
 
 export function getAttributes(answer): Attributes {
   const result: Attributes = [];
@@ -242,9 +243,9 @@ export function showFilters(): void {
   }
 }
 
-export function filtersHandler(event): void {
-  const {target} = event;
-  if (target.classList.contains("close-button")) {
+export function closeFiltersHandler(event): void {
+  const { target } = event;
+  if (target.closest(".filter-container__close-button")) {
     unlockBodyAndCloseFilters();
   }
 }
@@ -265,4 +266,8 @@ export function addProfileIco(where: HTMLElement) {
   profileLink.appendChild(profileIcon);
   profileListItem.appendChild(profileLink);
   where.appendChild(profileListItem);
+}
+
+export function setArrayOfAttributes(attributes: Attributes) {
+  attributesForFilters.attributes = attributes;
 }

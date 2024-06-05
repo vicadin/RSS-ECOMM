@@ -17,8 +17,10 @@ import {
   clearCurrentSort,
   getAttributes,
   removeCategoryData,
+  setArrayOfAttributes,
   setCategoriesArray,
   setCurrentFilter,
+  setCurrentFiltersArray,
   setCurrentSort,
   setDataForBreadcrumbs,
   setProductsArray,
@@ -87,6 +89,7 @@ export function handleHash() {
         promise.then((promiseResult) => {
           setProductsArray(promiseResult);
           getAttributes(promiseResult);
+          setArrayOfAttributes(getAttributes(promiseResult));
           newContent.append(new CatalogPage().getHtml());
         });
       }
@@ -100,6 +103,8 @@ export function handleHash() {
         fetchSearchSortFilter(newParams).then((res) => {
           setProductsArray(res);
           setCurrentFilter(newParams);
+          setCurrentFiltersArray(newParams);
+          setArrayOfAttributes(getAttributes(res));
           newContent.append(new CatalogPage().getHtml());
           setCurrentSort(newParams);
         });
@@ -118,9 +123,13 @@ export function handleHash() {
           promiseResultAsArray.forEach((promiseResultItem, index) => {
             if (typeof promiseResultItem !== "boolean") {
               mutateFunctions[index](promiseResultItem);
+              if (index === 1) {
+                setArrayOfAttributes(getAttributes(promiseResultItem));
+              }
             }
           });
           setDataForBreadcrumbs(localStorage.getItem("productsCategoryId"), categories.array);
+
           newContent.append(new CatalogPage().getHtml());
         });
       }

@@ -1,11 +1,12 @@
 import "./catalog-page.css";
 import "../../styles/style.css";
 import { createButton, createElement, createInput } from "../../utils/login-page-utils.ts";
-import { filtersHandler, products, showFilters } from "../../utils/catalog-utils.ts";
+import { products, showFilters } from "../../utils/catalog-utils.ts";
 import Products from "../../components/catalog/products.ts";
 import Breadcrumbs from "../../components/catalog/breadcrumbs.ts";
-import { closeButtonAttr, currentSearch } from "../../interfaces/header-types.ts";
+import { currentSearch } from "../../interfaces/header-types.ts";
 import {
+  attributesForFilters,
   currentFilter,
   datasets,
   dropdownButtonAttributes,
@@ -16,6 +17,8 @@ import {
   svgFilter,
 } from "../../interfaces/catalog-types.ts";
 import { lockBody, setLocationForSearching } from "../../utils/header-utils.ts";
+import { filtersCloseButton } from "../../components/catalog/filters-close-button.ts";
+
 
 export default class CatalogPage {
   aside: HTMLElement;
@@ -42,6 +45,10 @@ export default class CatalogPage {
 
   filterContainer: HTMLElement | HTMLUListElement;
 
+  filterContainerHeader: HTMLElement | HTMLUListElement;
+
+  filterAttributesContainer: HTMLElement | HTMLUListElement;
+
   constructor() {
     this.pageContainer = createElement("div", "catalog-container");
     this.catalogBreadcrumbs = createElement("div", "catalog_breadcrumbs");
@@ -54,7 +61,6 @@ export default class CatalogPage {
     this.createFilterButton();
     this.createFilterBlock();
     this.catalogFilterBlock.append(this.sortWrapper, this.filterButton);
-
     this.catalogMain = createElement("section", "catalog-main");
     this.catalogMain.append(new Products(products.array).getHtml());
     this.pageContainer.append(
@@ -174,12 +180,17 @@ export default class CatalogPage {
 
   createFilterBlock() {
     this.filterContainer = createElement("div", "filter-container filter-container_closed");
-    const closeButton = createButton("close-button", closeButtonAttr, "Apply filters");
-    this.filterContainer.textContent = "A wide range of skin types";
-    this.filterContainer.append(closeButton);
-    this.catalogFilterBlock.append(this.filterContainer);
 
-    this.filterContainer.addEventListener("click", filtersHandler);
+    this.filterContainerHeader = createElement("header", "filter-container__header");
+    const filterContainerHeading = createElement("h2", "filter-container__heading");
+    filterContainerHeading.textContent = "Filters";
+    const closeButton = filtersCloseButton;
+    this.filterContainerHeader.append(filterContainerHeading, closeButton.getHtml());
+
+    this.filterAttributesContainer = createElement("div", "attributes-container");
+    console.log(attributesForFilters.attributes, "this is from creating filterAside");
+    this.filterContainer.append(this.filterContainerHeader, this.filterAttributesContainer);
+    this.catalogFilterBlock.append(this.filterContainer);
   }
 
   getHtml() {

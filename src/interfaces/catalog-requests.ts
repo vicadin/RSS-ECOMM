@@ -30,6 +30,7 @@ export async function fetchGetProducts(id?: string): Promise<ProductsResult | Pr
     const response = await fetch(fetchInput, config);
     if (response.ok) {
       const answer: Promise<ProductsResult | Product> = await response.json();
+      console.log(answer);
       return answer;
     }
   } catch {
