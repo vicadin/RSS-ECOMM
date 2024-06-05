@@ -6,6 +6,7 @@ import {
   updateAddress,
   changePassword,
   Address,
+  AddressUpdateParams,
 } from "../../interfaces/profile/profileRequests.ts";
 
 import countries from "../../interfaces/registration/countriesList.ts";
@@ -230,8 +231,9 @@ export class ProfileTabs {
                   if (authToken && this.userProfile) {
                     fetchAuthenticateCustomer(authToken, this.userProfile.email, newPassword).then(
                       (resfetchAuthenticateCustomer) => {
-                        const { id } = (resfetchAuthenticateCustomer as Customer).customer;
-                        localStorage.setItem("id", id);
+                        const { id: customerId } = (resfetchAuthenticateCustomer as Customer)
+                          .customer;
+                        localStorage.setItem("id", customerId);
                         localStorage.setItem("token", JSON.stringify({ token: authToken }));
                         window.location.hash = "#home";
                       },
@@ -416,6 +418,7 @@ export class ProfileTabs {
     const success = await saveUserProfile({ action, value: newValue });
 
     if (success) {
+      /* eslint no-param-reassign: "error" */
       fieldInput.dataset.originalValue = newValue;
       const fieldSpan = fieldInput.previousElementSibling as HTMLElement;
       fieldSpan.innerText = newValue;
@@ -442,7 +445,7 @@ export class ProfileTabs {
     const fieldInputs = addressElement.querySelectorAll(".field-input") as NodeListOf<
       HTMLInputElement | HTMLSelectElement
     >;
-    const updatedAddress: any = {};
+    const updatedAddress: AddressUpdateParams = {};
     let hasValidationError = false;
     fieldInputs.forEach((input) => {
       const fieldName = input.getAttribute("data-field-name")!;
@@ -489,7 +492,10 @@ export class ProfileTabs {
       this.renderAddressesTab(this.userProfile!);
     } else {
       alert("Failed to save the address");
-      fieldInputs.forEach((input) => (input.value = input.dataset.originalValue!));
+      fieldInputs.forEach((input) => {
+        const tempInput = input;
+        tempInput.value = tempInput.dataset.originalValue!;
+      });
     }
   }
 
@@ -535,7 +541,7 @@ export class ProfileTabs {
     }
   }
 
-  updateAddressInMemory(addressId: string, updatedAddress: any) {
+  updateAddressInMemory(addressId: string, updatedAddress: AddressUpdateParams) {
     if (this.userProfile) {
       const addressIndex = this.userProfile.addresses.findIndex(
         (address) => address.id === addressId,
@@ -675,12 +681,12 @@ export class ProfileTabs {
       const fieldInputs = modal.querySelectorAll(".field-input") as NodeListOf<
         HTMLInputElement | HTMLSelectElement
       >;
-      const newAddress: any = {};
+      const newAddress: Address = {};
       let hasValidationError = false;
 
       fieldInputs.forEach((input) => {
         const fieldName = input.getAttribute("data-field-name")!;
-        const value = input.value;
+        const { value } = input;
 
         let errorMessage = null;
         switch (fieldName) {
