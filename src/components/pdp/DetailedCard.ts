@@ -22,7 +22,7 @@ export default class DetailedCard {
 
   constructor(props: Product, locale: string) {
     this.detailedCardItem = createElement("div", "detailed-card");
-    this.slides = props.masterData?.current.masterVariant.images.map((image) => image.url);
+    this.slides = props.masterData?.current.masterVariant.images.map((image) => image.url)  || [];
     this.currentSlideIndex = 0;
     this.setupModal();
     this.id = props.id;
@@ -34,6 +34,7 @@ export default class DetailedCard {
     this.detailedCardHeading = createElement("h4", "detailed-card_heading");
     this.detailedCardHeading.textContent = props.masterData.current.name["en-US"];
     this.detailedCardDescription = createElement("p", "detailed-card_description");
+    this.detailedCardDescription.textContent = props.masterData.current.description["en-US"];
     this.detailedCardPrices = createElement("div", "detailed-card_prices");
     this.finalPrice = createElement("span", "final-price");
     this.beforeDiscountPrice = createElement("span", "before-discount-price");

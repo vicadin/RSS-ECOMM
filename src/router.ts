@@ -39,10 +39,10 @@ export function handleHash() {
     product: () => {
       if (newContent) {
         newContent.innerHTML = "";
-        // const prodItem = fetchGetProducts("9f4eb6b5-2d60-4046-aeba-be9c466b4b7e");
-        const prodItem = fetchGetProducts(
-          localStorage.getItem("productId") ? localStorage.getItem("productId") as string : undefined,
-        );
+        const prodItem = fetchGetProducts("f36fbf68-1c38-468e-bd2a-d17ead95e0de");
+        // const prodItem = fetchGetProducts(
+        //   localStorage.getItem("productId") ? localStorage.getItem("productId") as string : undefined,
+        // );
         prodItem.then((result) => {
           console.log(result);
           newContent.append(new DetailedCard(result, "en-US").getHtml());
