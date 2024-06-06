@@ -177,6 +177,7 @@ export function setCurrentFilter(params: URLSearchParams) {
     }
   });
 }
+
 // вставить перед new Catalog Page
 export function setCurrentFiltersArray(params: URLSearchParams) {
   const array = [];
@@ -270,4 +271,20 @@ export function addProfileIco(where: HTMLElement) {
 
 export function setArrayOfAttributes(attributes: Attributes) {
   attributesForFilters.attributes = attributes;
+}
+
+export function setTempArrayOfAttributes(params) {
+  const temparr = [];
+  const paramsArray = Array.from(params.entries());
+  paramsArray.forEach(([key, value]) => {
+    if (key === "filter" && !value.startsWith("categories")) {
+      const [tempstring1, tempstring2] = value.slice(20).split(":");
+      if (tempstring1.slice(-2) === "US") {
+        temparr.push([tempstring1.slice(0, -6), tempstring2.slice(1, -1)]);
+      }
+      if (tempstring1.slice(-2) !== "US") {
+        temparr.push([tempstring1, tempstring2.slice(1, -1)]);
+      }
+    }
+  });
 }

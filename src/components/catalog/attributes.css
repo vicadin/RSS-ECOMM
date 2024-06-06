@@ -44,6 +44,16 @@
   padding-right: 10px;
   font-size: 18px;
   line-height: 24px;
+  flex-wrap: nowrap;
+}
+
+.svg-check {
+  overflow: visible;
+}
+
+.attribute-item__text {
+  margin-right: 10px;
+  max-width: 75vw;
 }
 
 @media (hover: hover) {

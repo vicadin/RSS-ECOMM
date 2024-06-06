@@ -24,6 +24,7 @@ import {
   setCurrentSort,
   setDataForBreadcrumbs,
   setProductsArray,
+  setTempArrayOfAttributes,
 } from "./utils/catalog-utils.ts";
 import { clearCurrentSearch, setCurrentSearch } from "./utils/header-utils.ts";
 import DetailedCard from "./components/pdp/DetailedCard.ts";
@@ -110,6 +111,7 @@ export function handleHash() {
           setCurrentFilter(newParams);
           setCurrentFiltersArray(newParams);
           setArrayOfAttributes(getAttributes(res));
+          setTempArrayOfAttributes(newParams);
           newContent.append(new CatalogPage().getHtml());
           setCurrentSort(newParams);
         });

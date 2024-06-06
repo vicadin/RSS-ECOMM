@@ -1,11 +1,12 @@
 import "./catalog-page.css";
 import "../../styles/style.css";
 import { createButton, createElement, createInput } from "../../utils/login-page-utils.ts";
-import { products, showFilters } from "../../utils/catalog-utils.ts";
+import { products, showFilters, unlockBodyAndCloseFilters } from "../../utils/catalog-utils.ts";
 import Products from "../../components/catalog/products.ts";
 import Breadcrumbs from "../../components/catalog/breadcrumbs.ts";
 import { currentSearch } from "../../interfaces/header-types.ts";
 import {
+  Attributes,
   attributesForFilters,
   currentFilter,
   datasets,
@@ -52,6 +53,8 @@ export default class CatalogPage {
 
   attributesShowButton: HTMLButtonElement;
 
+  arrayOfAttributeBlock: Attributes[];
+
   constructor() {
     this.pageContainer = createElement("div", "catalog-container");
     this.catalogBreadcrumbs = createElement("div", "catalog_breadcrumbs");
@@ -72,7 +75,7 @@ export default class CatalogPage {
       this.catalogFilterBlock,
       this.catalogMain,
     );
-
+    this.arrayOfAttributeBlock = [];
     this.addEventListeners();
   }
 
@@ -100,7 +103,7 @@ export default class CatalogPage {
     }
   }
 
-  static setSearchParams(button) {
+  static setSearchParams(button?: HTMLButtonElement, arrayOfFilters?: Attributes[]) {
     let newSearchParam;
     let filtersSearchParams;
 
@@ -108,13 +111,42 @@ export default class CatalogPage {
     if (localStorage.getItem("productsCategoryId")) {
       currentFilter.filter = `categories.id:"${localStorage.getItem("productsCategoryId")}"`;
     }
+    if (button) {
+      sortObject.sorting = button.dataset.value;
+    }
+    if (sortObject.sorting) {
+      const sortParam = new URLSearchParams(`sort=${sortObject.sorting}`);
+      if (finalParamString.length !== 0) {
+        finalParamString.push(`&${sortParam}`);
+      } else {
+        finalParamString.push(`${sortParam}`);
+      }
+    }
 
-    sortObject.sorting = button.dataset.value;
-    const sortParam = new URLSearchParams(`sort=${sortObject.sorting}`);
-    if (finalParamString.length !== 0) {
-      finalParamString.push(`&${sortParam}`);
-    } else {
-      finalParamString.push(`${sortParam}`);
+    if (arrayOfFilters) {
+      arrayOfFilters.forEach(([name, value]) => {
+        value.forEach((stringValue) => {
+          if (name === "size") {
+            const filterParam = new URLSearchParams(
+              `filter=variants.attributes.${name}.en-US:"${stringValue}"`,
+            );
+            if (finalParamString.length !== 0) {
+              finalParamString.push(`&${filterParam}`);
+            } else {
+              finalParamString.push(`${filterParam}`);
+            }
+          } else {
+            const filterParam = new URLSearchParams(
+              `filter=variants.attributes.${name}:"${stringValue}"`,
+            );
+            if (finalParamString.length !== 0) {
+              finalParamString.push(`&${filterParam}`);
+            } else {
+              finalParamString.push(`${filterParam}`);
+            }
+          }
+        });
+      });
     }
 
     if (currentSearch.currentText) {
@@ -146,6 +178,27 @@ export default class CatalogPage {
     this.filterButton.addEventListener("click", () => {
       showFilters();
       lockBody();
+    });
+
+    this.attributesShowButton.addEventListener("click", () => {
+      unlockBodyAndCloseFilters();
+      this.arrayOfAttributeBlock.length = 0;
+      if (this.filterAttributesContainer.children.length !== 0) {
+        Array.from(this.filterAttributesContainer.children).forEach((child) => {
+          const newKey: string = child.firstElementChild?.firstElementChild.textContent;
+          const newarray: string[] = [];
+          Array.from(child.lastElementChild.children).forEach((lastChild) => {
+            if (lastChild.classList.contains("attribute-item__active")) {
+              newarray.push(lastChild?.lastElementChild?.textContent);
+            }
+          });
+          if (newarray.length !== 0) {
+            this.arrayOfAttributeBlock.push([newKey, newarray]);
+          }
+        });
+      }
+      console.log(this.arrayOfAttributeBlock);
+      CatalogPage.setSearchParams(undefined, this.arrayOfAttributeBlock);
     });
   }
 
