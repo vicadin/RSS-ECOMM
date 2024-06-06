@@ -143,13 +143,15 @@ export function handleHash() {
     product: () => {
       if (newContent) {
         newContent.innerHTML = "";
-        const prodItem = fetchGetProducts(localStorage.getItem("productId"));
-        prodItem.then((result) => {
-          // append detailed card instead of product card
-          if (typeof result !== "boolean") {
-            newContent.append(new DetailedCard(result, "en-US").getHtml());
-          }
-        });
+        if (localStorage.getItem("productId")) {
+          const prodItem = fetchGetProducts(localStorage.getItem("productId"));
+          prodItem.then((result) => {
+            // append detailed card instead of product card
+            if (!(typeof result === "boolean")) {
+              newContent.append(new DetailedCard(result, "en-US").getHtml());
+            }
+          });
+        }
       }
     },
   };

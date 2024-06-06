@@ -18,7 +18,8 @@ import {
 } from "../../interfaces/catalog-types.ts";
 import { lockBody, setLocationForSearching } from "../../utils/header-utils.ts";
 import { filtersCloseButton } from "../../components/catalog/filters-close-button.ts";
-import { AttributeBlock } from "../../components/catalog/attribute-block.ts";
+import AttributeBlock from "../../components/catalog/attribute-block.ts";
+import { showButtonAttributes } from "../../interfaces/login-page-types.ts";
 
 export default class CatalogPage {
   aside: HTMLElement;
@@ -48,6 +49,8 @@ export default class CatalogPage {
   filterContainerHeader: HTMLElement | HTMLUListElement;
 
   filterAttributesContainer: HTMLElement | HTMLUListElement;
+
+  attributesShowButton: HTMLButtonElement;
 
   constructor() {
     this.pageContainer = createElement("div", "catalog-container");
@@ -193,7 +196,16 @@ export default class CatalogPage {
       this.filterAttributesContainer.append(attributeBlock.getHtml());
     });
     // console.log(attributesForFilters.attributes, "this is from creating filterAside");
-    this.filterContainer.append(this.filterContainerHeader, this.filterAttributesContainer);
+    this.attributesShowButton = createButton(
+      "attributes-container__show-button hidden",
+      showButtonAttributes,
+      "Show results",
+    );
+    this.filterContainer.append(
+      this.filterContainerHeader,
+      this.filterAttributesContainer,
+      this.attributesShowButton,
+    );
     this.catalogFilterBlock.append(this.filterContainer);
   }
 

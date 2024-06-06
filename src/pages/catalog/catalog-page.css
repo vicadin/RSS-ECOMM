@@ -19,7 +19,7 @@
 .catalog_filters-block {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   margin-bottom: 20px;
   justify-content: space-between;
 }
