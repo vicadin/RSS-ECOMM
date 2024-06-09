@@ -1,7 +1,8 @@
 import "./login-page.css";
 import { form } from "./form/form.ts";
-import { createButton, createElement } from "../../interfaces/login-page-utils.ts";
+
 import { createAccountButtonAttributes } from "../../interfaces/login-page-types.ts";
+import { createButton, createElement } from "../../utils/login-page-utils.ts";
 
 export default class LoginPage {
   loginPage: HTMLDivElement;
