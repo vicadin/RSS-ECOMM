@@ -1,29 +1,33 @@
-import RegistrationPage from "./pages/registration";
-import LoginPage from "./components/login-page/login-page";
-import NotFoundComponent from "./components/404components";
-import { profilePage } from "./pages/profile";
-import { headerEl } from "./components/header";
-import CatalogPage from "./pages/catalog/catalog";
+import RegistrationPage from "./pages/registration.ts";
+import LoginPage from "./components/login-page/login-page.ts";
+import NotFoundComponent from "./components/404components.ts";
+import { profilePage } from "./pages/profile.ts";
+import { headerEl } from "./components/header.ts";
+import CatalogPage from "./pages/catalog/catalog.ts";
 import {
   fetchGetCategories,
   fetchGetProductByCategoryId,
   fetchGetProducts,
   fetchSearchSortFilter,
-} from "./interfaces/catalog-requests";
-import ProductCard from "./components/catalog/product-card";
+} from "./interfaces/catalog-requests.ts";
+
 import {
   categories,
   clearCurrentFilter,
   clearCurrentSort,
+  getAttributes,
   removeCategoryData,
+  setArrayOfAttributes,
   setCategoriesArray,
   setCurrentFilter,
+  setCurrentFiltersArray,
   setCurrentSort,
   setDataForBreadcrumbs,
   setProductsArray,
-} from "./utils/catalog-utils";
-import { clearCurrentSearch, setCurrentSearch } from "./utils/header-utils";
-import DetailedCard from "./components/pdp/DetailedCard";
+  setTempArrayOfAttributes,
+} from "./utils/catalog-utils.ts";
+import { clearCurrentSearch, setCurrentSearch } from "./utils/header-utils.ts";
+import DetailedCard from "./components/pdp/DetailedCard.ts";
 
 type Routes = {
   [key: string]: () => void;
@@ -67,7 +71,11 @@ export function handleHash() {
     profile: () => {
       if (newContent) {
         newContent.innerHTML = "";
-        newContent.appendChild(profilePage.getHtml());
+        if (localStorage.getItem("token")) {
+          newContent.appendChild(profilePage.getHtml());
+        } else {
+          window.location.hash = "login";
+        }
       }
     },
     "": () => {
@@ -86,6 +94,8 @@ export function handleHash() {
         const promise = fetchGetProducts();
         promise.then((promiseResult) => {
           setProductsArray(promiseResult);
+          getAttributes(promiseResult);
+          setArrayOfAttributes(getAttributes(promiseResult));
           newContent.append(new CatalogPage().getHtml());
         });
       }
@@ -99,6 +109,9 @@ export function handleHash() {
         fetchSearchSortFilter(newParams).then((res) => {
           setProductsArray(res);
           setCurrentFilter(newParams);
+          setCurrentFiltersArray(newParams);
+          setArrayOfAttributes(getAttributes(res));
+          setTempArrayOfAttributes(newParams);
           newContent.append(new CatalogPage().getHtml());
           setCurrentSort(newParams);
         });
@@ -117,9 +130,13 @@ export function handleHash() {
           promiseResultAsArray.forEach((promiseResultItem, index) => {
             if (typeof promiseResultItem !== "boolean") {
               mutateFunctions[index](promiseResultItem);
+              if (index === 1) {
+                setArrayOfAttributes(getAttributes(promiseResultItem));
+              }
             }
           });
           setDataForBreadcrumbs(localStorage.getItem("productsCategoryId"), categories.array);
+
           newContent.append(new CatalogPage().getHtml());
         });
       }
@@ -128,11 +145,15 @@ export function handleHash() {
     product: () => {
       if (newContent) {
         newContent.innerHTML = "";
-        const prodItem = fetchGetProducts(localStorage.getItem("productId"));
-        prodItem.then((result) => {
-          // append detailed card instead of product card
-          newContent.append(new DetailedCard(result, "en-US").getHtml());
-        });
+        if (localStorage.getItem("productId")) {
+          const prodItem = fetchGetProducts(localStorage.getItem("productId"));
+          prodItem.then((result) => {
+            // append detailed card instead of product card
+            if (!(typeof result === "boolean")) {
+              newContent.append(new DetailedCard(result, "en-US").getHtml());
+            }
+          });
+        }
       }
     },
   };

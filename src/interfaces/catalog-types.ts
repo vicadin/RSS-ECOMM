@@ -216,3 +216,44 @@ export type FilterType = {
 export const currentFilter: FilterType = {
   filter: undefined,
 };
+
+export const priceInputAttributes: [string, string][] = [
+  ["type", "range"],
+  ["autocomplete", "off"],
+  ["min", "20"],
+];
+
+export const svgFilter = `<svg class="filter-button__ico" width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M5.56254 9.71128H3.93758V11.9613H0.666748L0.666748 13.5862H3.93758L3.93758 15.8362H5.56254L5.56254 9.71128ZM15.3334 11.9613L7.06258 11.9613V13.5862L15.3334 13.5862V11.9613ZM15.3334 5.41962H12.0625V3.16962L10.4376 3.16962V9.29457H12.0625V7.04457H15.3334V5.41962ZM8.93754 5.41962H0.666748L0.666748 7.04457H8.93754V5.41962Z" fill="currentColor"/>
+    </svg>`;
+
+export type StringArray = string[];
+export type Attributes = [string, StringArray];
+
+export type FiltersArray = {
+  filter: string[] | [];
+};
+
+// is set from router to fill filterContainer
+export const currentFilterArray: FiltersArray = {
+  filter: [],
+};
+
+// is set before every rendering of Catalog Page to fill attibutes container of filter-container-main
+export const attributesForFilters: { attributes: [] | Attributes } = {
+  attributes: [],
+};
+
+export const svgCheckActive =
+  "<svg xmlns='http://www.w3.org/2000/svg' class ='svg-check' width='25' height='24' fill='#666'><path fill-rule='evenodd' d='M12.928 0c-9.6 0-12 2.4-12 12s2.4 12 12 12 12-2.4 12-12-2.4-12-12-12' clip-rule='evenodd'/><path stroke='#fff' stroke-width='2.325' d='m6.511 11.121 4.203 4.665 8.63-9.354'/></svg>";
+
+export const svgCheckInactive =
+  "<svg xmlns='http://www.w3.org/2000/svg' class ='svg-check' width='25' height='24' fill='none' stroke='#666'><path stroke-width='3' d='M12.928 1.5c-4.81 0-7.216.638-8.54 1.96-1.322 1.324-1.96 3.73-1.96 8.54s.638 7.216 1.96 8.54c1.324 1.322 3.73 1.96 8.54 1.96 4.811 0 7.217-.638 8.54-1.96 1.323-1.324 1.96-3.73 1.96-8.54s-.637-7.216-1.96-8.54c-1.323-1.322-3.729-1.96-8.54-1.96Z'/></svg>";
+
+export type FilterObj = {
+  size?: [string];
+  ["suited-to"]?: [string];
+  ["key-ingredients"]?: [string];
+};
+
+export type TempArrayOfAttributes = Attributes[];

@@ -58,11 +58,8 @@ export class ProfileTabs {
 
   async render() {
     this.userProfile = await getUserProfile();
-
     if (this.userProfile) {
       this.createTabs();
-    } else {
-      window.location.hash = "login";
     }
   }
 

@@ -1,14 +1,17 @@
 import {
   Ancestor,
   Ancestors,
+  Attributes,
+  attributesForFilters,
   CatalogCategoryResult,
   CategoryType,
   currentFilter,
+  currentFilterArray,
   sortObject,
 } from "../interfaces/catalog-types.ts";
 import { createElement } from "./login-page-utils.ts";
 import CategoryList from "../components/catalog/category-list.ts";
-import { asideHandler } from "./header-utils.ts";
+import { asideHandler, unlockBody } from "./header-utils.ts";
 
 export const categories: CategoryType = {
   array: [],
@@ -169,10 +172,23 @@ export function setCurrentSort(params: URLSearchParams) {
 export function setCurrentFilter(params: URLSearchParams) {
   const paramsArray = Array.from(params.entries());
   paramsArray.forEach(([key, value]) => {
-    if (key === "filter") {
+    if (key === "filter" && value.startsWith("categories")) {
       currentFilter.filter = value;
     }
   });
+}
+
+// вставить перед new Catalog Page
+export function setCurrentFiltersArray(params: URLSearchParams) {
+  const array = [];
+  const paramsArray = Array.from(params.entries());
+  paramsArray.forEach(([key, value]) => {
+    if (key === "filter" && !value.startsWith("categories")) {
+      array.push(value);
+    }
+  });
+  currentFilterArray.filter = array;
+  // console.log(currentFilterArray, "currentFilterArray");
 }
 
 export function clearCurrentSort() {
@@ -181,6 +197,58 @@ export function clearCurrentSort() {
 
 export function clearCurrentFilter() {
   currentFilter.filter = undefined;
+}
+
+export function getAttributes(answer): Attributes {
+  const result: Attributes = [];
+  const totalAttributes = [];
+  let totalAttributesNames = [];
+  if (answer.results) {
+    answer.results.forEach((anserResult) => {
+      anserResult.masterVariant.attributes.forEach((attribute) => {
+        totalAttributesNames.push(attribute.name);
+        totalAttributes.push(attribute);
+      });
+    });
+    const newset = new Set(totalAttributesNames);
+    totalAttributesNames = Array.from(newset);
+    totalAttributesNames.forEach((name) => {
+      const valuesAccordingToName = [];
+      const filteredByName = totalAttributes.filter((entry) => entry.name === name);
+      filteredByName.forEach((entry) => {
+        const currentValue = typeof entry.value === "string" ? entry.value : entry.value["en-US"];
+        valuesAccordingToName.push(currentValue);
+      });
+      result.push([name, Array.from(new Set(valuesAccordingToName))]);
+    });
+  }
+  return result;
+}
+
+export function closeFilters(): void {
+  const filters = document.querySelector(".filter-container");
+  if (filters) {
+    filters.classList.add("filter-container_closed");
+  }
+}
+
+export function unlockBodyAndCloseFilters(): void {
+  closeFilters();
+  unlockBody();
+}
+
+export function showFilters(): void {
+  const filters = document.querySelector(".filter-container");
+  if (filters) {
+    filters.classList.remove("filter-container_closed");
+  }
+}
+
+export function closeFiltersHandler(event): void {
+  const { target } = event;
+  if (target.closest(".filter-container__close-button")) {
+    unlockBodyAndCloseFilters();
+  }
 }
 
 export function addProfileIco(where: HTMLElement) {
@@ -199,4 +267,24 @@ export function addProfileIco(where: HTMLElement) {
   profileLink.appendChild(profileIcon);
   profileListItem.appendChild(profileLink);
   where.appendChild(profileListItem);
+}
+
+export function setArrayOfAttributes(attributes: Attributes) {
+  attributesForFilters.attributes = attributes;
+}
+
+export function setTempArrayOfAttributes(params) {
+  const temparr = [];
+  const paramsArray = Array.from(params.entries());
+  paramsArray.forEach(([key, value]) => {
+    if (key === "filter" && !value.startsWith("categories")) {
+      const [tempstring1, tempstring2] = value.slice(20).split(":");
+      if (tempstring1.slice(-2) === "US") {
+        temparr.push([tempstring1.slice(0, -6), tempstring2.slice(1, -1)]);
+      }
+      if (tempstring1.slice(-2) !== "US") {
+        temparr.push([tempstring1, tempstring2.slice(1, -1)]);
+      }
+    }
+  });
 }
