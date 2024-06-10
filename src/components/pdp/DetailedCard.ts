@@ -39,6 +39,10 @@ export default class DetailedCard {
 
   slides: string[];
 
+  addToBasket: HTMLElement | undefined;
+
+  removeFromBasket: HTMLElement | undefined;
+
   constructor(props: Product, locale: string) {
     this.detailedCardItem = createElement("div", "detailed-card");
     this.slides = props.masterData?.current.masterVariant.images.map((image) => image.url) || [];
@@ -47,6 +51,7 @@ export default class DetailedCard {
     this.setupModal();
     this.id = props.id;
     this.renderCard(props, locale);
+    this.checkBasketStatus(props);
   }
 
   renderCard = (props: Product, locale: string) => {
@@ -74,6 +79,18 @@ export default class DetailedCard {
     );
     this.detailedCardItem.append(this.detailedImage, this.detailedCardContent);
     this.detailedImage.append(this.image);
+//AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//
+    this.addToBasket = createElement("button", "add-to-basket");
+    this.removeFromBasket = createElement("button", "remove-from-basket");
+
+    this.addToBasket.textContent = "Add";
+    this.removeFromBasket.textContent = "Delete";
+
+    this.addToBasket.onclick = this.handleAddToBasket;
+    this.removeFromBasket.onclick = this.handleRemoveFromBasket;
+
+    this.detailedCardItem.append(this.addToBasket, this.removeFromBasket);
+    //aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa//
   };
 
   setFieldsValues(props: Product) {
@@ -162,6 +179,11 @@ export default class DetailedCard {
       slide.classList.toggle("active", index === this.currentSlideIndex);
     });
   };
+  //------------------------------------------------------------//
+
+  
+
+  //------------------------------------------------------------//
 
   getHtml() {
     return this.detailedCardItem;
