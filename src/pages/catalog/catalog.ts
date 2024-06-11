@@ -197,7 +197,6 @@ export default class CatalogPage {
           }
         });
       }
-      console.log(this.arrayOfAttributeBlock);
       CatalogPage.setSearchParams(undefined, this.arrayOfAttributeBlock);
     });
   }

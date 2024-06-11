@@ -55,7 +55,6 @@ export default class AttributeBlock {
           li.firstElementChild.outerHTML = "";
           li.insertAdjacentHTML("afterbegin", svgCheckActive);
           this.arrayOfCurrentAttributes.push(li.children[1].textContent);
-          console.log(this.arrayOfCurrentAttributes);
         } else {
           li.firstElementChild.outerHTML = "";
           li.insertAdjacentHTML("afterbegin", svgCheckInactive);
@@ -63,7 +62,6 @@ export default class AttributeBlock {
             const thisElem = this.arrayOfCurrentAttributes.findIndex((item) => item === text);
             if (thisElem !== -1) {
               this.arrayOfCurrentAttributes.splice(thisElem, 1);
-              console.log(this.arrayOfCurrentAttributes);
             }
           }
         }
@@ -117,7 +115,6 @@ export default class AttributeBlock {
         child.firstElementChild.lastElementChild.classList.contains("hidden"),
       );
       if (isEmptyAttributesContainer) {
-        console.log(parent.parentElement.lastElementChild);
         parent.parentElement.lastElementChild.classList.add("hidden");
       }
     }

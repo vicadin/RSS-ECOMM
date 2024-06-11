@@ -1,6 +1,7 @@
 import "./products.css";
-import { createElement } from "../../utils/login-page-utils.ts";
+import { createButton, createElement } from "../../utils/login-page-utils.ts";
 import { setBeforeDiscountPrice, setFinalPrice } from "../../utils/catalog-utils.ts";
+import { productButtonAttributes } from "../../interfaces/catalog-types.ts";
 
 export default class ProductCard {
   id: string;
@@ -25,6 +26,12 @@ export default class ProductCard {
 
   productCardIngredient: HTMLElement | HTMLUListElement;
 
+  productCardButton: HTMLButtonElement;
+
+  productButtonContainer: HTMLElement | HTMLUListElement;
+
+  spinner: HTMLElement | HTMLUListElement;
+
   constructor(props, locale: string) {
     this.id = props.id;
     this.renderCard(props, locale);
@@ -42,6 +49,16 @@ export default class ProductCard {
     this.finalPrice = createElement("span", "final-price");
     this.beforeDiscountPrice = createElement("span", "before-discount-price ");
     this.productImage = createElement("div", "product-card_image");
+    this.productButtonContainer = createElement("div", "product-card__button-container");
+    this.spinner = createElement("div", "button-spinner");
+
+    this.productCardButton = createButton(
+      "product-card__button button-common",
+      productButtonAttributes,
+      "Add to cart",
+    );
+
+    this.productButtonContainer.append(this.productCardButton, this.spinner);
     this.setFieldsValues(props, locale);
     this.productCardPrices.append(this.finalPrice, this.beforeDiscountPrice);
     this.productCardContent.append(
@@ -50,6 +67,7 @@ export default class ProductCard {
       this.productCardSize,
       this.productCardIngredient,
       this.productCardPrices,
+      this.productButtonContainer,
     );
     this.productCardItem.append(this.productImage, this.productCardContent);
   }
@@ -81,9 +99,21 @@ export default class ProductCard {
   }
 
   addEventListeners() {
-    this.productCardItem.addEventListener("click", () => {
-      const pathname = `${this.id}`;
-      window.location.href = `#${pathname}product`;
+    this.productCardItem.addEventListener("click", (ev) => {
+      if ((ev.target as HTMLElement).closest(".product-card__button-container")) {
+        this.spinner.classList.add("button-spinner_active");
+        this.productCardItem.classList.add("product-card_spin");
+        //  Add product with this id to the cart + update cart products-amount;
+        // After request for adding product to the cart button must be inactive: change setTimeout for another function
+        setTimeout(() => {
+          this.productCardButton.textContent = "Added to your cart";
+          this.productCardButton.setAttribute("disabled", "disabled");
+          this.productCardItem.classList.remove("product-card_spin");
+        }, 5000);
+      } else {
+        const pathname = `${this.id}`;
+        window.location.href = `#${pathname}product`;
+      }
     });
   }
 }
