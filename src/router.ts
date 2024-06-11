@@ -1,6 +1,7 @@
 import RegistrationPage from "./pages/registration.ts";
 import LoginPage from "./components/login-page/login-page.ts";
 import NotFoundComponent from "./components/404components.ts";
+import BasketPage from "./pages/basket.ts";
 import { profilePage } from "./pages/profile.ts";
 import { headerEl } from "./components/header.ts";
 import CatalogPage from "./pages/catalog/catalog.ts";
@@ -76,6 +77,12 @@ export function handleHash() {
         } else {
           window.location.hash = "login";
         }
+      }
+    },
+    basket: () => {
+      if (newContent) {
+        newContent.innerHTML = "";
+        BasketPage();
       }
     },
     "": () => {

@@ -269,6 +269,24 @@ export function addProfileIco(where: HTMLElement) {
   where.appendChild(profileListItem);
 }
 
+export function addBasketIco(where: HTMLElement) {
+  const profileListItem = document.createElement("li");
+  profileListItem.classList.add("nav_list_item");
+
+  const profileLink = document.createElement("a");
+  profileLink.href = "#basket";
+  profileLink.classList.add("basket-link");
+
+  const profileIcon = document.createElement("img");
+  profileIcon.src = "../assets/icons/bag.png";
+  profileIcon.alt = "Basket";
+  profileIcon.classList.add("basket-icon");
+
+  profileLink.appendChild(profileIcon);
+  profileListItem.appendChild(profileLink);
+  where.appendChild(profileListItem);
+}
+
 export function setArrayOfAttributes(attributes: Attributes) {
   attributesForFilters.attributes = attributes;
 }
