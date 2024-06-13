@@ -2,6 +2,7 @@ import "./products.css";
 import { createButton, createElement } from "../../utils/login-page-utils.ts";
 import { setBeforeDiscountPrice, setFinalPrice } from "../../utils/catalog-utils.ts";
 import { productButtonAttributes } from "../../interfaces/catalog-types.ts";
+import { addLineItem, getMyActiveCart } from "../../interfaces/cart-request.ts";
 
 export default class ProductCard {
   id: string;
@@ -101,15 +102,21 @@ export default class ProductCard {
   addEventListeners() {
     this.productCardItem.addEventListener("click", (ev) => {
       if ((ev.target as HTMLElement).closest(".product-card__button-container")) {
-        this.spinner.classList.add("button-spinner_active");
         this.productCardItem.classList.add("product-card_spin");
-        //  Add product with this id to the cart + update cart products-amount;
-        // After request for adding product to the cart button must be inactive: change setTimeout for another function
-        setTimeout(() => {
+        //  Add product with this id to the cart + update cart products-amount - need to be added updating function;
+        const token = localStorage.getItem("token")
+          ? JSON.parse(localStorage.getItem("token")).token
+          : localStorage.getItem("anonymous-token");
+        getMyActiveCart(token).then(async (cart) => {
           this.productCardButton.textContent = "Added to your cart";
           this.productCardButton.setAttribute("disabled", "disabled");
-          this.productCardItem.classList.remove("product-card_spin");
-        }, 5000);
+          const { version, id } = cart;
+          await addLineItem(version, id, this.id, token);
+          setTimeout(() => {
+            this.productCardItem.classList.remove("product-card_spin");
+            this.productCardButton.classList.add("product-card_added");
+          }, 300);
+        });
       } else {
         const pathname = `${this.id}`;
         window.location.href = `#${pathname}product`;

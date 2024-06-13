@@ -149,7 +149,6 @@ export default class RegistrationForm {
     ) {
       return;
     }
-
     const responseGetAccessToken = getAccessToken();
     responseGetAccessToken.then((result) => {
       const accessToken = result.access_token;
@@ -191,8 +190,15 @@ export default class RegistrationForm {
                   if (authToken) {
                     fetchAuthenticateCustomer(authToken, email, password).then(
                       (resfetchAuthenticateCustomer) => {
+                        if (localStorage.getItem("anonymous-token")) {
+                          localStorage.removeItem("anonymous-token");
+                        }
                         const { id } = (resfetchAuthenticateCustomer as Customer).customer;
                         localStorage.setItem("id", id);
+                        localStorage.setItem(
+                          "currentCartVersion",
+                          resfetchAuthenticateCustomer?.cart?.version,
+                        );
                         localStorage.setItem("token", JSON.stringify({ token: authToken }));
                         window.location.hash = "#home";
                       },

@@ -215,6 +215,7 @@ export class ProfileTabs {
               this.userProfile.email,
               newPassword,
             );
+
             responseFetchGetAccessTokenThroughPassword.then(
               (resultFetchGetAccessTokenThroughPassword) => {
                 let authToken: string;

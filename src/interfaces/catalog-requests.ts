@@ -11,11 +11,12 @@ export async function fetchGetProducts(id?: string): Promise<ProductsResult | Pr
   let token: string;
   if (localStorage.getItem("token")) {
     token = JSON.parse(<string>localStorage.getItem("token")).token;
+  } else if (localStorage.getItem("anonymous-token")) {
+    token = localStorage.getItem("anonymous-token");
   } else {
     const answer = await getAccessToken();
     token = (answer as AccessToken).access_token;
   }
-
   const config = {
     method: "GET",
     headers: {
@@ -30,7 +31,6 @@ export async function fetchGetProducts(id?: string): Promise<ProductsResult | Pr
     const response = await fetch(fetchInput, config);
     if (response.ok) {
       const answer: Promise<ProductsResult | Product> = await response.json();
-      // console.log(answer);
       return answer;
     }
   } catch {
@@ -43,9 +43,13 @@ export async function fetchGetCategories(): Promise<CatalogCategoriesAnswer | bo
   let token;
   if (localStorage.getItem("token")) {
     token = JSON.parse(localStorage.getItem("token")).token;
+  } else if (localStorage.getItem("anonymous-token")) {
+    token = localStorage.getItem("anonymous-token");
   } else {
     const answer = await getAccessToken();
-    token = (answer as AccessToken).access_token;
+    if (answer as AccessToken) {
+      token = (answer as AccessToken).access_token;
+    }
   }
   const config = {
     method: "GET",
@@ -75,6 +79,8 @@ export async function fetchGetProductByCategoryId(
   let token;
   if (localStorage.getItem("token")) {
     token = JSON.parse(localStorage.getItem("token")).token;
+  } else if (localStorage.getItem("anonymous-token")) {
+    token = localStorage.getItem("anonymous-token");
   } else {
     const answer = await getAccessToken();
     token = (answer as AccessToken).access_token;
@@ -105,6 +111,8 @@ export async function fetchSearchSortFilter(params: URLSearchParams) {
   let token;
   if (localStorage.getItem("token")) {
     token = JSON.parse(localStorage.getItem("token")).token;
+  } else if (localStorage.getItem("anonymous-token")) {
+    token = localStorage.getItem("anonymous-token");
   } else {
     const answer = await getAccessToken();
     token = (answer as AccessToken).access_token;
