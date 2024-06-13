@@ -44,7 +44,9 @@ export async function fetchAuthenticateCustomer(
     anonymousId: localStorage.getItem("anonId"),
     anonymousCartSignInMode: "MergeWithExistingCustomerCart",
   };
-  const usefulData = localStorage.getItem("anonCartId") ? { ...data, ...anonymousCartData } : data;
+  const usefulData = localStorage.getItem("anonCartId")
+    ? { ...{}, ...data, ...anonymousCartData }
+    : data;
   const config = {
     method: "POST",
     headers: {
