@@ -17,8 +17,6 @@ export async function getAccessToken(): Promise<AccessToken | Error | boolean> {
     );
     if (response.ok) {
       const answer: AccessTokenResponse = await response.json();
-      // localStorage.setItem("anonymous-token", answer.access_token);
-      // await fetchCreateAnonCart(answer.access_token);
       return answer;
     }
     return false;

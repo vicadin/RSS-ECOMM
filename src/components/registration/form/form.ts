@@ -11,7 +11,7 @@ import {
 import { AccessTokenResponse, Customer } from "../../../interfaces/login-page-types.ts";
 import { setType } from "../../../interfaces/registration/registartionFormUtils.ts";
 import { AccessToken } from "../../../interfaces/catalog-types.ts";
-import { fetchCreateAnonCart } from "../../../interfaces/cart-request.ts";
+import { setAnonTokenAndCreateAnonCart } from "../../../utils/cart-utils.ts";
 
 export default class RegistrationForm {
   private formElement: HTMLFormElement;
@@ -158,8 +158,7 @@ export default class RegistrationForm {
       const result = await getAccessToken();
       if (typeof result !== "boolean" && (result as AccessToken).token_type === "Bearer") {
         accessToken = (result as AccessToken).access_token;
-        localStorage.setItem("anonymous-token", accessToken);
-        await fetchCreateAnonCart(accessToken);
+        await setAnonTokenAndCreateAnonCart(accessToken);
       }
     }
     if (accessToken) {

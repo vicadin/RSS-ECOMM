@@ -1,4 +1,5 @@
 import { Cart, chosen } from "../interfaces/cart.-types.ts";
+import { fetchCreateAnonCart } from "../interfaces/cart-request.ts";
 
 export function getCurrentToken() {
   const token = localStorage.getItem("token")
@@ -17,4 +18,9 @@ export function setArrayOfChosenProduct(cart: Cart | Error | boolean): void {
     }
     chosen.products = arrayOfProductsId;
   }
+}
+
+export async function setAnonTokenAndCreateAnonCart(anonToken: string) {
+  localStorage.setItem("anonymous-token", anonToken);
+  await fetchCreateAnonCart(anonToken);
 }

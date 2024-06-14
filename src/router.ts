@@ -29,8 +29,12 @@ import {
 import { clearCurrentSearch, setCurrentSearch } from "./utils/header-utils.ts";
 import DetailedCard from "./components/pdp/DetailedCard.ts";
 import { getAccessToken } from "./interfaces/registration/registrationRequests.ts";
-import { fetchCreateAnonCart, getMyActiveCart } from "./interfaces/cart-request.ts";
-import { getCurrentToken, setArrayOfChosenProduct } from "./utils/cart-utils.ts";
+import { getMyActiveCart } from "./interfaces/cart-request.ts";
+import {
+  getCurrentToken,
+  setAnonTokenAndCreateAnonCart,
+  setArrayOfChosenProduct,
+} from "./utils/cart-utils.ts";
 import { AccessToken } from "./interfaces/catalog-types.ts";
 
 type Routes = {
@@ -181,8 +185,7 @@ export function handleHash() {
     hash = "home";
     window.location.hash = hash;
     getAccessToken().then(async (answer) => {
-      localStorage.setItem("anonymous-token", (answer as AccessToken).access_token);
-      await fetchCreateAnonCart((answer as AccessToken).access_token);
+      await setAnonTokenAndCreateAnonCart((answer as AccessToken).access_token);
     });
   }
 
