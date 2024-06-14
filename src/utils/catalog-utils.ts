@@ -188,7 +188,6 @@ export function setCurrentFiltersArray(params: URLSearchParams) {
     }
   });
   currentFilterArray.filter = array;
-  // console.log(currentFilterArray, "currentFilterArray");
 }
 
 export function clearCurrentSort() {
@@ -204,8 +203,8 @@ export function getAttributes(answer): Attributes {
   const totalAttributes = [];
   let totalAttributesNames = [];
   if (answer.results) {
-    answer.results.forEach((anserResult) => {
-      anserResult.masterVariant.attributes.forEach((attribute) => {
+    answer.results.forEach((answerResult) => {
+      answerResult.masterVariant.attributes.forEach((attribute) => {
         totalAttributesNames.push(attribute.name);
         totalAttributes.push(attribute);
       });
@@ -305,4 +304,5 @@ export function setTempArrayOfAttributes(params) {
       }
     }
   });
+  temparr.push(["limit", "150"]);
 }

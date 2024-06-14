@@ -158,7 +158,7 @@ export class ProfileTabs {
         label.classList.add("label_moved");
       });
       input.addEventListener("focusout", () => {
-        if (input.value === "") {
+        if ((input as HTMLInputElement).value === "") {
           const label = input.previousElementSibling as HTMLLabelElement;
           label.classList.remove("label_moved");
         }
@@ -215,6 +215,7 @@ export class ProfileTabs {
               this.userProfile.email,
               newPassword,
             );
+
             responseFetchGetAccessTokenThroughPassword.then(
               (resultFetchGetAccessTokenThroughPassword) => {
                 let authToken: string;
