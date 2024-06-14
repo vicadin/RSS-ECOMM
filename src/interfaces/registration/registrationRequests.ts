@@ -1,6 +1,6 @@
 import { displayError } from "./registartionFormUtils.ts";
 import { AccessToken } from "../catalog-types.ts";
-import { fetchCreateAnonCart } from "../cart-request.ts";
+import { AccessTokenResponse } from "../login-page-types.ts";
 
 export async function getAccessToken(): Promise<AccessToken | Error | boolean> {
   const config = {
@@ -16,9 +16,9 @@ export async function getAccessToken(): Promise<AccessToken | Error | boolean> {
       config,
     );
     if (response.ok) {
-      const answer = await response.json();
-      localStorage.setItem("anonymous-token", answer.access_token);
-      await fetchCreateAnonCart(answer.access_token);
+      const answer: AccessTokenResponse = await response.json();
+      // localStorage.setItem("anonymous-token", answer.access_token);
+      // await fetchCreateAnonCart(answer.access_token);
       return answer;
     }
     return false;

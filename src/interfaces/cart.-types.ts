@@ -87,3 +87,11 @@ export type Cart = {
   version: 23;
   versionModifiedAt: "2024-06-13T17:20:27.213Z";
 };
+
+export type ArrayOfProductsInCart = {
+  products: string[];
+};
+
+export const chosen: ArrayOfProductsInCart = {
+  products: [],
+};
