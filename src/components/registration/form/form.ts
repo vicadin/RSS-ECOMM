@@ -10,6 +10,7 @@ import {
 } from "../../../interfaces/login-page-requests.ts";
 import { AccessTokenResponse, Customer } from "../../../interfaces/login-page-types.ts";
 import { setType } from "../../../interfaces/registration/registartionFormUtils.ts";
+import { AccessToken } from "../../../interfaces/catalog-types.ts";
 
 export default class RegistrationForm {
   private formElement: HTMLFormElement;
@@ -149,65 +150,77 @@ export default class RegistrationForm {
     ) {
       return;
     }
-
-    const responseGetAccessToken = getAccessToken();
-    responseGetAccessToken.then((result) => {
-      const accessToken = result.access_token;
-      if (accessToken) {
-        registerUser(
-          accessToken,
-          email,
-          password,
-          firstName,
-          lastName,
-          dateOfBirth,
-          deliveryStreet,
-          deliveryCity,
-          deliveryPostalCode,
-          deliveryCountry,
-          billingStreet,
-          billingCity,
-          billingPostalCode,
-          billingCountry,
-          this.deliveryAddressCheckbox.checked,
-          this.billingAddressCheckbox.checked,
-        ).then((res) => {
-          if (res) {
-            this.overlay.classList.add("show");
-            this.registrationSection.appendChild(this.successMessage);
-            const responseFetchGetAccessTokenThroughPassword = fetchGetAccessTokenThroughPassword(
-              email,
-              password,
-            );
-            responseFetchGetAccessTokenThroughPassword.then(
-              (resultFetchGetAccessTokenThroughPassword) => {
-                let authToken: string;
-                if (
-                  (resultFetchGetAccessTokenThroughPassword as AccessTokenResponse).token_type ===
-                  "Bearer"
-                ) {
-                  authToken = (resultFetchGetAccessTokenThroughPassword as AccessTokenResponse)
-                    .access_token;
-                  if (authToken) {
-                    fetchAuthenticateCustomer(authToken, email, password).then(
-                      (resfetchAuthenticateCustomer) => {
-                        const { id } = (resfetchAuthenticateCustomer as Customer).customer;
-                        localStorage.setItem("id", id);
-                        localStorage.setItem("token", JSON.stringify({ token: authToken }));
-                        window.location.hash = "#home";
-                      },
-                    );
-                  }
-                }
-              },
-            );
-            setTimeout(() => {
-              window.location.href = "/#home";
-            }, 500);
-          }
-        });
+    let accessToken;
+    if (localStorage.getItem("anonymous-token")) {
+      accessToken = localStorage.getItem("anonymous-token");
+    } else {
+      const result = await getAccessToken();
+      if (typeof result !== "boolean" && (result as AccessToken).token_type === "Bearer") {
+        accessToken = (result as AccessToken).access_token;
       }
-    });
+    }
+    if (accessToken) {
+      registerUser(
+        accessToken,
+        email,
+        password,
+        firstName,
+        lastName,
+        dateOfBirth,
+        deliveryStreet,
+        deliveryCity,
+        deliveryPostalCode,
+        deliveryCountry,
+        billingStreet,
+        billingCity,
+        billingPostalCode,
+        billingCountry,
+        this.deliveryAddressCheckbox.checked,
+        this.billingAddressCheckbox.checked,
+      ).then((res) => {
+        if (res) {
+          this.overlay.classList.add("show");
+          this.registrationSection.appendChild(this.successMessage);
+          const responseFetchGetAccessTokenThroughPassword = fetchGetAccessTokenThroughPassword(
+            email,
+            password,
+          );
+          responseFetchGetAccessTokenThroughPassword.then(
+            (resultFetchGetAccessTokenThroughPassword) => {
+              let authToken: string;
+              if (
+                (resultFetchGetAccessTokenThroughPassword as AccessTokenResponse).token_type ===
+                "Bearer"
+              ) {
+                authToken = (resultFetchGetAccessTokenThroughPassword as AccessTokenResponse)
+                  .access_token;
+                if (authToken) {
+                  fetchAuthenticateCustomer(authToken, email, password).then(
+                    (resfetchAuthenticateCustomer) => {
+                      if (localStorage.getItem("anonymous-token")) {
+                        localStorage.removeItem("anonymous-token");
+                      }
+                      const { id } = (resfetchAuthenticateCustomer as Customer).customer;
+                      localStorage.setItem("id", id);
+                      localStorage.setItem(
+                        "currentCartVersion",
+                        resfetchAuthenticateCustomer?.cart?.version,
+                      );
+                      localStorage.setItem("token", JSON.stringify({ token: authToken }));
+                      window.location.hash = "#home";
+                    },
+                  );
+                }
+              }
+            },
+          );
+          setTimeout(() => {
+            window.location.href = "/#home";
+          }, 500);
+        }
+      });
+    }
+    // });
   }
 
   private updateErrorMessage(fieldName: string, errorMessage: string | null): void {

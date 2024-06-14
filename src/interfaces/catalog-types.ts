@@ -257,3 +257,5 @@ export type FilterObj = {
 };
 
 export type TempArrayOfAttributes = Attributes[];
+
+export const productButtonAttributes: [string, string][] = [["type", "button"]];

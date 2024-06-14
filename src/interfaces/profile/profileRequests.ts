@@ -381,7 +381,6 @@ export async function changePassword(
 
     return { success: true };
   } catch (error) {
-    console.error("Error changing password:", error);
     return { success: false, message: "Error changing password" };
   }
 }

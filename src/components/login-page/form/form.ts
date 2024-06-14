@@ -157,13 +157,19 @@ export class Form {
                 this.showRequestError("Sorry, something went wrong. Please, try again later.");
               } else {
                 const { id } = (res as Customer).customer;
+                if (localStorage.getItem("anonymous-token")) {
+                  localStorage.removeItem("anonymous-token");
+                }
                 setLocalStorage([
                   ["id", id],
                   ["token", JSON.stringify({ token })],
                 ]);
                 this.clearFormInputs();
+                if (localStorage.getItem("anonCartId")) {
+                  localStorage.removeItem("anonCartId");
+                }
                 window.location.hash = "#home";
-                window.location.reload();
+                // window.location.reload();
               }
             });
           } else if ((result as Response).status === 400) {

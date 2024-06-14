@@ -197,7 +197,6 @@ export default class CatalogPage {
           }
         });
       }
-      console.log(this.arrayOfAttributeBlock);
       CatalogPage.setSearchParams(undefined, this.arrayOfAttributeBlock);
     });
   }
@@ -248,7 +247,6 @@ export default class CatalogPage {
       const attributeBlock = new AttributeBlock(key, value);
       this.filterAttributesContainer.append(attributeBlock.getHtml());
     });
-    // console.log(attributesForFilters.attributes, "this is from creating filterAside");
     this.attributesShowButton = createButton(
       "attributes-container__show-button hidden",
       showButtonAttributes,

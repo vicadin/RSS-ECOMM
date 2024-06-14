@@ -28,6 +28,7 @@ import {
 } from "./utils/catalog-utils.ts";
 import { clearCurrentSearch, setCurrentSearch } from "./utils/header-utils.ts";
 import DetailedCard from "./components/pdp/DetailedCard.ts";
+import { getAccessToken } from "./interfaces/registration/registrationRequests.ts";
 
 type Routes = {
   [key: string]: () => void;
@@ -136,7 +137,6 @@ export function handleHash() {
             }
           });
           setDataForBreadcrumbs(localStorage.getItem("productsCategoryId"), categories.array);
-
           newContent.append(new CatalogPage().getHtml());
         });
       }
@@ -148,7 +148,6 @@ export function handleHash() {
         if (localStorage.getItem("productId")) {
           const prodItem = fetchGetProducts(localStorage.getItem("productId"));
           prodItem.then((result) => {
-            // append detailed card instead of product card
             if (!(typeof result === "boolean")) {
               newContent.append(new DetailedCard(result, "en-US").getHtml());
             }
@@ -163,6 +162,7 @@ export function handleHash() {
     window.location.hash = hash;
   }
   if (hash === "logout") {
+    getAccessToken();
     hash = "home";
     window.location.hash = hash;
   }

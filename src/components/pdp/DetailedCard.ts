@@ -39,9 +39,9 @@ export default class DetailedCard {
 
   slides: string[];
 
-  constructor(props: Product, locale: string) {
+  constructor(props, locale: string) {
     this.detailedCardItem = createElement("div", "detailed-card");
-    this.slides = props.masterData?.current.masterVariant.images.map((image) => image.url) || [];
+    this.slides = props.masterData.current.masterVariant.images.map((image) => image.url) || [];
     this.image = new Image();
     this.currentSlideIndex = 0;
     this.setupModal();

@@ -19,7 +19,6 @@ export class ProfilePage {
     this.profileSection.append(this.profileTitle);
     const profileInfoDiv = document.createElement("div");
     profileInfoDiv.classList.add("profile-info");
-
     this.profileSection.append(profileTabs.getHtml());
   }
 
