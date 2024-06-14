@@ -85,6 +85,7 @@ export async function addLineItem(
     );
     if (response.ok) {
       const answer = await response.json();
+      console.log(answer);
       return answer;
     }
     return {
