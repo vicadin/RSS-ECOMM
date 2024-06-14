@@ -5,8 +5,6 @@ export async function getUserBasket(): Promise<Basket | null> {
   const userId = localStorage.getItem("id");
   const tokenData = localStorage.getItem("token");
   const token = tokenData ? JSON.parse(tokenData).token : null;
-  console.log(token);
-  console.log(userId);
 
   if (!userId || !token) {
     throw new Error("User is not authenticated");
@@ -24,12 +22,13 @@ export async function getUserBasket(): Promise<Basket | null> {
       },
     );
 
+
     if (!response.ok) {
       throw new Error("Failed to fetch basket");
     }
 
     const data = await response.json();
-
+    console.log(data);
     const lineItems = data.lineItems.map((item: any) => ({
       id: item.id,
       productId: item.productId,
@@ -38,12 +37,14 @@ export async function getUserBasket(): Promise<Basket | null> {
       quantity: item.quantity,
       imageUrl: item.variant.images[0]?.url || "",
     }));
+    console.log(lineItems);
 
     return {
       id: data.id,
       customerId: data.customerId || "",
       lineItems,
       totalPrice: data.totalPrice.centAmount / 100,
+      version: data.version,
     };
   } catch (error) {
     console.error("Error fetching basket:", error);
@@ -78,3 +79,32 @@ export async function updateProductQuantity(
     return false;
   }
 }
+export async function clearBasket(cartId: string, cartVersion: number): Promise<boolean> {
+    const tokenData = localStorage.getItem("token");
+    const token = tokenData ? JSON.parse(tokenData).token : null;
+  
+    if (!token) {
+      throw new Error("User is not authenticated");
+    }
+    try {
+      const response = await fetch(
+        `${process.env.HOST}/${process.env.PROJECT_KEY}/carts/${cartId}?version=${cartVersion}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+  
+      if (!response.ok) {
+        throw new Error("Failed to clear basket");
+      }
+  
+      return true;
+    } catch (error) {
+      console.error("Error clearing basket:", error);
+      return false;
+    }
+  }

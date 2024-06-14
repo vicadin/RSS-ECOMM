@@ -33,6 +33,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  width: 45%;
 }
 .empty-basket {
   font-size: 18px;
@@ -119,5 +120,15 @@
   .product-details {
     flex-direction: column;
     gap: 4px;
+    text-align: center;
   }
+  .quantity-decrease, .quantity-increase{
+    padding: 5px;
+  }
+  .quantity-value {
+    padding: 0 4px;
+}
+.product-name{
+    font-size: 14px;
+}
 }

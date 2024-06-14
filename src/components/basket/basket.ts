@@ -1,6 +1,7 @@
 import "./basket.css";
-import { getUserBasket, updateProductQuantity } from "../../interfaces/basket/basketRequests";
+import { getUserBasket, updateProductQuantity, clearBasket } from "../../interfaces/basket/basketRequests";
 import { Basket, Product } from "../../interfaces/basket/basketTypes";
+import { log } from "console";
 
 export default class BasketPage {
   private title: HTMLElement;
@@ -29,7 +30,7 @@ export default class BasketPage {
       this.basketContainer.innerHTML = `<p class="empty-basket">Your basket is empty :(<br><br>Go to <a class="basket-link" href="#catalog">catalog</a></p>`;
       return;
     }
-
+console.log(basket)
     const totalSum = basket.totalPrice;
 
     const productItems = basket.lineItems.map((product) => this.createProductItem(product));
@@ -92,6 +93,8 @@ export default class BasketPage {
     const applyPromoCodeButton = this.basketContainer.querySelector(".apply-promo-code");
     const promoInput = this.basketContainer.querySelector(".promo-code-input") as HTMLInputElement;
     const promoLabel = this.basketContainer.querySelector(".promo-code-label") as HTMLInputElement;
+    const clearAllButton = this.basketContainer.querySelector("#clearAll");
+
 
     decreaseButtons.forEach((button) => {
       button.addEventListener("click", async (event) => {
@@ -164,6 +167,22 @@ export default class BasketPage {
         promoLabel.classList.remove("password-label_moved");
       }
     });
+
+    if (clearAllButton) {
+      clearAllButton.addEventListener("click", async () => {
+        const basket = await getUserBasket();
+        
+        if (basket && basket.id) {
+          console.log(basket);
+          
+          console.log(basket.version)
+          const success = await clearBasket(basket.id, basket.version);
+          if (success) {
+            this.basketContainer.innerHTML = `<p class="empty-basket">Your basket is empty :(<br><br>Go to <a class="basket-link" href="#catalog">catalog</a></p>`;
+          }
+        }
+      });
+    }
   }
 
   async updateTotal() {

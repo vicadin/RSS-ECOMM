@@ -12,4 +12,5 @@ export interface Basket {
   customerId: string;
   lineItems: Product[];
   totalPrice: number;
+  version: number;
 }
