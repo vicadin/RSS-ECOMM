@@ -2,7 +2,7 @@ import { displayError } from "./registartionFormUtils.ts";
 import { AccessToken } from "../catalog-types.ts";
 import { fetchCreateAnonCart } from "../cart-request.ts";
 
-export async function getAccessToken(): Promise<AccessToken | Error | Response> {
+export async function getAccessToken(): Promise<AccessToken | Error | boolean> {
   const config = {
     method: "POST",
     headers: {
@@ -18,10 +18,10 @@ export async function getAccessToken(): Promise<AccessToken | Error | Response> 
     if (response.ok) {
       const answer = await response.json();
       localStorage.setItem("anonymous-token", answer.access_token);
-      fetchCreateAnonCart(answer.access_token);
+      await fetchCreateAnonCart(answer.access_token);
       return answer;
     }
-    return response;
+    return false;
   } catch (err: Error) {
     return err;
   }

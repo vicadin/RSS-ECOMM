@@ -173,7 +173,7 @@ export class Form {
                   localStorage.removeItem("anonCartId");
                 }
                 window.location.hash = "#home";
-                // window.location.reload();
+                window.location.reload();
               }
             });
           } else if ((result as Response).status === 400) {

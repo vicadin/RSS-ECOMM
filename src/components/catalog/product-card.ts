@@ -104,6 +104,7 @@ export default class ProductCard {
       if ((ev.target as HTMLElement).closest(".product-card__button-container")) {
         this.productCardItem.classList.add("product-card_spin");
         //  Add product with this id to the cart + update cart products-amount - need to be added updating function;
+
         const token = localStorage.getItem("token")
           ? JSON.parse(localStorage.getItem("token")).token
           : localStorage.getItem("anonymous-token");

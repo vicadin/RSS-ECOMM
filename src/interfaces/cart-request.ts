@@ -44,6 +44,7 @@ export async function getMyActiveCart(token: string): Promise<Cart | boolean | E
     );
     if (response.ok) {
       const answer = await response.json();
+
       return answer;
     }
     return false;
@@ -84,7 +85,6 @@ export async function addLineItem(
     );
     if (response.ok) {
       const answer = await response.json();
-      console.log(answer, "add line item");
       return answer;
     }
     return {

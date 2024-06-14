@@ -77,7 +77,7 @@ export class Header {
         if (localStorage.getItem("token")) {
           localStorage.removeItem("token");
         }
-        // window.location.reload();
+        window.location.reload();
       }
 
       this.findContainer.addEventListener("mousedown", (event) => {
