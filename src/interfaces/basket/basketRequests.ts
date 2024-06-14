@@ -50,7 +50,7 @@ export async function getUserBasket(): Promise<Basket | null> {
   }
 }
 
-export async function updateProductQuantity(
+/* export async function updateProductQuantity(
   customerId: string,
   productId: number,
   quantity: number,
@@ -76,7 +76,7 @@ export async function updateProductQuantity(
     console.error("Error updating product quantity:", error);
     return false;
   }
-}
+} */
 export async function clearBasket(cartId: string, cartVersion: number): Promise<boolean> {
   const tokenData = localStorage.getItem("token");
   const token = tokenData ? JSON.parse(tokenData).token : null;
@@ -141,6 +141,48 @@ export async function removeProduct(
     return true;
   } catch (error) {
     console.error("Error removing product:", error);
+    return false;
+  }
+}
+
+export async function updateLineItemQuantity(
+  cartId: string,
+  cartVersion: number,
+  lineItemId: string,
+  quantity: number,
+): Promise<boolean> {
+  const tokenData = localStorage.getItem("token");
+  const token = tokenData ? JSON.parse(tokenData).token : null;
+
+  if (!token) {
+    throw new Error("User is not authenticated");
+  }
+  try {
+    const response = await fetch(`${process.env.HOST}/${process.env.PROJECT_KEY}/carts/${cartId}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        version: cartVersion,
+        actions: [
+          {
+            action: "changeLineItemQuantity",
+            lineItemId: lineItemId,
+            quantity: quantity,
+          },
+        ],
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update line item quantity");
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error updating line item quantity:", error);
     return false;
   }
 }

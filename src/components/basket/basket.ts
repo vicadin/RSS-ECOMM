@@ -1,7 +1,7 @@
 import "./basket.css";
 import {
   getUserBasket,
-  updateProductQuantity,
+  updateLineItemQuantity,
   clearBasket,
   removeProduct,
 } from "../../interfaces/basket/basketRequests";
@@ -100,18 +100,25 @@ export default class BasketPage {
 
     decreaseButtons.forEach((button) => {
       button.addEventListener("click", async (event) => {
-        const productId = Number((event.target as HTMLElement).getAttribute("data-product-id"));
+        const productId = (event.target as HTMLElement).getAttribute("data-product-id")!;
         const productElement = this.basketContainer.querySelector(
           `.product-item[data-product-id="${productId}"]`,
         );
-        if (productElement) {
-          const quantityElement = productElement.querySelector(".quantity-value");
-          const currentQuantity = Number(quantityElement?.textContent);
-          if (currentQuantity > 1) {
-            const newQuantity = currentQuantity - 1;
-            const success = await updateProductQuantity(this.customerId, productId, newQuantity);
+        const quantityValueElement = productElement!.querySelector(".quantity-value")!;
+        let quantity = parseInt(quantityValueElement.textContent!);
+
+        if (quantity > 1) {
+          quantity--;
+          const basket = await getUserBasket();
+          if (basket) {
+            const success = await updateLineItemQuantity(
+              basket.id,
+              basket.version,
+              productId,
+              quantity,
+            );
             if (success) {
-              quantityElement!.textContent = String(newQuantity);
+              quantityValueElement.textContent = quantity.toString();
               this.updateTotal();
             }
           }
@@ -121,22 +128,30 @@ export default class BasketPage {
 
     increaseButtons.forEach((button) => {
       button.addEventListener("click", async (event) => {
-        const productId = Number((event.target as HTMLElement).getAttribute("data-product-id"));
+        const productId = (event.target as HTMLElement).getAttribute("data-product-id")!;
         const productElement = this.basketContainer.querySelector(
           `.product-item[data-product-id="${productId}"]`,
         );
-        if (productElement) {
-          const quantityElement = productElement.querySelector(".quantity-value");
-          const currentQuantity = Number(quantityElement?.textContent);
-          const newQuantity = currentQuantity + 1;
-          const success = await updateProductQuantity(this.customerId, productId, newQuantity);
+        const quantityValueElement = productElement!.querySelector(".quantity-value")!;
+        let quantity = parseInt(quantityValueElement.textContent!);
+
+        quantity++;
+        const basket = await getUserBasket();
+        if (basket) {
+          const success = await updateLineItemQuantity(
+            basket.id,
+            basket.version,
+            productId,
+            quantity,
+          );
           if (success) {
-            quantityElement!.textContent = String(newQuantity);
+            quantityValueElement.textContent = quantity.toString();
             this.updateTotal();
           }
         }
       });
     });
+
     if (applyPromoButton) {
       applyPromoButton.addEventListener("click", () => {
         const promoModal = this.basketContainer.querySelector(".promo-modal");
@@ -206,17 +221,10 @@ export default class BasketPage {
   }
 
   async updateTotal() {
-    const basket = await getUserBasket(this.customerId);
-    if (basket) {
-      let totalSum = 0;
-      basket.products.forEach((product) => {
-        totalSum += product.price * product.quantity;
-      });
-      const totalElement = this.basketContainer.querySelector(".total");
-      if (totalElement) {
-        /*  totalElement.textContent = `Total: ${totalSum.toFixed(2)}$`; */
-        totalElement.textContent = `Total: ${totalSum}$`;
-      }
+    const basket = await getUserBasket();
+    const totalElement = this.basketContainer.querySelector(".total");
+    if (basket && totalElement) {
+      totalElement.textContent = `Total: ${basket.totalPrice}$`;
     }
   }
   async applyPromoCode(promoCode: string) {
