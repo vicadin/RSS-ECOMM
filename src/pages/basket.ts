@@ -1,4 +1,4 @@
-import Basket from "../components/basket/Basket.ts";
+import Basket from "../components/basket/basket.ts";
 
 export default function BasketPage() {
   const basketForm = new Basket();
