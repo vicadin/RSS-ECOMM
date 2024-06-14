@@ -1,7 +1,11 @@
 import "./basket.css";
-import { getUserBasket, updateProductQuantity, clearBasket } from "../../interfaces/basket/basketRequests";
+import {
+  getUserBasket,
+  updateProductQuantity,
+  clearBasket,
+  removeProduct,
+} from "../../interfaces/basket/basketRequests";
 import { Basket, Product } from "../../interfaces/basket/basketTypes";
-import { log } from "console";
 
 export default class BasketPage {
   private title: HTMLElement;
@@ -30,7 +34,6 @@ export default class BasketPage {
       this.basketContainer.innerHTML = `<p class="empty-basket">Your basket is empty :(<br><br>Go to <a class="basket-link" href="#catalog">catalog</a></p>`;
       return;
     }
-console.log(basket)
     const totalSum = basket.totalPrice;
 
     const productItems = basket.lineItems.map((product) => this.createProductItem(product));
@@ -61,7 +64,7 @@ console.log(basket)
               <span class="quantity-value">${product.quantity}</span>
               <button class="quantity-increase" data-product-id="${product.id}">+</button>
             </div>
-          <img src="../assets/icons/close.png" alt="" class="remove-icon">  
+          <img src="../assets/icons/close.png" alt="" data-product-id="${product.id}" class="remove-icon">  
          
         </div>
       `;
@@ -94,7 +97,6 @@ console.log(basket)
     const promoInput = this.basketContainer.querySelector(".promo-code-input") as HTMLInputElement;
     const promoLabel = this.basketContainer.querySelector(".promo-code-label") as HTMLInputElement;
     const clearAllButton = this.basketContainer.querySelector("#clearAll");
-
 
     decreaseButtons.forEach((button) => {
       button.addEventListener("click", async (event) => {
@@ -171,11 +173,11 @@ console.log(basket)
     if (clearAllButton) {
       clearAllButton.addEventListener("click", async () => {
         const basket = await getUserBasket();
-        
+
         if (basket && basket.id) {
           console.log(basket);
-          
-          console.log(basket.version)
+
+          console.log(basket.version);
           const success = await clearBasket(basket.id, basket.version);
           if (success) {
             this.basketContainer.innerHTML = `<p class="empty-basket">Your basket is empty :(<br><br>Go to <a class="basket-link" href="#catalog">catalog</a></p>`;
@@ -183,6 +185,24 @@ console.log(basket)
         }
       });
     }
+
+    const removeIcons = this.basketContainer.querySelectorAll(".remove-icon");
+    removeIcons.forEach((icon) => {
+      icon.addEventListener("click", async (event) => {
+        const productId = (event.target as HTMLElement).getAttribute("data-product-id")!;
+        const basket = await getUserBasket();
+        if (basket) {
+          const product = basket.lineItems.find((item) => item.id === productId);
+          if (product) {
+            console.log(productId);
+            const success = await removeProduct(basket.id, basket.version, productId);
+            if (success) {
+              this.render(this.basketContainer.parentElement!);
+            }
+          }
+        }
+      });
+    });
   }
 
   async updateTotal() {

@@ -1,5 +1,6 @@
 import { log } from "console";
 import { Basket, Product } from "./basketTypes";
+import { version } from "os";
 
 export async function getUserBasket(): Promise<Basket | null> {
   const userId = localStorage.getItem("id");
@@ -22,13 +23,11 @@ export async function getUserBasket(): Promise<Basket | null> {
       },
     );
 
-
     if (!response.ok) {
       throw new Error("Failed to fetch basket");
     }
 
     const data = await response.json();
-    console.log(data);
     const lineItems = data.lineItems.map((item: any) => ({
       id: item.id,
       productId: item.productId,
@@ -37,7 +36,6 @@ export async function getUserBasket(): Promise<Basket | null> {
       quantity: item.quantity,
       imageUrl: item.variant.images[0]?.url || "",
     }));
-    console.log(lineItems);
 
     return {
       id: data.id,
@@ -80,31 +78,69 @@ export async function updateProductQuantity(
   }
 }
 export async function clearBasket(cartId: string, cartVersion: number): Promise<boolean> {
-    const tokenData = localStorage.getItem("token");
-    const token = tokenData ? JSON.parse(tokenData).token : null;
-  
-    if (!token) {
-      throw new Error("User is not authenticated");
-    }
-    try {
-      const response = await fetch(
-        `${process.env.HOST}/${process.env.PROJECT_KEY}/carts/${cartId}?version=${cartVersion}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        },
-      );
-  
-      if (!response.ok) {
-        throw new Error("Failed to clear basket");
-      }
-  
-      return true;
-    } catch (error) {
-      console.error("Error clearing basket:", error);
-      return false;
-    }
+  const tokenData = localStorage.getItem("token");
+  const token = tokenData ? JSON.parse(tokenData).token : null;
+
+  if (!token) {
+    throw new Error("User is not authenticated");
   }
+  try {
+    const response = await fetch(
+      `${process.env.HOST}/${process.env.PROJECT_KEY}/carts/${cartId}?version=${cartVersion}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to clear basket");
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error clearing basket:", error);
+    return false;
+  }
+}
+export async function removeProduct(
+  cartId: string,
+  cartVersion: number,
+  lineItemId: string,
+): Promise<boolean> {
+  const tokenData = localStorage.getItem("token");
+  const token = tokenData ? JSON.parse(tokenData).token : null;
+
+  if (!token) {
+    throw new Error("User is not authenticated");
+  }
+  try {
+    const response = await fetch(`${process.env.HOST}/${process.env.PROJECT_KEY}/carts/${cartId}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        version: cartVersion,
+        actions: [
+          {
+            action: "removeLineItem",
+            lineItemId: lineItemId,
+          },
+        ],
+      }),
+    });
+    if (!response.ok) {
+      throw new Error("Failed to remove product");
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error removing product:", error);
+    return false;
+  }
+}
