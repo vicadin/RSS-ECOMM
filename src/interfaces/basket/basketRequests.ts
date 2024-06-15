@@ -1,27 +1,32 @@
-import { log } from "console";
 import { Basket, Product } from "./basketTypes";
-import { version } from "os";
 
-export async function getUserBasket(): Promise<Basket | null> {
-  const userId = localStorage.getItem("id");
+function getAuthData() {
   const tokenData = localStorage.getItem("token");
   const token = tokenData ? JSON.parse(tokenData).token : null;
+  const anonCartId = localStorage.getItem("anonCartId");
+  const anonToken = localStorage.getItem("anonymous-token");
+  const userId = localStorage.getItem("id");
 
-  if (!userId || !token) {
-    throw new Error("User is not authenticated");
+  let url: string;
+  let headers: HeadersInit = { "Content-Type": "application/json" };
+
+  if (userId && token) {
+    url = `${process.env.HOST}/${process.env.PROJECT_KEY}/carts/customer-id=${userId}`;
+    headers.Authorization = `Bearer ${token}`;
+  } else if (anonCartId) {
+    url = `${process.env.HOST}/${process.env.PROJECT_KEY}/carts/${anonCartId}`;
+    headers.Authorization = `Bearer ${anonToken}`;
+  } else {
+    throw new Error("No authenticated user or anonymous cart ID found");
   }
+
+  return { url, headers };
+}
+
+export async function getUserBasket(): Promise<Basket | null> {
   try {
-    const response = await fetch(
-      `${process.env.HOST}/${process.env.PROJECT_KEY}/carts/customer-id=${userId}`,
-      //const response = await fetch(`${process.env.HOST}/${process.env.PROJECT_KEY}/carts/e2da1674-1b69-4f29-b762-8d1d6267d712`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          /* Authorization: `Bearer HZTao77uyUrMif0XqAOgvzH-YJ14qikI`, */
-          "Content-Type": "application/json",
-        },
-      },
-    );
+    const { url, headers } = getAuthData();
+    const response = await fetch(url, { headers });
 
     if (!response.ok) {
       throw new Error("Failed to fetch basket");
@@ -50,99 +55,50 @@ export async function getUserBasket(): Promise<Basket | null> {
   }
 }
 
-/* export async function updateProductQuantity(
-  customerId: string,
-  productId: number,
-  quantity: number,
+async function modifyBasket(
+  cartId: string,
+  method: string,
+  cartVersion?: number,
+  body?: any,
 ): Promise<boolean> {
   try {
-    const response = await fetch(
-      `${process.env.HOST}/${process.env.PROJECT_KEY}/carts/customer-id=${customerId}/product/${productId}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ quantity }),
-      },
-    );
+    const { url, headers } = getAuthData();
+    const requestUrl = cartVersion ? `${url}?version=${cartVersion}` : url;
+
+    const response = await fetch(requestUrl, {
+      method,
+      headers,
+      body: body ? JSON.stringify(body) : undefined,
+    });
 
     if (!response.ok) {
-      throw new Error("Failed to update product quantity");
+      throw new Error(`Failed to ${method === "DELETE" ? "clear basket" : "modify basket"}`);
     }
 
     return true;
   } catch (error) {
-    console.error("Error updating product quantity:", error);
-    return false;
-  }
-} */
-export async function clearBasket(cartId: string, cartVersion: number): Promise<boolean> {
-  const tokenData = localStorage.getItem("token");
-  const token = tokenData ? JSON.parse(tokenData).token : null;
-
-  if (!token) {
-    throw new Error("User is not authenticated");
-  }
-  try {
-    const response = await fetch(
-      `${process.env.HOST}/${process.env.PROJECT_KEY}/carts/${cartId}?version=${cartVersion}`,
-      {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      },
+    console.error(
+      `Error during ${method === "DELETE" ? "clearing basket" : "modifying basket"}:`,
+      error,
     );
-
-    if (!response.ok) {
-      throw new Error("Failed to clear basket");
-    }
-
-    return true;
-  } catch (error) {
-    console.error("Error clearing basket:", error);
     return false;
   }
 }
+
+export async function clearBasket(cartId: string, cartVersion: number): Promise<boolean> {
+  return modifyBasket(cartId, "DELETE", cartVersion);
+}
+
 export async function removeProduct(
   cartId: string,
   cartVersion: number,
   lineItemId: string,
 ): Promise<boolean> {
-  const tokenData = localStorage.getItem("token");
-  const token = tokenData ? JSON.parse(tokenData).token : null;
-
-  if (!token) {
-    throw new Error("User is not authenticated");
-  }
-  try {
-    const response = await fetch(`${process.env.HOST}/${process.env.PROJECT_KEY}/carts/${cartId}`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        version: cartVersion,
-        actions: [
-          {
-            action: "removeLineItem",
-            lineItemId: lineItemId,
-          },
-        ],
-      }),
-    });
-    if (!response.ok) {
-      throw new Error("Failed to remove product");
-    }
-
-    return true;
-  } catch (error) {
-    console.error("Error removing product:", error);
-    return false;
-  }
+  const body = {
+    version: cartVersion,
+    actions: [{ action: "removeLineItem", lineItemId }],
+  };
+  return modifyBasket(cartId, "POST", undefined, body);
 }
 
 export async function updateLineItemQuantity(
@@ -151,38 +107,9 @@ export async function updateLineItemQuantity(
   lineItemId: string,
   quantity: number,
 ): Promise<boolean> {
-  const tokenData = localStorage.getItem("token");
-  const token = tokenData ? JSON.parse(tokenData).token : null;
-
-  if (!token) {
-    throw new Error("User is not authenticated");
-  }
-  try {
-    const response = await fetch(`${process.env.HOST}/${process.env.PROJECT_KEY}/carts/${cartId}`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        version: cartVersion,
-        actions: [
-          {
-            action: "changeLineItemQuantity",
-            lineItemId: lineItemId,
-            quantity: quantity,
-          },
-        ],
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to update line item quantity");
-    }
-
-    return true;
-  } catch (error) {
-    console.error("Error updating line item quantity:", error);
-    return false;
-  }
+  const body = {
+    version: cartVersion,
+    actions: [{ action: "changeLineItemQuantity", lineItemId, quantity }],
+  };
+  return modifyBasket(cartId, "POST", undefined, body);
 }
