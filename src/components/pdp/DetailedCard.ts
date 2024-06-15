@@ -3,6 +3,7 @@ import "../../pages/catalog/catalog-page.css";
 import { createElement } from "../../utils/login-page-utils.ts";
 import { setBeforeDiscountPrice, setFinalPrice } from "../../utils/catalog-utils.ts";
 import { Product } from "../../interfaces/product.ts";
+import { addItemToCart, removeItemFromCart, checkItemInCart } from "../../utils/cart-utils.ts";
 
 export default class DetailedCard {
   id: string;
@@ -39,9 +40,9 @@ export default class DetailedCard {
 
   slides: string[];
 
-  addToBasket: HTMLElement | undefined;
+  addToCartButton: HTMLElement | undefined;
 
-  removeFromBasket: HTMLElement | undefined;
+  removeFromCartButton: HTMLElement | undefined;
 
   constructor(props: Product, locale: string) {
     this.detailedCardItem = createElement("div", "detailed-card");
@@ -51,7 +52,7 @@ export default class DetailedCard {
     this.setupModal();
     this.id = props.id;
     this.renderCard(props, locale);
-    this.checkBasketStatus(props);
+    this.checkCartStatus(props);
   }
 
   renderCard = (props: Product, locale: string) => {
@@ -79,17 +80,15 @@ export default class DetailedCard {
     );
     this.detailedCardItem.append(this.detailedImage, this.detailedCardContent);
     this.detailedImage.append(this.image);
-//AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//
-    this.addToBasket = createElement("button", "add-to-basket");
-    this.removeFromBasket = createElement("button", "remove-from-basket");
+    //AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//
+    this.addToCartButton = createElement("button", "add-to-cart-button");
+    this.removeFromCartButton = createElement("button", "remove-from-cart-button");
 
-    this.addToBasket.textContent = "Add";
-    this.removeFromBasket.textContent = "Delete";
+    this.addToCartButton.textContent = "Add to cart";
+    this.removeFromCartButton.textContent = "Delete from cart";
 
-    this.addToBasket.onclick = this.handleAddToBasket;
-    this.removeFromBasket.onclick = this.handleRemoveFromBasket;
-
-    this.detailedCardItem.append(this.addToBasket, this.removeFromBasket);
+    this.addToCartButton.onclick = this.handleAddToCart;
+    this.removeFromCartButton.onclick = this.handleRemoveFromCart;
     //aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa//
   };
 
@@ -180,8 +179,36 @@ export default class DetailedCard {
     });
   };
   //------------------------------------------------------------//
+  handleAddToCart = async () => {
+    try {
+      await addItemToCart(this.id, this.currentSlideIndex);
+      alert("product added to cart");
+      this.toggleCartButtons(true);
+    } catch (error) {
+      console.error("Error: product not added to cart", error);
+    }
+  };
 
-  
+  handleRemoveFromCart = async () => {
+    try {
+      await removeItemFromCart(this.id);
+      alert("product has been removed from cart");
+      this.toggleCartButtons(false);
+    } catch (error) {
+      console.error("Error when removing an product from the cart:", error);
+    }
+  };
+
+  checkCartStatus = async (props: Product) => {
+    const isInCart = await checkItemInCart(this.id);
+    this.toggleCartButtons(isInCart);
+  };
+
+  toggleCartButtons = (isInCart: boolean) => {
+    if (!this.addToCartButton || !this.removeFromCartButton) return;
+    this.addToCartButton.style.display = isInCart ? "none" : "block";
+    this.removeFromCartButton.style.display = isInCart ? "block" : "none";
+  };
 
   //------------------------------------------------------------//
 
