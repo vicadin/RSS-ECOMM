@@ -1,4 +1,4 @@
-
+import { AccessToken } from "../catalog-types"
 export const addItemToCart = async (): Promise<void> => {
 
 }
