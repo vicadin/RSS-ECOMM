@@ -1,15 +1,15 @@
-import RegistrationPage from "./pages/registration.ts";
-import LoginPage from "./components/login-page/login-page.ts";
-import NotFoundComponent from "./components/404components.ts";
-import { profilePage } from "./pages/profile.ts";
-import { headerEl } from "./components/header.ts";
-import CatalogPage from "./pages/catalog/catalog.ts";
+import RegistrationPage from "./pages/registration";
+import LoginPage from "./components/login-page/login-page";
+import NotFoundComponent from "./components/404components";
+import { profilePage } from "./pages/profile";
+import { headerEl } from "./components/header";
+import CatalogPage from "./pages/catalog/catalog";
 import {
   fetchGetCategories,
   fetchGetProductByCategoryId,
   fetchGetProducts,
   fetchSearchSortFilter,
-} from "./interfaces/catalog-requests.ts";
+} from "./interfaces/catalog-requests";
 
 import {
   categories,
@@ -25,9 +25,9 @@ import {
   setDataForBreadcrumbs,
   setProductsArray,
   setTempArrayOfAttributes,
-} from "./utils/catalog-utils.ts";
-import { clearCurrentSearch, setCurrentSearch } from "./utils/header-utils.ts";
-import DetailedCard from "./components/pdp/DetailedCard.ts";
+} from "./utils/catalog-utils";
+import { clearCurrentSearch, setCurrentSearch } from "./utils/header-utils";
+import DetailedCard from "./components/pdp/DetailedCard";
 
 type Routes = {
   [key: string]: () => void;
