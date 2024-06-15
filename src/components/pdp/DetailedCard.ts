@@ -3,7 +3,7 @@ import "../../pages/catalog/catalog-page.css";
 import { createElement } from "../../utils/login-page-utils.ts";
 import { setBeforeDiscountPrice, setFinalPrice } from "../../utils/catalog-utils.ts";
 import { Product } from "../../interfaces/product.ts";
-import { addItemToCart, removeItemFromCart, checkItemInCart } from "../../utils/cart-utils.ts";
+import { addItemToCart, removeItemFromCart, checkItemInCart } from "../../interfaces/utils/cart-utils";
 
 export default class DetailedCard {
   id: string;
