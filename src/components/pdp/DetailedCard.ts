@@ -5,6 +5,7 @@ import { setBeforeDiscountPrice, setFinalPrice } from "../../utils/catalog-utils
 import { Product } from "../../interfaces/product";
 import { getMyActiveCart, fetchCreateAnonCart, addLineItem } from "../../interfaces/cart-request";
 import { Cart } from "../../interfaces/cart.-types";
+import { getCurrentToken } from "../../utils/"
 
 export default class DetailedCard {
   id: string;
@@ -40,7 +41,9 @@ export default class DetailedCard {
   }
 
   async initializeCart() {
-    const token = this.token;
+    const token = localStorage.getItem("token")
+    ? JSON.parse(localStorage.getItem("token")).token
+    : localStorage.getItem("anonymous-token");
     const existingCart = await getMyActiveCart(token);
     if (existingCart) {
 
