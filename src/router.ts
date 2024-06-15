@@ -25,9 +25,17 @@ import {
   setDataForBreadcrumbs,
   setProductsArray,
   setTempArrayOfAttributes,
-} from "./utils/catalog-utils";
-import { clearCurrentSearch, setCurrentSearch } from "./utils/header-utils";
-import DetailedCard from "./components/pdp/DetailedCard";
+} from "./utils/catalog-utils.ts";
+import { clearCurrentSearch, setCurrentSearch } from "./utils/header-utils.ts";
+import DetailedCard from "./components/pdp/DetailedCard.ts";
+import { getAccessToken } from "./interfaces/registration/registrationRequests.ts";
+import { getMyActiveCart } from "./interfaces/cart-request.ts";
+import {
+  getCurrentToken,
+  setAnonTokenAndCreateAnonCart,
+  setArrayOfChosenProduct,
+} from "./utils/cart-utils.ts";
+import { AccessToken } from "./interfaces/catalog-types.ts";
 
 type Routes = {
   [key: string]: () => void;
@@ -91,12 +99,17 @@ export function handleHash() {
         clearCurrentSearch();
         clearCurrentSort();
         clearCurrentFilter();
+
         const promise = fetchGetProducts();
         promise.then((promiseResult) => {
           setProductsArray(promiseResult);
           getAttributes(promiseResult);
           setArrayOfAttributes(getAttributes(promiseResult));
-          newContent.append(new CatalogPage().getHtml());
+          const currentCart = getMyActiveCart(getCurrentToken());
+          currentCart.then((cart) => {
+            setArrayOfChosenProduct(cart);
+            newContent.append(new CatalogPage().getHtml());
+          });
         });
       }
     },
@@ -112,8 +125,12 @@ export function handleHash() {
           setCurrentFiltersArray(newParams);
           setArrayOfAttributes(getAttributes(res));
           setTempArrayOfAttributes(newParams);
-          newContent.append(new CatalogPage().getHtml());
-          setCurrentSort(newParams);
+          const currentCart = getMyActiveCart(getCurrentToken());
+          currentCart.then((cart) => {
+            setArrayOfChosenProduct(cart);
+            newContent.append(new CatalogPage().getHtml());
+            setCurrentSort(newParams);
+          });
         });
       }
     },
@@ -136,7 +153,6 @@ export function handleHash() {
             }
           });
           setDataForBreadcrumbs(localStorage.getItem("productsCategoryId"), categories.array);
-
           newContent.append(new CatalogPage().getHtml());
         });
       }
@@ -150,6 +166,11 @@ export function handleHash() {
           prodItem.then((result) => {
             // append detailed card instead of product card
             if (!(typeof result === "boolean")) {
+              const currentCart = getMyActiveCart(getCurrentToken());
+          currentCart.then((cart) => {
+            setArrayOfChosenProduct(cart);
+            newContent.append(new CatalogPage().getHtml());
+          });
               newContent.append(new DetailedCard(result, "en-US").getHtml());
             }
           });
@@ -165,6 +186,9 @@ export function handleHash() {
   if (hash === "logout") {
     hash = "home";
     window.location.hash = hash;
+    getAccessToken().then(async (answer) => {
+      await setAnonTokenAndCreateAnonCart((answer as AccessToken).access_token);
+    });
   }
 
   if (hash.match(/.product/s)) {

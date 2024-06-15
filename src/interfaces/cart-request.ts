@@ -1,6 +1,6 @@
 import { Cart } from "./cart.-types";
 
-export async function fetchCreateAnonCart(currentToken: string) {
+export async function fetchCreateAnonCart(currentToken: string): Promise<Cart | Error | boolean> {
   const data = {
     country: "US",
     currency: "USD",
@@ -17,10 +17,10 @@ export async function fetchCreateAnonCart(currentToken: string) {
   const response = await fetch(`${process.env.HOST}/${process.env.PROJECT_KEY}/me/carts`, config);
   try {
     if (response.ok) {
-      const answer = await response.json();
+      const answer: Cart = await response.json();
       localStorage.setItem("anonCartId", answer.id);
       localStorage.setItem("anonId", answer.anonymousId);
-      localStorage.setItem("currentCartVersion", answer.version);
+      localStorage.setItem("currentCartVersion", String(answer.version));
       return answer;
     }
     return false;
@@ -85,7 +85,6 @@ export async function addLineItem(
     );
     if (response.ok) {
       const answer = await response.json();
-      console.log(answer);
       return answer;
     }
     return {

@@ -1,5 +1,6 @@
 import { displayError } from "./registartionFormUtils.ts";
 import { AccessToken } from "../catalog-types.ts";
+import { AccessTokenResponse } from "../login-page-types.ts";
 
 export async function getAccessToken(): Promise<AccessToken | Error | Response> {
   const config = {
@@ -15,7 +16,8 @@ export async function getAccessToken(): Promise<AccessToken | Error | Response> 
       config,
     );
     if (response.ok) {
-      return await response.json();
+      const answer: AccessTokenResponse = await response.json();
+      return answer;
     }
     return response;
   } catch (err) {
