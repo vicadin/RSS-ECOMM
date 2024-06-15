@@ -1,48 +1,32 @@
 import "./detailed.css";
 import "../../pages/catalog/catalog-page.css";
-import { createElement } from "../../utils/login-page-utils.ts";
-import { setBeforeDiscountPrice, setFinalPrice } from "../../utils/catalog-utils.ts";
-import { Product } from "../../interfaces/product.ts";
-import { addItemToCart, removeItemFromCart, checkItemInCart } from "../../interfaces/utils/cart-utils";
+import { createElement } from "../../utils/login-page-utils";
+import { setBeforeDiscountPrice, setFinalPrice } from "../../utils/catalog-utils";
+import { Product } from "../../interfaces/product";
+import { getMyActiveCart, fetchCreateAnonCart, addLineItem } from "../../interfaces/cart-request";
+import { Cart } from "../../interfaces/cart.-types";
 
 export default class DetailedCard {
   id: string;
-
   detailedCardItem: HTMLElement;
-
   detailedImage: HTMLElement | undefined;
-
   detailedCardContent: HTMLElement | undefined;
-
   detailedCardHeading: HTMLElement | undefined;
-
   detailedCardDescription: HTMLElement | undefined;
-
   detailedCardPrices: HTMLElement | undefined;
-
   finalPrice: HTMLElement | undefined;
-
   beforeDiscountPrice: HTMLElement | undefined;
-
   image: HTMLImageElement;
-
   modal: HTMLElement | undefined;
-
   modalContent: HTMLElement | undefined;
-
   closeBtn: HTMLElement | undefined;
-
   prevArrow: HTMLElement | undefined;
-
   nextArrow: HTMLElement | undefined;
-
   currentSlideIndex: number;
-
   slides: string[];
-
-  addToCartButton: HTMLElement | undefined;
-
-  removeFromCartButton: HTMLElement | undefined;
+  cartId: string | null = null;
+  cartVersion: number = 0;
+  token: string = "";
 
   constructor(props: Product, locale: string) {
     this.detailedCardItem = createElement("div", "detailed-card");
@@ -52,7 +36,23 @@ export default class DetailedCard {
     this.setupModal();
     this.id = props.id;
     this.renderCard(props, locale);
-    this.checkCartStatus(props);
+    this.initializeCart();
+  }
+
+  async initializeCart() {
+    const token = this.token;
+    const existingCart = await getMyActiveCart(token);
+    if (existingCart) {
+
+      this.cartId = (existingCart as Cart).id;
+      this.cartVersion = (existingCart as Cart).version;
+    } else {
+      const newCart = await fetchCreateAnonCart(token);
+      if (newCart) {
+        this.cartId = newCart.id;
+        this.cartVersion = newCart.version;
+      }
+    }
   }
 
   renderCard = (props: Product, locale: string) => {
@@ -70,6 +70,10 @@ export default class DetailedCard {
     this.image.src = props.masterData.current.masterVariant.images[0].url;
     this.image.onclick = this.openModal;
 
+    const addToCartButton = createElement("button", "add-to-cart-button");
+    addToCartButton.textContent = "Добавить в корзину";
+    addToCartButton.onclick = () => this.handleAddToCart(props.id);
+
     this.setFieldsValues(props, locale);
 
     this.detailedCardPrices.append(this.finalPrice, this.beforeDiscountPrice);
@@ -77,19 +81,10 @@ export default class DetailedCard {
       this.detailedCardHeading,
       this.detailedCardDescription,
       this.detailedCardPrices,
+      addToCartButton,
     );
     this.detailedCardItem.append(this.detailedImage, this.detailedCardContent);
     this.detailedImage.append(this.image);
-    //AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//
-    this.addToCartButton = createElement("button", "add-to-cart-button");
-    this.removeFromCartButton = createElement("button", "remove-from-cart-button");
-
-    this.addToCartButton.textContent = "Add to cart";
-    this.removeFromCartButton.textContent = "Delete from cart";
-
-    this.addToCartButton.onclick = this.handleAddToCart;
-    this.removeFromCartButton.onclick = this.handleRemoveFromCart;
-    //aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa//
   };
 
   setFieldsValues(props: Product) {
@@ -178,39 +173,25 @@ export default class DetailedCard {
       slide.classList.toggle("active", index === this.currentSlideIndex);
     });
   };
-  //------------------------------------------------------------//
-  handleAddToCart = async () => {
-    try {
-      await addItemToCart(this.id, this.currentSlideIndex);
-      alert("product added to cart");
-      this.toggleCartButtons(true);
-    } catch (error) {
-      console.error("Error: product not added to cart", error);
+
+  handleAddToCart = async (productId: string) => {
+    const token = this.token;
+    if (!this.cartId) {
+      const newCart = await fetchCreateAnonCart(token);
+      if (newCart) {
+        this.cartId = newCart.id;
+        this.cartVersion = newCart.version;
+      }
+    }
+    if (this.cartId) {
+      const response = await addLineItem(this.cartVersion, this.cartId, productId, token);
+      if (response) {
+        console.log("Product added to cart:", response);
+      } else {
+        console.log("Failed to add product to cart.");
+      }
     }
   };
-
-  handleRemoveFromCart = async () => {
-    try {
-      await removeItemFromCart(this.id);
-      alert("product has been removed from cart");
-      this.toggleCartButtons(false);
-    } catch (error) {
-      console.error("Error when removing an product from the cart:", error);
-    }
-  };
-
-  checkCartStatus = async (props: Product) => {
-    const isInCart = await checkItemInCart(this.id);
-    this.toggleCartButtons(isInCart);
-  };
-
-  toggleCartButtons = (isInCart: boolean) => {
-    if (!this.addToCartButton || !this.removeFromCartButton) return;
-    this.addToCartButton.style.display = isInCart ? "none" : "block";
-    this.removeFromCartButton.style.display = isInCart ? "block" : "none";
-  };
-
-  //------------------------------------------------------------//
 
   getHtml() {
     return this.detailedCardItem;
