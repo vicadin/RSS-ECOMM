@@ -155,3 +155,35 @@
 .modal .next-arrow:hover {
   background-color: rgba(0, 0, 0, 0.8);
 }
+
+.add-to-cart-button {
+  width: 70px;
+  height: 50px;
+  border-radius: 10%;
+  padding: 10px;
+  margin: 10px;
+  border-color: #333;
+  background-color: #333;
+  transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+  color: #f6f5e8;
+}
+
+.add-to-cart-button:hover {
+  background-color: #000000;
+}
+
+.remove-from-cart-button {
+  width: 80px;
+  height: 50px;
+  border-radius: 10%;
+  padding: 10px;
+  margin: 10px;
+  border-color: #333;
+  background-color: #333;
+  transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+  color: #f6f5e8;
+}
+.remove-from-cart-button:hover {
+  background-color: #000000;
+}
+

@@ -1,8 +1,8 @@
 import "./detailed.css";
 import "../../pages/catalog/catalog-page.css";
-import { createElement } from "../../utils/login-page-utils.ts";
-import { setBeforeDiscountPrice, setFinalPrice } from "../../utils/catalog-utils.ts";
-import { Product } from "../../interfaces/product.ts";
+import { createElement } from "../../utils/login-page-utils";
+import { setBeforeDiscountPrice, setFinalPrice } from "../../utils/catalog-utils";
+import { Product } from "../../interfaces/product";
 
 export default class DetailedCard {
   id: string;
@@ -39,6 +39,10 @@ export default class DetailedCard {
 
   slides: string[];
 
+  addToCartButton: HTMLElement | undefined;
+
+  removeFromCartButton: HTMLElement | undefined;
+
   constructor(props, locale: string) {
     this.detailedCardItem = createElement("div", "detailed-card");
     this.slides = props.masterData.current.masterVariant.images.map((image) => image.url) || [];
@@ -66,11 +70,21 @@ export default class DetailedCard {
 
     this.setFieldsValues(props, locale);
 
+    this.addToCartButton = createElement("button", "add-to-cart-button");
+    this.addToCartButton.textContent = "Add to Cart";
+    this.addToCartButton.onclick = this.addToCart;
+
+    this.removeFromCartButton = createElement("button", "remove-from-cart-button");
+    this.removeFromCartButton.textContent = "Delete from Cart";
+    this.removeFromCartButton.onclick = this.removeFromCart;
+
     this.detailedCardPrices.append(this.finalPrice, this.beforeDiscountPrice);
     this.detailedCardContent.append(
       this.detailedCardHeading,
       this.detailedCardDescription,
       this.detailedCardPrices,
+      this.addToCartButton,
+      this.removeFromCartButton
     );
     this.detailedCardItem.append(this.detailedImage, this.detailedCardContent);
     this.detailedImage.append(this.image);
@@ -161,6 +175,16 @@ export default class DetailedCard {
     slides.forEach((slide, index) => {
       slide.classList.toggle("active", index === this.currentSlideIndex);
     });
+  };
+
+  addToCart = () => {
+    console.log(`Товар с id ${this.id} добавлен в корзину`);
+    
+  };
+
+  removeFromCart = () => {
+    console.log(`Товар с id ${this.id} удален из корзины`);
+    
   };
 
   getHtml() {
