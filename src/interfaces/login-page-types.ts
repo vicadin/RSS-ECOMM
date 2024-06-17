@@ -29,7 +29,7 @@ export type Token_type = "Bearer";
 
 export type AccessTokenResponse = {
   access_token: string;
-  expires_in: number; // seconds (2 days)
+  expires_in: number;
   scope: string;
   refresh_token: string;
   token_type: Token_type;

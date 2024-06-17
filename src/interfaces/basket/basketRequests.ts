@@ -1,4 +1,5 @@
 import { Product, Basket } from "./basketTypes.ts";
+import { updateBasketCounter } from "../../utils/catalog-utils.ts";
 
 type ModifyBasketBody =
   | { version: number; actions: { action: string; [key: string]: string }[] }
@@ -37,6 +38,7 @@ export async function getUserBasket(): Promise<Basket | null> {
     }
 
     const data = await response.json();
+    updateBasketCounter(data);
 
     const lineItems = data.lineItems.map((item: Product) => ({
       id: item.id,

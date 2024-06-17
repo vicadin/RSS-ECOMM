@@ -28,6 +28,7 @@ import {
   setDataForBreadcrumbs,
   setProductsArray,
   setTempArrayOfAttributes,
+  updateBasketCounter,
 } from "./utils/catalog-utils.ts";
 import { clearCurrentSearch, setCurrentSearch } from "./utils/header-utils.ts";
 import DetailedCard from "./components/pdp/DetailedCard.ts";
@@ -120,15 +121,12 @@ export function handleHash() {
           if (typeof promiseResult !== "boolean" && (promiseResult as ProductsResult).total) {
             Object.assign(utilObject, promiseResult);
           }
-
-          // getAttributes(promiseResult);
           getBaseForAttributes().then((base) => {
             setArrayOfAttributes(getAttributes(base));
           });
-          // setArrayOfAttributes(getAttributes(promiseResult));
-
           const currentCart = getMyActiveCart(getCurrentToken());
           currentCart.then((cart) => {
+            updateBasketCounter(cart);
             setArrayOfChosenProduct(cart);
             fetchGetProducts(8, 0).then((res) => {
               setProductsArray(res);
@@ -187,12 +185,7 @@ export function handleHash() {
                 getBaseForAttributes().then((base) => {
                   setArrayOfAttributes(getAttributes(base));
                 });
-                if (
-                  typeof promiseResultItem !== "boolean" &&
-                  (promiseResultItem as ProductsResult).total
-                ) {
-                  Object.assign(utilObject, promiseResultItem);
-                }
+                Object.assign(utilObject, promiseResultItem);
               }
             }
           });
@@ -234,7 +227,13 @@ export function handleHash() {
     hash = "home";
     window.location.hash = hash;
     getAccessToken().then(async (answer) => {
-      await setAnonTokenAndCreateAnonCart((answer as AccessToken).access_token);
+      await setAnonTokenAndCreateAnonCart((answer as AccessToken).access_token).then(() => {
+        const counter = document.querySelector(".counter_active");
+        if (counter) {
+          counter.textContent = "";
+          counter.classList.remove("counter_active");
+        }
+      });
     });
   }
 
@@ -274,6 +273,5 @@ export function routerInit() {
   }
 
   window.location.hash = "#home";
-  // window.location.hash = "#home";
   handleHash();
 }

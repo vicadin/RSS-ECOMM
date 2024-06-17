@@ -83,7 +83,7 @@ export async function fetchGetProductByCategoryId(
   page: number,
 ): Promise<ProductByCategory | boolean> {
   let token = getTokenFromLocalStorage();
-  if (!token) {
+  if (token === undefined) {
     token = await getNewAnonToken();
     await setAnonTokenAndCreateAnonCart(token);
   }

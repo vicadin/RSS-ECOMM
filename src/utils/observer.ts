@@ -21,9 +21,7 @@ const infiniteObserver = new IntersectionObserver(
         const newParams = new URLSearchParams(stringWithOffset);
         promise = fetchSearchSortFilter(newParams);
         nextpage += 1;
-      }
-      // отрисовка товаров по категории
-      else if (window.location.hash.slice(-20) === "products_by_category") {
+      } else if (window.location.hash.slice(-20) === "products_by_category") {
         promise = fetchGetProductByCategoryId(
           <string>localStorage.getItem("productsCategoryId"),
           8,
