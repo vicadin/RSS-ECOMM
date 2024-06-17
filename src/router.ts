@@ -58,7 +58,7 @@ export function handleHash() {
   const routes: Routes = {
     home: () => {
       if (newContent) {
-        newContent.innerHTML = "<h2>Welcome!</h2>";
+        newContent.innerHTML = `<h2>Welcome!</h2><p class="promocode">Use promo code <span>FINAL</span> to get a 20% discount</p>`;
         clearCurrentSearch();
         clearCurrentSort();
         removeCategoryData();

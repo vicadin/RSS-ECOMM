@@ -131,6 +131,16 @@
   justify-content: end;
   cursor: pointer;
 }
+.promocode {
+  font-size: 20px;
+  margin: 20px 0;
+}
+.promocode span {
+  border: 2px dashed #333;
+  background: #dcdada95;
+  padding: 8px;
+  font-weight: 800;
+}
 @media only screen and (min-device-width: 320px) and (max-device-width: 480px) {
   .product-details {
     flex-direction: column;
