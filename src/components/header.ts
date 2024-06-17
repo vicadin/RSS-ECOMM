@@ -62,7 +62,7 @@ export class Header {
     const leftNav = CreateNavigation(this, headerPropsForLeftNav);
     const rightNav = CreateNavigation(this, headerPropsForRightNav);
     addProfileIco(rightNav);
-    addBasketIco(rightNav)
+    addBasketIco(rightNav);
     this.burger = new Burger();
     leftNav.append(this.burger.getHtml());
     insertFindIco(leftNav, svgIco);
