@@ -64,6 +64,7 @@
   margin-right: 10px;
   border-radius: 10px;
   background-repeat: no-repeat;
+  background-size: contain;
   cursor: pointer;
 }
 

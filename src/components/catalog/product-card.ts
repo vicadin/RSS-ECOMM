@@ -1,6 +1,10 @@
 import "./products.css";
 import { createButton, createElement } from "../../utils/login-page-utils.ts";
-import { setBeforeDiscountPrice, setFinalPrice } from "../../utils/catalog-utils.ts";
+import {
+  setBeforeDiscountPrice,
+  setFinalPrice,
+  updateBasketCounter,
+} from "../../utils/catalog-utils.ts";
 import { productButtonAttributes } from "../../interfaces/catalog-types.ts";
 import { addLineItem, getMyActiveCart } from "../../interfaces/cart-request.ts";
 import { Cart, chosen } from "../../interfaces/cart.-types.ts";
@@ -115,13 +119,12 @@ export default class ProductCard {
     this.productCardItem.addEventListener("click", (ev) => {
       if ((ev.target as HTMLElement).closest(".product-card__button-container")) {
         this.productCardItem.classList.add("product-card_spin");
-        //  Add product with this id to the cart + update cart products-amount - need to be added updating function;
-
         const token = getCurrentToken();
         getMyActiveCart(token).then(async (cart) => {
           this.disableButton();
           const { version, id } = cart;
-          await addLineItem(version, id, this.id, token);
+          const basket = await addLineItem(version, id, this.id, token);
+          updateBasketCounter(basket as Cart);
           setTimeout(() => {
             this.productCardItem.classList.remove("product-card_spin");
             this.productCardButton.classList.add("product-card_added");

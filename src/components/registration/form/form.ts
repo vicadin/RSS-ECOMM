@@ -222,7 +222,6 @@ export default class RegistrationForm {
         }
       });
     }
-    // });
   }
 
   private updateErrorMessage(fieldName: string, errorMessage: string | null): void {

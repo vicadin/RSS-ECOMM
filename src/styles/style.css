@@ -200,6 +200,10 @@ footer {
   padding: 10px 5px;
 }
 
+.nav_list_item:last-child {
+  position: relative;
+}
+
 @media (hover: hover) {
   .nav_list_item:hover,
   .category-item:hover {
@@ -227,4 +231,45 @@ footer {
 }
 .profile-link img {
   width: 24px;
+}
+.basket-icon {
+  position: relative;
+  width: 28px;
+}
+
+.basket-counter {
+  display: flex;
+  position: absolute;
+  top: 12px;
+  left: 20px;
+  align-items: center;
+  font-size: 11px;
+  height: fit-content;
+  padding: 2px 3px 1px;
+  border-radius: 10px;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.counter_active {
+  background-color: #fffef2;
+}
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 500px) {
+  .header_nav-container {
+    font-size: 13px;
+  }
+  .nav_list_item img,
+  .burger,
+  .find-ico {
+    width: 16px !important;
+  }
+  .nav_list_item {
+    padding: 10px 4px;
+  }
+  .wrapper {
+    padding: 10px;
+  }
+
 }

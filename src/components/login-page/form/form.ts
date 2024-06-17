@@ -23,6 +23,7 @@ import {
   validateEmail,
   validatePassword,
 } from "../../../utils/login-page-utils.ts";
+import { updateBasketCounter } from "../../../utils/catalog-utils.ts";
 
 export class Form {
   form: HTMLFormElement;
@@ -169,7 +170,7 @@ export class Form {
                   localStorage.removeItem("anonCartId");
                 }
                 window.location.hash = "#home";
-                // window.location.reload();
+                updateBasketCounter(res.cart);
               }
             });
           } else if ((result as Response).status === 400) {

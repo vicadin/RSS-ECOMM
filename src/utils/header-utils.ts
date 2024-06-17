@@ -5,7 +5,7 @@ import { currentFilter } from "../interfaces/catalog-types.ts";
 export function createNavLink(itemText): HTMLLIElement {
   const listItem = document.createElement("li");
   const link = document.createElement("a");
-  link.href = `#${itemText.toLowerCase()}`;
+  link.href = `#${itemText.toLowerCase().replace(/\s/g, "")}`;
   link.textContent = itemText;
   listItem.appendChild(link);
   listItem.classList.add("nav_list_item");
@@ -14,8 +14,8 @@ export function createNavLink(itemText): HTMLLIElement {
 
 export function getListItems(): string[] {
   return localStorage.getItem("token")
-    ? ["Register", "Logout", "Home"]
-    : ["Register", "Login", "Home"];
+    ? ["Home", "About us", "Register", "Logout"]
+    : ["Home", "About us", "Register", "Login"];
 }
 
 export function fillNavList(parentUl: HTMLUListElement, items: string[]): void {

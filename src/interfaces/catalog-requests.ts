@@ -7,8 +7,13 @@ import {
 } from "./catalog-types.ts";
 import { getAccessToken } from "./registration/registrationRequests.ts";
 import { setAnonTokenAndCreateAnonCart } from "../utils/cart-utils.ts";
+import { getNewAnonToken, getTokenFromLocalStorage } from "../utils/catalog-utils.ts";
 
-export async function fetchGetProducts(id?: string): Promise<ProductsResult | Product | boolean> {
+export async function fetchGetProducts(
+  limit: number,
+  page: number,
+  id?: string,
+): Promise<ProductsResult | Product | boolean> {
   let token: string;
   if (localStorage.getItem("token")) {
     token = JSON.parse(<string>localStorage.getItem("token")).token;
@@ -29,7 +34,7 @@ export async function fetchGetProducts(id?: string): Promise<ProductsResult | Pr
   try {
     const fetchInput = id
       ? `${process.env.HOST}/${process.env.PROJECT_KEY}/products/${id}`
-      : `${process.env.HOST}/${process.env.PROJECT_KEY}/product-projections/search?limit=50`;
+      : `${process.env.HOST}/${process.env.PROJECT_KEY}/product-projections/search?limit=${limit}&offset=${page}`;
     const response = await fetch(fetchInput, config);
     if (response.ok) {
       const answer: Promise<ProductsResult | Product> = await response.json();
@@ -42,18 +47,12 @@ export async function fetchGetProducts(id?: string): Promise<ProductsResult | Pr
 }
 
 export async function fetchGetCategories(): Promise<CatalogCategoriesAnswer | boolean> {
-  let token;
-  if (localStorage.getItem("token")) {
-    token = JSON.parse(localStorage.getItem("token")).token;
-  } else if (localStorage.getItem("anonymous-token")) {
-    token = localStorage.getItem("anonymous-token");
-  } else {
-    const answer = await getAccessToken();
-    if (answer as AccessToken) {
-      token = (answer as AccessToken).access_token;
-      await setAnonTokenAndCreateAnonCart(token);
-    }
+  let token = getTokenFromLocalStorage();
+  if (token === undefined) {
+    token = await getNewAnonToken();
+    await setAnonTokenAndCreateAnonCart(token);
   }
+
   const config = {
     method: "GET",
     headers: {
@@ -68,25 +67,24 @@ export async function fetchGetCategories(): Promise<CatalogCategoriesAnswer | bo
     );
     if (response.ok) {
       const answer = await response.json();
+
       return answer;
     }
-  } catch {
+  } catch (err) {
     return false;
   }
+
   return false;
 }
 
 export async function fetchGetProductByCategoryId(
   id: string,
+  limit: number,
+  page: number,
 ): Promise<ProductByCategory | boolean> {
-  let token;
-  if (localStorage.getItem("token")) {
-    token = JSON.parse(localStorage.getItem("token")).token;
-  } else if (localStorage.getItem("anonymous-token")) {
-    token = localStorage.getItem("anonymous-token");
-  } else {
-    const answer = await getAccessToken();
-    token = (answer as AccessToken).access_token;
+  let token = getTokenFromLocalStorage();
+  if (token === undefined) {
+    token = await getNewAnonToken();
     await setAnonTokenAndCreateAnonCart(token);
   }
   const config = {
@@ -98,7 +96,7 @@ export async function fetchGetProductByCategoryId(
   };
   try {
     const response = await fetch(
-      `${process.env.HOST}/${process.env.PROJECT_KEY}/product-projections/search?filter=categories.id:"${id}"`,
+      `${process.env.HOST}/${process.env.PROJECT_KEY}/product-projections/search?limit=${limit}&offset=${page}&filter=categories.id:"${id}"`,
       config,
     );
     if (response.ok) {
@@ -111,15 +109,12 @@ export async function fetchGetProductByCategoryId(
   return false;
 }
 
-export async function fetchSearchSortFilter(params: URLSearchParams) {
-  let token;
-  if (localStorage.getItem("token")) {
-    token = JSON.parse(localStorage.getItem("token")).token;
-  } else if (localStorage.getItem("anonymous-token")) {
-    token = localStorage.getItem("anonymous-token");
-  } else {
-    const answer = await getAccessToken();
-    token = (answer as AccessToken).access_token;
+export async function fetchSearchSortFilter(
+  params: URLSearchParams,
+): Promise<ProductsResult | boolean> {
+  let token = getTokenFromLocalStorage();
+  if (token === undefined) {
+    token = await getNewAnonToken();
     await setAnonTokenAndCreateAnonCart(token);
   }
   const config = {
