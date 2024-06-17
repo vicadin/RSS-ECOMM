@@ -1,6 +1,6 @@
 import { Cart } from "./cart.-types.ts";
 
-export async function fetchCreateAnonCart(currentToken: string): Promise<Cart | Error | boolean> {
+export async function fetchCreateAnonCart(currentToken: string): Promise<Cart | boolean> {
   const data = {
     country: "US",
     currency: "USD",
@@ -25,11 +25,11 @@ export async function fetchCreateAnonCart(currentToken: string): Promise<Cart | 
     }
     return false;
   } catch (err) {
-    return err;
+    return false;
   }
 }
 
-export async function getMyActiveCart(token: string): Promise<Cart | boolean | Error> {
+export async function getMyActiveCart(token: string): Promise<Cart | boolean> {
   const config = {
     method: "GET",
     headers: {
@@ -44,12 +44,11 @@ export async function getMyActiveCart(token: string): Promise<Cart | boolean | E
     );
     if (response.ok) {
       const answer = await response.json();
-
       return answer;
     }
     return false;
   } catch (err) {
-    return err;
+    return false;
   }
 }
 
@@ -92,5 +91,32 @@ export async function addLineItem(
     };
   } catch (err: Error) {
     return err.message;
+  }
+}
+
+export async function fetchCreateMyCart(currentToken: string): Promise<Cart | boolean> {
+  const data = {
+    country: "US",
+    currency: "USD",
+  };
+  const config = {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${currentToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  };
+
+  const response = await fetch(`${process.env.HOST}/${process.env.PROJECT_KEY}/me/carts`, config);
+  try {
+    if (response.ok) {
+      const answer: Cart = await response.json();
+
+      return answer;
+    }
+    return false;
+  } catch (err) {
+    return false;
   }
 }

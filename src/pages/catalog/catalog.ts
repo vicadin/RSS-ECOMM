@@ -165,7 +165,6 @@ export default class CatalogPage {
           }
         }
       });
-      // конец
     }
 
     if (currentSearch.currentText) {

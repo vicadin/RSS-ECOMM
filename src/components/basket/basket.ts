@@ -8,6 +8,11 @@ import {
   removePromoCode,
 } from "../../interfaces/basket/basketRequests.ts";
 import { Product } from "../../interfaces/basket/basketTypes.ts";
+import { getAccessToken } from "../../interfaces/registration/registrationRequests.ts";
+import { AccessToken } from "../../interfaces/catalog-types.ts";
+import { fetchCreateAnonCart, fetchCreateMyCart } from "../../interfaces/cart-request.ts";
+
+import { getActiveCartAndUpdateCounter } from "../../utils/cart-utils.ts";
 
 export default class BasketPage {
   private title: HTMLElement;
@@ -25,7 +30,7 @@ export default class BasketPage {
     this.basketContainer.classList.add("basket-container");
   }
 
-  public async render(container: HTMLElement): void {
+  public async render(container: HTMLElement): Promise<void> {
     container.appendChild(this.title);
     container.append(this.basketContainer);
     const basket = await getUserBasket();
@@ -225,6 +230,27 @@ export default class BasketPage {
           const success = await clearBasket(basket.id, basket.version);
           if (success) {
             this.basketContainer.innerHTML = `<p class="empty-basket">Your basket is empty :(<br><br>Go to <a class="basket-link" href="#catalog">catalog</a></p>`;
+            let tokenForNewCart;
+            if (localStorage.getItem("token")) {
+              tokenForNewCart = JSON.parse(localStorage.getItem("token")).token;
+              await fetchCreateMyCart(tokenForNewCart).then((answer) =>
+                getActiveCartAndUpdateCounter(answer, tokenForNewCart),
+              );
+            } else if (localStorage.getItem("anonymous-token")) {
+              tokenForNewCart = localStorage.getItem("anonymous-token");
+              await fetchCreateAnonCart(tokenForNewCart).then((answer) =>
+                getActiveCartAndUpdateCounter(answer, tokenForNewCart),
+              );
+            } else {
+              getAccessToken().then((res) => {
+                if (typeof res !== "boolean") {
+                  tokenForNewCart = (res as AccessToken).access_token;
+                  fetchCreateAnonCart(tokenForNewCart).then((answer) =>
+                    getActiveCartAndUpdateCounter(answer, tokenForNewCart),
+                  );
+                }
+              });
+            }
           }
         }
       });

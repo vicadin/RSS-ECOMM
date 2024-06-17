@@ -8,6 +8,7 @@ import {
   CategoryType,
   currentFilter,
   currentFilterArray,
+  ProductsResult,
   sortObject,
 } from "../interfaces/catalog-types.ts";
 import { createElement } from "./login-page-utils.ts";
@@ -16,6 +17,8 @@ import { asideHandler, unlockBody } from "./header-utils.ts";
 import { getAccessToken } from "../interfaces/registration/registrationRequests.ts";
 import { currentSearch } from "../interfaces/header-types.ts";
 import { fetchSearchSortFilter } from "../interfaces/catalog-requests.ts";
+import { Cart } from "../interfaces/cart.-types.ts";
+import Products from "../components/catalog/products.ts";
 
 export const categories: CategoryType = {
   array: [],
@@ -38,32 +41,6 @@ export function setProductsArray(answer) {
   }
 }
 
-export function getLocale(props) {
-  let locale;
-  const userLanguages = window.navigator.languages;
-  const appLanguages = Object.keys(props.masterData.current.name);
-
-  if (appLanguages.length === 1) {
-    locale = appLanguages.toString();
-  } else {
-    const languagesSet = new Set(appLanguages.concat(userLanguages));
-
-    if (languagesSet.size === appLanguages.length + userLanguages.length) {
-      locale = languagesSet.has("en-US") ? "en-US" : Array.from(languagesSet)[0];
-    } else if (appLanguages.length + userLanguages.length - languagesSet.size === 1) {
-      appLanguages.forEach((item) => {
-        if (languagesSet.has(item)) {
-          locale = item;
-        }
-        return locale;
-      });
-    } else {
-      [locale] = Array.from(languagesSet);
-    }
-  }
-  return locale;
-}
-
 export function getPriceBlockByLocale(props, locale) {
   const productPrices = props.masterData?.current?.masterVariant?.prices
     ? props.masterData.current.masterVariant.prices
@@ -84,7 +61,7 @@ function setCurrency(priceBlock, number) {
   return currencyCode + numberFixed;
 }
 
-export function setFinalPrice(props, locale: string) {
+export function setFinalPrice(props: Products | ProductsResult, locale: string) {
   const priceBlock = getPriceBlockByLocale(props, locale);
   const finalPriceNumber = priceBlock?.discounted?.value?.centAmount ?? priceBlock.value.centAmount;
   return setCurrency(priceBlock, finalPriceNumber);
@@ -183,7 +160,6 @@ export function setCurrentFilter(params: URLSearchParams) {
   });
 }
 
-// вставить перед new Catalog Page
 export function setCurrentFiltersArray(params: URLSearchParams) {
   const array = [];
   const paramsArray = Array.from(params.entries());
@@ -342,24 +318,25 @@ export async function getBaseForAttributes() {
   return result;
 }
 
-export function getReadyFinalParamString(paramStringArray: string[]) {
-  const joinedParamString = paramStringArray.join("!");
-  const [length] = paramStringArray;
-  let newParamString = "";
-  for (let i = 0; i <= length; i += 1) {
-    const regexp = /,&/g;
-    const p = joinedParamString.replace(regexp, "&");
-    if (i === length) {
-      newParamString += p;
-    }
-  }
-  return newParamString;
-}
-
-export function addParamToFinalParamArray(finalArray: string[], param: URLSearchParams) {
+export function addParamToFinalParamArray(finalArray: string[], param: URLSearchParams): void {
   if (finalArray.length !== 0) {
     finalArray.push(`&${param}`);
   } else {
     finalArray.push(`${param}`);
+  }
+}
+
+export function updateBasketCounter(basket: Cart | boolean): void {
+  const counter = document.querySelector(".basket-counter");
+  if (typeof basket !== "boolean") {
+    if (basket.totalLineItemQuantity) {
+      if (!counter.classList.contains(".counter_active")) {
+        counter.classList.add("counter_active");
+      }
+      counter.textContent = String(basket.totalLineItemQuantity);
+    } else {
+      counter.classList.remove("counter_active");
+      counter.textContent = "";
+    }
   }
 }
