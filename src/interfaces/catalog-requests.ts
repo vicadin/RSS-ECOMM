@@ -6,6 +6,7 @@ import {
   ProductsResult,
 } from "./catalog-types.ts";
 import { getAccessToken } from "./registration/registrationRequests.ts";
+import { setAnonTokenAndCreateAnonCart } from "../utils/cart-utils.ts";
 
 export async function fetchGetProducts(id?: string): Promise<ProductsResult | Product | boolean> {
   let token: string;
@@ -16,6 +17,7 @@ export async function fetchGetProducts(id?: string): Promise<ProductsResult | Pr
   } else {
     const answer = await getAccessToken();
     token = (answer as AccessToken).access_token;
+    await setAnonTokenAndCreateAnonCart(token);
   }
   const config = {
     method: "GET",
@@ -49,6 +51,7 @@ export async function fetchGetCategories(): Promise<CatalogCategoriesAnswer | bo
     const answer = await getAccessToken();
     if (answer as AccessToken) {
       token = (answer as AccessToken).access_token;
+      await setAnonTokenAndCreateAnonCart(token);
     }
   }
   const config = {
@@ -84,6 +87,7 @@ export async function fetchGetProductByCategoryId(
   } else {
     const answer = await getAccessToken();
     token = (answer as AccessToken).access_token;
+    await setAnonTokenAndCreateAnonCart(token);
   }
   const config = {
     method: "GET",
@@ -116,6 +120,7 @@ export async function fetchSearchSortFilter(params: URLSearchParams) {
   } else {
     const answer = await getAccessToken();
     token = (answer as AccessToken).access_token;
+    await setAnonTokenAndCreateAnonCart(token);
   }
   const config = {
     method: "GET",
