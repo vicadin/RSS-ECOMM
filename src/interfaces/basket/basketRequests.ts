@@ -136,6 +136,7 @@ export async function applyPromoCode(
   };
   return modifyBasket(cartId, "POST", undefined, body);
 }
+
 export async function removePromoCode(
   cartId: string,
   cartVersion: number,

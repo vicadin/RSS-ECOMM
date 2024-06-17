@@ -134,6 +134,8 @@
 .promocode {
   font-size: 20px;
   margin: 20px 0;
+  text-align: center;
+  line-height: 40px;
 }
 .promocode span {
   border: 2px dashed #333;

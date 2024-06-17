@@ -40,8 +40,6 @@ export default class BasketPage {
     let originalTotalSum;
     if (basket.discountOnTotalPrice) {
       originalTotalSum = basket.discountOnTotalPrice.discountedAmount.centAmount / 100 + totalSum;
-      console.log(basket);
-      console.log(basket.discountOnTotalPrice.discountedAmount.centAmount / 100 + totalSum);
     }
 
     this.basketContainer.innerHTML = `
