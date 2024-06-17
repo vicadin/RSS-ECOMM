@@ -231,3 +231,19 @@ footer {
 .basket-icon {
   width: 28px;
 }
+@media only screen and (min-device-width: 320px) and (max-device-width: 500px) {
+  .header_nav-container {
+    font-size: 13px;
+  }
+  .nav_list_item img,
+  .burger,
+  .find-ico {
+    width: 16px !important;
+  }
+  .nav_list_item {
+    padding: 10px 4px;
+  }
+  .wrapper {
+    padding: 10px;
+  }
+}

@@ -6,7 +6,7 @@ const teamMembers: TeamMember[] = [
     name: "Victoria Tonkovich",
     position: "Frontend-developer",
     description:
-      "Victoria holds a background in web design and has experience as an HTML-developer and web -developer. Her leadership and technical skills have been pivotal in guiding the team and ensuring the project's success.",
+      "Victoria holds a background in web design and has experience as an HTML-developer and web-developer. Her leadership and technical skills have been pivotal in guiding the team and ensuring the project's success.",
     imageUrl: "../assets/images/victoria.jpg",
     link: "https://github.com/vicadin",
   },
