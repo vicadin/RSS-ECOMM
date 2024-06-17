@@ -5,6 +5,7 @@ import BasketPage from "./pages/basket.ts";
 import { profilePage } from "./pages/profile.ts";
 import { headerEl } from "./components/header.ts";
 import CatalogPage from "./pages/catalog/catalog.ts";
+import AboutUsPage from "./pages/aboutUs.ts";
 import {
   fetchGetCategories,
   fetchGetProductByCategoryId,
@@ -91,6 +92,12 @@ export function handleHash() {
       if (newContent) {
         newContent.innerHTML = "";
         BasketPage();
+      }
+    },
+    aboutus: () => {
+      if (newContent) {
+        newContent.innerHTML = "";
+        AboutUsPage();
       }
     },
     "": () => {

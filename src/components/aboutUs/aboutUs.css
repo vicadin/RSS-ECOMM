@@ -1,0 +1,51 @@
+.team-container {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid #8d8d8d;
+  border-bottom: 1px solid #8d8d8d;
+  padding: 18px 0;
+  margin: 40px 0;
+}
+
+.team-member {
+  width: 28%;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.team-member img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+  object-fit: cover;
+}
+
+.member-position {
+  margin: 8px 0;
+}
+.member-link {
+  font-size: 12px;
+  text-decoration: underline;
+}
+.member-description {
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+.logo-container {
+  display: flex;
+  margin: 40px 0;
+  font-size: 18px;
+}
+.logo-container img {
+  width: 16px;
+  margin-left: 8px;
+}
+.logo-container a {
+  text-decoration: underline;
+}
+.text-desc {
+  font-size: 18px;
+  line-height: 20px;
+  text-align: center;
+}
