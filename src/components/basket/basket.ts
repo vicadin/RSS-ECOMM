@@ -4,12 +4,15 @@ import {
   updateLineItemQuantity,
   clearBasket,
   removeProduct,
+  applyPromoCode,
+  removePromoCode,
 } from "../../interfaces/basket/basketRequests";
 import { Basket, Product } from "../../interfaces/basket/basketTypes";
 
 export default class BasketPage {
   private title: HTMLElement;
   basketContainer: HTMLElement;
+  private promoErrorLabel: HTMLElement;
   // customerId: string;
 
   constructor() {
@@ -19,15 +22,11 @@ export default class BasketPage {
 
     this.basketContainer = document.createElement("div");
     this.basketContainer.classList.add("basket-container");
-    // this.customerId = localStorage.getItem("id");
-
-    // this.render();
   }
 
   public async render(container: HTMLElement): void {
     container.appendChild(this.title);
     container.append(this.basketContainer);
-    //container.innerHTML=this.createProductItem();
     const basket = await getUserBasket();
 
     if (!basket || basket.lineItems.length === 0) {
@@ -37,19 +36,43 @@ export default class BasketPage {
     const totalSum = basket.totalPrice;
 
     const productItems = basket.lineItems.map((product) => this.createProductItem(product));
+    let originalTotalSum;
+    if (basket.discountOnTotalPrice) {
+      originalTotalSum = basket.discountOnTotalPrice.discountedAmount.centAmount / 100 + totalSum;
+      console.log(basket);
+      console.log(basket.discountOnTotalPrice.discountedAmount.centAmount / 100 + totalSum);
+    }
 
     this.basketContainer.innerHTML = `
-    <button class="clear-btn" id="clearAll">Clear all</button>
-      <div class="products">${productItems.join("")}</div>
-      <div class="basket-info">
-     
-      <button class="apply-promo-btn">Apply a promotional code <img src="../assets/icons/add.png" alt="" class="remove-icon"></button>
-      ${this.createPromoModal()}
-       <div class="total">Total: $${totalSum.toFixed(2)}</div>
-      </div>
+   <button class="clear-btn" id="clearAll">Clear all</button>
+  <div class="products">${productItems.join("")}</div>
+  <div class="basket-info">
+    <button class="apply-promo-btn">Apply a promotional code <img src="../assets/icons/add.png" alt="" class="remove-icon"></button>
+    ${this.createPromoModal()}
+    <div class="total-container">
+      <div class="total">Total: ${originalTotalSum > totalSum ? `<span class="original-total">$${originalTotalSum.toFixed(2)}</span>` : ""} $${totalSum.toFixed(2)}</div>
+      
+      ${basket.discountCodes.length > 0 ? `<div class="remove-promo-code" data-discount-code-id="${basket.discountCodes[0].discountCode.id}">remove promo code <img src="../assets/icons/delete.png" width=16 alt="remove promo code" ></div>` : ""}
+    </div>
+  </div>
     `;
+
+    const removePromoCodeButton = this.basketContainer.querySelector(".remove-promo-code");
+    if (removePromoCodeButton) {
+      removePromoCodeButton.addEventListener("click", async (event) => {
+        const discountCodeId = (event.target as HTMLElement).getAttribute("data-discount-code-id")!;
+        const basket = await getUserBasket();
+        if (basket) {
+          const success = await removePromoCode(basket.id, basket.version, discountCodeId);
+          if (success) {
+            this.render(this.basketContainer.parentElement!);
+          }
+        }
+      });
+    }
     this.addEventListeners();
   }
+
   createProductItem(product: Product): string {
     return `
         <div class="product-item" data-product-id="${product.id}">
@@ -81,7 +104,8 @@ export default class BasketPage {
             <label for="promo-code" class="promo-code-label">Enter your code</label>
           <input type="text" id="promo-code" name="promoCode" class="field-input promo-code-input">
 </div>
-            <button class="btn-black">Apply</button>
+<span class="promo-error"></span>
+            <button class="btn-black apply-promo-code">Apply</button>
           </div>
         </div>
       `;
@@ -167,10 +191,22 @@ export default class BasketPage {
     }
 
     if (applyPromoCodeButton) {
-      applyPromoCodeButton.addEventListener("click", () => {
-        const promoCode = promoInput.value.trim();
+      applyPromoCodeButton.addEventListener("click", async () => {
+        const promoCode = promoInput.value.trim().toLocaleUpperCase();
         if (promoCode) {
-          this.applyPromoCode(promoCode);
+          try {
+            const basket = await getUserBasket();
+            if (basket) {
+              const success = await applyPromoCode(basket.id, basket.version, promoCode);
+              if (success) {
+                this.render(this.basketContainer.parentElement!);
+              } else {
+                this.showPromoError("Invalid promo code. Please try again.");
+              }
+            }
+          } catch (error) {
+            this.showPromoError("Failed to apply promo code. Please try again later.");
+          }
         }
       });
     }
@@ -190,9 +226,6 @@ export default class BasketPage {
         const basket = await getUserBasket();
 
         if (basket && basket.id) {
-          console.log(basket);
-
-          console.log(basket.version);
           const success = await clearBasket(basket.id, basket.version);
           if (success) {
             this.basketContainer.innerHTML = `<p class="empty-basket">Your basket is empty :(<br><br>Go to <a class="basket-link" href="#catalog">catalog</a></p>`;
@@ -209,7 +242,6 @@ export default class BasketPage {
         if (basket) {
           const product = basket.lineItems.find((item) => item.id === productId);
           if (product) {
-            console.log(productId);
             const success = await removeProduct(basket.id, basket.version, productId);
             if (success) {
               this.render(this.basketContainer.parentElement!);
@@ -223,14 +255,36 @@ export default class BasketPage {
   async updateTotal() {
     const basket = await getUserBasket();
     const totalElement = this.basketContainer.querySelector(".total");
+    const originalTotalElement = this.basketContainer.querySelector(".original-total");
+
     if (basket && totalElement) {
-      totalElement.textContent = `Total: ${basket.totalPrice}$`;
+      totalElement.textContent = `Total: $${basket.totalPrice.toFixed(2)}`;
+      if (originalTotalElement) {
+        originalTotalElement.textContent = `Original Total: $${basket.originalTotalPrice.toFixed(2)}`;
+      } else if (basket.originalTotalPrice > basket.totalPrice) {
+        const originalTotalHTML = `<div class="original-total">Original Total: $${basket.originalTotalPrice.toFixed(2)}</div>`;
+        totalElement.insertAdjacentHTML("afterend", originalTotalHTML);
+      }
     }
   }
+
   async applyPromoCode(promoCode: string) {
     const promoModal = this.basketContainer.querySelector(".promo-modal");
     promoModal?.classList.add("hidden");
 
     this.render();
+  }
+  showPromoError(message: string) {
+    const promoModal = this.basketContainer.querySelector(".promo-modal-content");
+    if (promoModal) {
+      const errorLabel = promoModal.querySelector(".promo-error") as HTMLLabelElement;
+      if (errorLabel) {
+        errorLabel.textContent = message;
+        errorLabel.style.display = "block";
+        setTimeout(() => {
+          errorLabel.style.display = "none";
+        }, 5000);
+      }
+    }
   }
 }

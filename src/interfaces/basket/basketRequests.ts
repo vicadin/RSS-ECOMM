@@ -1,5 +1,3 @@
-import { Basket, Product } from "./basketTypes";
-
 function getAuthData() {
   const tokenData = localStorage.getItem("token");
   const token = tokenData ? JSON.parse(tokenData).token : null;
@@ -33,6 +31,7 @@ export async function getUserBasket(): Promise<Basket | null> {
     }
 
     const data = await response.json();
+
     const lineItems = data.lineItems.map((item: any) => ({
       id: item.id,
       productId: item.productId,
@@ -40,6 +39,8 @@ export async function getUserBasket(): Promise<Basket | null> {
       price: item.price.value.centAmount / 100,
       quantity: item.quantity,
       imageUrl: item.variant.images[0]?.url || "",
+      discountCodes: item.discountCodes,
+      discountOnTotalPrice: item.discountOnTotalPrice,
     }));
 
     return {
@@ -48,6 +49,8 @@ export async function getUserBasket(): Promise<Basket | null> {
       lineItems,
       totalPrice: data.totalPrice.centAmount / 100,
       version: data.version,
+      discountCodes: data.discountCodes,
+      discountOnTotalPrice: data.discountOnTotalPrice,
     };
   } catch (error) {
     console.error("Error fetching basket:", error);
@@ -62,8 +65,10 @@ async function modifyBasket(
   body?: any,
 ): Promise<boolean> {
   try {
-    const { url, headers } = getAuthData();
-    const requestUrl = cartVersion ? `${url}?version=${cartVersion}` : url;
+    const { headers } = getAuthData();
+    const requestUrl = cartVersion
+      ? `${process.env.HOST}/${process.env.PROJECT_KEY}/carts/${cartId}?version=${cartVersion}`
+      : `${process.env.HOST}/${process.env.PROJECT_KEY}/carts/${cartId}`;
 
     const response = await fetch(requestUrl, {
       method,
@@ -112,4 +117,35 @@ export async function updateLineItemQuantity(
     actions: [{ action: "changeLineItemQuantity", lineItemId, quantity }],
   };
   return modifyBasket(cartId, "POST", undefined, body);
+}
+
+export async function applyPromoCode(
+  cartId: string,
+  cartVersion: number,
+  promoCode: string,
+): Promise<boolean> {
+  const body = {
+    version: cartVersion,
+    actions: [{ action: "addDiscountCode", code: promoCode }],
+  };
+  return modifyBasket(cartId, "POST", undefined, body);
+}
+export async function removePromoCode(
+  cartId: string,
+  cartVersion: number,
+  discountCodeId: string,
+): Promise<boolean> {
+  const body = {
+    version: cartVersion,
+    actions: [
+      {
+        action: "removeDiscountCode",
+        discountCode: {
+          typeId: "discount-code",
+          id: discountCodeId,
+        },
+      },
+    ],
+  };
+  return modifyBasket(cartId, "POST", cartVersion, body);
 }
