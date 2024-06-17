@@ -3,6 +3,9 @@ import "../../pages/catalog/catalog-page.css";
 import { createElement } from "../../utils/login-page-utils";
 import { setBeforeDiscountPrice, setFinalPrice } from "../../utils/catalog-utils";
 import { Product } from "../../interfaces/product";
+import { addLineItem, removeLineItem, getMyActiveCart } from "../../interfaces/cart-request";
+import { Cart } from "../../interfaces/cart.-types";
+import { getCurrentToken } from "../../utils/cart-utils";
 
 export default class DetailedCard {
   id: string;
@@ -84,7 +87,7 @@ export default class DetailedCard {
       this.detailedCardDescription,
       this.detailedCardPrices,
       this.addToCartButton,
-      this.removeFromCartButton
+      this.removeFromCartButton,
     );
     this.detailedCardItem.append(this.detailedImage, this.detailedCardContent);
     this.detailedImage.append(this.image);
@@ -177,14 +180,30 @@ export default class DetailedCard {
     });
   };
 
-  addToCart = () => {
-    console.log(`Товар с id ${this.id} добавлен в корзину`);
-    
+  addToCart = async () => {
+    const token = getCurrentToken();
+    const cart = await getMyActiveCart(token);
+    if (cart) {
+      const { version, id } = cart as Cart;
+      const updatedCart = await addLineItem(version, id, this.id, token);
+      updateBasketCounter(updatedCart as Cart);
+      console.log(`Product with id ${this.id} added to cart`);
+    } else {
+      console.error("Failed to retrieve active cart.");
+    }
   };
 
-  removeFromCart = () => {
-    console.log(`Товар с id ${this.id} удален из корзины`);
-    
+  removeFromCart = async () => {
+    const token = getCurrentToken();
+    const cart = await getMyActiveCart(token);
+    if (cart) {
+      const { version, id } = cart as Cart;
+      const updatedCart = await removeLineItem(version, id, this.id, token);
+      updateBasketCounter(updatedCart as Cart);
+      console.log(`Product with id ${this.id} removed from cart`);
+    } else {
+      console.error("Failed to retrieve active cart.");
+    }
   };
 
   getHtml() {

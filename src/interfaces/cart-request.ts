@@ -94,6 +94,29 @@ export async function addLineItem(
   }
 }
 
+export async function removeLineItem(cartid: string, lineitemId: string, token: string): Promise<Cart | boolean> {
+  const config = {
+    method: "delete",
+    headers: {
+      authorization: `bearer ${token}`,
+      "content-type": "application/json",
+    },
+  };
+
+  try {
+    const response = await fetch(`${process.env.host}/${process.env.project_key}/carts/${cartid}/line-items/${lineitemId}`, config);
+
+    if (response.ok) {
+      const answer: Cart = await response.json();
+      return answer;
+    } 
+    return false;
+  } catch (err) {
+    return false;
+  }
+}
+
+
 export async function fetchCreateMyCart(currentToken: string): Promise<Cart | boolean> {
   const data = {
     country: "US",
