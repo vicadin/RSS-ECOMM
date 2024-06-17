@@ -129,6 +129,7 @@
   gap: 7px;
   font-size: 12px;
   justify-content: end;
+  cursor: pointer;
 }
 @media only screen and (min-device-width: 320px) and (max-device-width: 480px) {
   .product-details {

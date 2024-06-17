@@ -1,3 +1,9 @@
+import { Product, Basket } from "./basketTypes.ts";
+
+type ModifyBasketBody =
+  | { version: number; actions: { action: string; [key: string]: string }[] }
+  | undefined;
+
 function getAuthData() {
   const tokenData = localStorage.getItem("token");
   const token = tokenData ? JSON.parse(tokenData).token : null;
@@ -6,7 +12,7 @@ function getAuthData() {
   const userId = localStorage.getItem("id");
 
   let url: string;
-  let headers: HeadersInit = { "Content-Type": "application/json" };
+  const headers: HeadersInit = { "Content-Type": "application/json" };
 
   if (userId && token) {
     url = `${process.env.HOST}/${process.env.PROJECT_KEY}/carts/customer-id=${userId}`;
@@ -32,7 +38,7 @@ export async function getUserBasket(): Promise<Basket | null> {
 
     const data = await response.json();
 
-    const lineItems = data.lineItems.map((item: any) => ({
+    const lineItems = data.lineItems.map((item: Product) => ({
       id: item.id,
       productId: item.productId,
       name: item.name["en-US"],
@@ -62,7 +68,7 @@ async function modifyBasket(
   cartId: string,
   method: string,
   cartVersion?: number,
-  body?: any,
+  body?: ModifyBasketBody,
 ): Promise<boolean> {
   try {
     const { headers } = getAuthData();
