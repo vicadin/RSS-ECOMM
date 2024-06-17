@@ -121,7 +121,8 @@ export class Header {
     if (this.searchProductInput.value.trim()) {
       searchObject.search = this.searchProductInput.value.trim();
       searchParam = new URLSearchParams(`text.en-US=${searchObject.search}`);
-      finalParamString.push("fuzzy=true&fuzzyLevel=2");
+      finalParamString.push("fuzzy=true");
+      finalParamString.push("&limit=8");
       if (finalParamString.length !== 0) {
         finalParamString.push(`&${searchParam}`);
       } else {
@@ -131,7 +132,8 @@ export class Header {
       if (sortObject.sorting) {
         sortObject.sorting = undefined;
       }
-      setLocationForSearching(finalParamString.join(",").replace(",", ""));
+      const regexp = /!&/g;
+      setLocationForSearching(finalParamString.join("!").replace(regexp, "&"));
     } else {
       searchObject.search = undefined;
     }

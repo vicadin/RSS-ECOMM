@@ -1,7 +1,12 @@
 import "./catalog-page.css";
 import "../../styles/style.css";
 import { createButton, createElement, createInput } from "../../utils/login-page-utils.ts";
-import { products, showFilters, unlockBodyAndCloseFilters } from "../../utils/catalog-utils.ts";
+import {
+  addParamToFinalParamArray,
+  products,
+  showFilters,
+  unlockBodyAndCloseFilters,
+} from "../../utils/catalog-utils.ts";
 import Products from "../../components/catalog/products.ts";
 import Breadcrumbs from "../../components/catalog/breadcrumbs.ts";
 import { currentSearch } from "../../interfaces/header-types.ts";
@@ -63,9 +68,10 @@ export default class CatalogPage {
     this.catalogFilterBlock.classList.remove("hidden");
     this.setTitle();
     this.setBreadcrumbs();
-    this.createSorting();
+
     this.createFilterButton();
     this.createFilterBlock();
+    this.createSorting();
     this.catalogFilterBlock.append(this.sortWrapper, this.filterButton);
     this.catalogMain = createElement("section", "catalog-main");
     this.catalogMain.append(new Products(products.array).getHtml());
@@ -106,68 +112,88 @@ export default class CatalogPage {
   static setSearchParams(button?: HTMLButtonElement, arrayOfFilters?: Attributes[]) {
     let newSearchParam;
     let filtersSearchParams;
+    let paramsFromUrl;
 
-    const finalParamString = [];
+    const finalParamStringArray: string[] = [];
+    if (window.location.hash.slice(-6) === "search") {
+      const stringFromSearchField = window.location.hash.slice(1, -6);
+      paramsFromUrl = new URLSearchParams(stringFromSearchField);
+    }
+
     if (localStorage.getItem("productsCategoryId")) {
       currentFilter.filter = `categories.id:"${localStorage.getItem("productsCategoryId")}"`;
     }
     if (button) {
+      sortObject.sorting = undefined;
       sortObject.sorting = button.dataset.value;
     }
     if (sortObject.sorting) {
-      const sortParam = new URLSearchParams(`sort=${sortObject.sorting}`);
-      if (finalParamString.length !== 0) {
-        finalParamString.push(`&${sortParam}`);
+      let sortParam;
+      if (paramsFromUrl) {
+        if (paramsFromUrl.has("sort")) {
+          paramsFromUrl.delete("sort");
+        }
+        if (paramsFromUrl.has("limit")) {
+          paramsFromUrl.delete("limit");
+        }
+        sortParam = new URLSearchParams(`${paramsFromUrl}&sort=${sortObject.sorting}`);
       } else {
-        finalParamString.push(`${sortParam}`);
+        sortParam = new URLSearchParams(`sort=${sortObject.sorting}`);
       }
+      addParamToFinalParamArray(finalParamStringArray, sortParam);
     }
 
     if (arrayOfFilters) {
       arrayOfFilters.forEach(([name, value]) => {
-        value.forEach((stringValue) => {
-          if (name === "size") {
-            const filterParam = new URLSearchParams(
-              `filter=variants.attributes.${name}.en-US:"${stringValue}"`,
-            );
-            if (finalParamString.length !== 0) {
-              finalParamString.push(`&${filterParam}`);
-            } else {
-              finalParamString.push(`${filterParam}`);
-            }
+        if (name === "size") {
+          const filterParam = new URLSearchParams(
+            `filter=variants.attributes.${name}.en-US:"${value.join('","')}"`,
+          );
+          if (finalParamStringArray.length !== 0) {
+            finalParamStringArray.push(`&${filterParam}`);
           } else {
-            const filterParam = new URLSearchParams(
-              `filter=variants.attributes.${name}:"${stringValue}"`,
-            );
-            if (finalParamString.length !== 0) {
-              finalParamString.push(`&${filterParam}`);
-            } else {
-              finalParamString.push(`${filterParam}`);
-            }
+            finalParamStringArray.push(`${filterParam}`);
           }
-        });
+        } else {
+          const filterParam = new URLSearchParams(
+            `filter=variants.attributes.${name}:"${value.join('","')}"`,
+          );
+          if (finalParamStringArray.length !== 0) {
+            finalParamStringArray.push(`&${filterParam}`);
+          } else {
+            finalParamStringArray.push(`${filterParam}`);
+          }
+        }
       });
+      // конец
     }
 
     if (currentSearch.currentText) {
       newSearchParam = new URLSearchParams(`text.en-US=${currentSearch.currentText}`);
-      finalParamString.push("&fuzzy=true");
-      if (finalParamString.length !== 0) {
-        finalParamString.push(`&${newSearchParam}`);
+      finalParamStringArray.push("&fuzzy=true");
+      if (finalParamStringArray.length !== 0) {
+        finalParamStringArray.push(`&${newSearchParam}`);
       } else {
-        finalParamString.push(`${newSearchParam}`);
+        finalParamStringArray.push(`${newSearchParam}`);
       }
     }
 
     if (currentFilter.filter) {
       filtersSearchParams = new URLSearchParams(`filter=${currentFilter.filter}`);
-      if (finalParamString.length !== 0) {
-        finalParamString.push(`&${filtersSearchParams}`);
+      if (finalParamStringArray.length !== 0) {
+        finalParamStringArray.push(`&${filtersSearchParams}`);
       } else {
-        finalParamString.push(`${filtersSearchParams}`);
+        finalParamStringArray.push(`${filtersSearchParams}`);
       }
     }
-    setLocationForSearching(finalParamString.join(",").replace(",&", "&").replace(",&", "&"));
+
+    if (finalParamStringArray.length !== 0) {
+      const limit = new URLSearchParams("limit=8");
+      finalParamStringArray.push(`&${limit}`);
+    }
+    const regexp = /!&/g;
+
+    setLocationForSearching(finalParamStringArray.join("!").replace(regexp, "&"));
   }
 
   addEventListeners() {

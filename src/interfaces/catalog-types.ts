@@ -256,6 +256,6 @@ export type FilterObj = {
   ["key-ingredients"]?: [string];
 };
 
-export type TempArrayOfAttributes = Attributes[];
-
 export const productButtonAttributes: [string, string][] = [["type", "button"]];
+
+export const utilObject: ProductsResult | object = {};

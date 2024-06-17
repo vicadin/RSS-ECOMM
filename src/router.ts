@@ -17,6 +17,7 @@ import {
   clearCurrentFilter,
   clearCurrentSort,
   getAttributes,
+  getBaseForAttributes,
   removeCategoryData,
   setArrayOfAttributes,
   setCategoriesArray,
@@ -36,7 +37,7 @@ import {
   setAnonTokenAndCreateAnonCart,
   setArrayOfChosenProduct,
 } from "./utils/cart-utils.ts";
-import { AccessToken } from "./interfaces/catalog-types.ts";
+import { AccessToken, ProductsResult, utilObject } from "./interfaces/catalog-types.ts";
 
 type Routes = {
   [key: string]: () => void;
@@ -107,15 +108,25 @@ export function handleHash() {
         clearCurrentSort();
         clearCurrentFilter();
 
-        const promise = fetchGetProducts();
+        const promise = fetchGetProducts(50, 0);
         promise.then((promiseResult) => {
-          setProductsArray(promiseResult);
-          getAttributes(promiseResult);
-          setArrayOfAttributes(getAttributes(promiseResult));
+          if (typeof promiseResult !== "boolean" && (promiseResult as ProductsResult).total) {
+            Object.assign(utilObject, promiseResult);
+          }
+
+          // getAttributes(promiseResult);
+          getBaseForAttributes().then((base) => {
+            setArrayOfAttributes(getAttributes(base));
+          });
+          // setArrayOfAttributes(getAttributes(promiseResult));
+
           const currentCart = getMyActiveCart(getCurrentToken());
           currentCart.then((cart) => {
             setArrayOfChosenProduct(cart);
-            newContent.append(new CatalogPage().getHtml());
+            fetchGetProducts(8, 0).then((res) => {
+              setProductsArray(res);
+              newContent.append(new CatalogPage().getHtml());
+            });
           });
         });
       }
@@ -130,13 +141,24 @@ export function handleHash() {
           setProductsArray(res);
           setCurrentFilter(newParams);
           setCurrentFiltersArray(newParams);
-          setArrayOfAttributes(getAttributes(res));
+          if (typeof res !== "boolean" && (res as ProductsResult).total) {
+            Object.assign(utilObject, res);
+          }
+          getBaseForAttributes().then(() => {
+            setArrayOfAttributes(getAttributes(utilObject));
+          });
+
           setTempArrayOfAttributes(newParams);
           const currentCart = getMyActiveCart(getCurrentToken());
           currentCart.then((cart) => {
             setArrayOfChosenProduct(cart);
-            newContent.append(new CatalogPage().getHtml());
-            setCurrentSort(newParams);
+            getBaseForAttributes().then((base) => {
+              const baseAttributes = getAttributes(base);
+              setArrayOfAttributes(baseAttributes);
+
+              newContent.append(new CatalogPage().getHtml());
+              setCurrentSort(newParams);
+            });
           });
         });
       }
@@ -147,7 +169,7 @@ export function handleHash() {
         newContent.innerHTML = "";
         const getRequests = [
           fetchGetCategories(),
-          fetchGetProductByCategoryId(localStorage.getItem("productsCategoryId")),
+          fetchGetProductByCategoryId(localStorage.getItem("productsCategoryId"), 50, 0),
         ];
         const mutateFunctions = [setCategoriesArray, setProductsArray];
         Promise.all(getRequests).then((promiseResultAsArray) => {
@@ -155,7 +177,15 @@ export function handleHash() {
             if (typeof promiseResultItem !== "boolean") {
               mutateFunctions[index](promiseResultItem);
               if (index === 1) {
-                setArrayOfAttributes(getAttributes(promiseResultItem));
+                getBaseForAttributes().then((base) => {
+                  setArrayOfAttributes(getAttributes(base));
+                });
+                if (
+                  typeof promiseResultItem !== "boolean" &&
+                  (promiseResultItem as ProductsResult).total
+                ) {
+                  Object.assign(utilObject, promiseResultItem);
+                }
               }
             }
           });
@@ -163,7 +193,12 @@ export function handleHash() {
           const currentCart = getMyActiveCart(getCurrentToken());
           currentCart.then((cart) => {
             setArrayOfChosenProduct(cart);
-            newContent.append(new CatalogPage().getHtml());
+            fetchGetProductByCategoryId(localStorage.getItem("productsCategoryId"), 8, 0).then(
+              (res) => {
+                setProductsArray(res);
+                newContent.append(new CatalogPage().getHtml());
+              },
+            );
           });
         });
       }
@@ -173,7 +208,7 @@ export function handleHash() {
       if (newContent) {
         newContent.innerHTML = "";
         if (localStorage.getItem("productId")) {
-          const prodItem = fetchGetProducts(localStorage.getItem("productId"));
+          const prodItem = fetchGetProducts(1, 0, localStorage.getItem("productId"));
           prodItem.then((result) => {
             if (!(typeof result === "boolean")) {
               newContent.append(new DetailedCard(result, "en-US").getHtml());

@@ -1,4 +1,5 @@
 import {
+  AccessToken,
   Ancestor,
   Ancestors,
   Attributes,
@@ -12,6 +13,9 @@ import {
 import { createElement } from "./login-page-utils.ts";
 import CategoryList from "../components/catalog/category-list.ts";
 import { asideHandler, unlockBody } from "./header-utils.ts";
+import { getAccessToken } from "../interfaces/registration/registrationRequests.ts";
+import { currentSearch } from "../interfaces/header-types.ts";
+import { fetchSearchSortFilter } from "../interfaces/catalog-requests.ts";
 
 export const categories: CategoryType = {
   array: [],
@@ -28,6 +32,7 @@ export const products = {
 };
 
 export function setProductsArray(answer) {
+  products.array.length = 0;
   if (answer.results) {
     products.array = answer.results;
   }
@@ -305,4 +310,56 @@ export function setTempArrayOfAttributes(params) {
     }
   });
   temparr.push(["limit", "150"]);
+}
+
+export function getTokenFromLocalStorage(): string | undefined {
+  let token;
+  if (localStorage.getItem("token")) {
+    token = JSON.parse(localStorage.getItem("token")).token;
+  } else if (localStorage.getItem("anonymous-token")) {
+    token = localStorage.getItem("anonymous-token");
+  }
+  return token;
+}
+
+export async function getNewAnonToken(): Promise<string> {
+  const answer = await getAccessToken();
+  return (answer as AccessToken).access_token;
+}
+
+export async function getBaseForAttributes() {
+  let p;
+  if (currentSearch.currentText) {
+    const searchString = `text.en-US=${currentSearch.currentText}&limit=8&offset=0&fuzzy=true`;
+    p = new URLSearchParams(searchString);
+  } else if (localStorage.getItem("productsCategoryId")) {
+    const string = `limit=8&offset=0&filter=categories.id:"${localStorage.getItem("productsCategoryId")}"`;
+    p = new URLSearchParams(string);
+  } else {
+    p = new URLSearchParams("limit=50&offset=0");
+  }
+  const result = await fetchSearchSortFilter(p);
+  return result;
+}
+
+export function getReadyFinalParamString(paramStringArray: string[]) {
+  const joinedParamString = paramStringArray.join("!");
+  const [length] = paramStringArray;
+  let newParamString = "";
+  for (let i = 0; i <= length; i += 1) {
+    const regexp = /,&/g;
+    const p = joinedParamString.replace(regexp, "&");
+    if (i === length) {
+      newParamString += p;
+    }
+  }
+  return newParamString;
+}
+
+export function addParamToFinalParamArray(finalArray: string[], param: URLSearchParams) {
+  if (finalArray.length !== 0) {
+    finalArray.push(`&${param}`);
+  } else {
+    finalArray.push(`${param}`);
+  }
 }
