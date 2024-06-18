@@ -209,4 +209,11 @@ export default class DetailedCard {
   getHtml() {
     return this.detailedCardItem;
   }
+
+}
+function updateBasketCounter(cart: Cart) {
+  const basketCounter = document.getElementById("basket-counter");
+  if (basketCounter) {
+    basketCounter.textContent = cart.totalLineItemQuantity.toString();
+  }
 }
