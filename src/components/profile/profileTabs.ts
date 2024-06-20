@@ -57,9 +57,15 @@ export class ProfileTabs {
   }
 
   async render() {
-    this.userProfile = await getUserProfile();
-    if (this.userProfile) {
-      this.createTabs();
+    const userId = localStorage.getItem("id");
+    const tokenData = localStorage.getItem("token");
+    const token = tokenData ? JSON.parse(tokenData).token : null;
+
+    if (userId || token) {
+      this.userProfile = await getUserProfile();
+      if (this.userProfile) {
+        this.createTabs();
+      }
     }
   }
 
@@ -81,7 +87,13 @@ export class ProfileTabs {
   }
 
   async renderInfoTab() {
-    this.userProfile = await getUserProfile();
+    const userId = localStorage.getItem("id");
+    const tokenData = localStorage.getItem("token");
+    const token = tokenData ? JSON.parse(tokenData).token : null;
+
+    if (userId || token) {
+      this.userProfile = await getUserProfile();
+    }
     if (!this.userProfile) return;
     this.tabContentContainer.innerHTML = `
       <div>
