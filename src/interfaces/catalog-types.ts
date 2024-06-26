@@ -234,12 +234,10 @@ export type FiltersArray = {
   filter: string[] | [];
 };
 
-// is set from router to fill filterContainer
 export const currentFilterArray: FiltersArray = {
   filter: [],
 };
 
-// is set before every rendering of Catalog Page to fill attibutes container of filter-container-main
 export const attributesForFilters: { attributes: [] | Attributes } = {
   attributes: [],
 };
@@ -256,4 +254,6 @@ export type FilterObj = {
   ["key-ingredients"]?: [string];
 };
 
-export type TempArrayOfAttributes = Attributes[];
+export const productButtonAttributes: [string, string][] = [["type", "button"]];
+
+export const utilObject: ProductsResult | object = {};

@@ -19,7 +19,7 @@ import {
 import CreateNavigation from "../utils/navigation.ts";
 import Burger from "./catalog/burger.ts";
 import { sortObject } from "../interfaces/catalog-types.ts";
-import { addProfileIco } from "../utils/catalog-utils.ts";
+import { addProfileIco, addBasketIco } from "../utils/catalog-utils.ts";
 
 export class Header {
   headerNavList: HTMLElement | HTMLUListElement;
@@ -48,6 +48,10 @@ export class Header {
 
   searchIco: Element;
 
+  basketElem: Element | null;
+
+  basketCounter: HTMLElement | HTMLUListElement;
+
   constructor() {
     this.header = document.createElement("header");
     this.findContainer = createElement("div", "find-container invisible");
@@ -55,17 +59,21 @@ export class Header {
     this.searchProductInput = createInput("main-search", searchInputAttr);
     this.searchButton = createButton("search-button", searchButtonAttr, "");
     insertFindIco(this.searchButton, svgIcoBig);
-    this.searchIco = this.searchButton.lastElementChild;
+    this.searchIco = this.searchButton?.lastElementChild;
     this.findInputContainer.append(this.searchProductInput, this.searchButton);
     this.findContainer.append(this.findInputContainer);
     this.headerNavContainer = createElement("div", "header_nav-container");
     const leftNav = CreateNavigation(this, headerPropsForLeftNav);
     const rightNav = CreateNavigation(this, headerPropsForRightNav);
     addProfileIco(rightNav);
+    addBasketIco(rightNav);
+    this.basketElem = rightNav.lastElementChild;
+    this.basketCounter = createElement("div", "basket-counter");
+    this.basketElem?.append(this.basketCounter);
     this.burger = new Burger();
     leftNav.append(this.burger.getHtml());
     insertFindIco(leftNav, svgIco);
-    this.findElem = leftNav.lastElementChild;
+    this.findElem = leftNav?.lastElementChild;
     this.headerNavContainer.append(leftNav, rightNav);
     this.header.append(this.findContainer, this.headerNavContainer);
     this.addEventListeners();
@@ -77,7 +85,7 @@ export class Header {
         if (localStorage.getItem("token")) {
           localStorage.removeItem("token");
         }
-        window.location.reload();
+        // window.location.reload();
       }
 
       this.findContainer.addEventListener("mousedown", (event) => {
@@ -120,7 +128,8 @@ export class Header {
     if (this.searchProductInput.value.trim()) {
       searchObject.search = this.searchProductInput.value.trim();
       searchParam = new URLSearchParams(`text.en-US=${searchObject.search}`);
-      finalParamString.push("fuzzy=true&fuzzyLevel=2");
+      finalParamString.push("fuzzy=true");
+      finalParamString.push("&limit=8");
       if (finalParamString.length !== 0) {
         finalParamString.push(`&${searchParam}`);
       } else {
@@ -130,7 +139,8 @@ export class Header {
       if (sortObject.sorting) {
         sortObject.sorting = undefined;
       }
-      setLocationForSearching(finalParamString.join(",").replace(",", ""));
+      const regexp = /!&/g;
+      setLocationForSearching(finalParamString.join("!").replace(regexp, "&"));
     } else {
       searchObject.search = undefined;
     }

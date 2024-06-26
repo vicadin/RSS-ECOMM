@@ -1,7 +1,8 @@
 import { displayError } from "./registartionFormUtils.ts";
 import { AccessToken } from "../catalog-types.ts";
+import { AccessTokenResponse } from "../login-page-types.ts";
 
-export async function getAccessToken(): Promise<AccessToken | Error | Response> {
+export async function getAccessToken(): Promise<AccessToken | Error | boolean> {
   const config = {
     method: "POST",
     headers: {
@@ -11,14 +12,15 @@ export async function getAccessToken(): Promise<AccessToken | Error | Response> 
   };
   try {
     const response = await fetch(
-      `${process.env.AUTH_URL}/oauth/token?grant_type=client_credentials`,
+      `${process.env.AUTH_URL}/oauth/${process.env.PROJECT_KEY}/anonymous/token?grant_type=client_credentials`,
       config,
     );
     if (response.ok) {
-      return await response.json();
+      const answer: AccessTokenResponse = await response.json();
+      return answer;
     }
-    return response;
-  } catch (err) {
+    return false;
+  } catch (err: Error) {
     return err;
   }
 }

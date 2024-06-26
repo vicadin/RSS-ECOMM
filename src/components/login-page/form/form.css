@@ -3,7 +3,6 @@
 }
 .form-error {
   box-sizing: border-box;
-  /* margin-bottom: 20px; */
   color: #ca432f;
   font-size: 16px;
   line-height: 1.7;
@@ -17,7 +16,6 @@
 
 .password-block-wrapper {
   box-sizing: border-box;
-  /*  margin-top: 35px; */
   position: relative;
   display: flex;
 }

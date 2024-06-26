@@ -1,5 +1,6 @@
 import { createElement } from "../../utils/login-page-utils.ts";
 import ProductCard from "./product-card.ts";
+import infiniteObserver from "../../utils/observer.ts";
 
 export default class Products {
   productContainer: HTMLElement | HTMLUListElement;
@@ -14,6 +15,11 @@ export default class Products {
       const product = new ProductCard(productItem, "en-US");
       this.productContainer.append(product.getHtml());
     });
+    const lastProduct = this.productContainer.lastElementChild;
+
+    if (lastProduct) {
+      infiniteObserver.observe(lastProduct);
+    }
   }
 
   getHtml() {

@@ -26,8 +26,12 @@ class App {
     const section = document.createElement("section");
     section.id = "content";
     const h2 = document.createElement("h2");
-    h2.textContent = "Welcome to the Shop!";
+    h2.textContent = "Welcome";
+    const promoCode = document.createElement("p");
+    promoCode.classList.add("promocode");
+    promoCode.innerHTML = `Use promo code <span>FINAL</span> to get a 20% discount`;
     section.appendChild(h2);
+    section.appendChild(promoCode);
     main.appendChild(section);
     main.id = this.id;
     const footer = document.createElement("footer");

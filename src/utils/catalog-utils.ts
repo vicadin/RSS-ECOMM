@@ -1,4 +1,5 @@
 import {
+  AccessToken,
   Ancestor,
   Ancestors,
   Attributes,
@@ -7,11 +8,17 @@ import {
   CategoryType,
   currentFilter,
   currentFilterArray,
+  ProductsResult,
   sortObject,
 } from "../interfaces/catalog-types.ts";
 import { createElement } from "./login-page-utils.ts";
 import CategoryList from "../components/catalog/category-list.ts";
 import { asideHandler, unlockBody } from "./header-utils.ts";
+import { getAccessToken } from "../interfaces/registration/registrationRequests.ts";
+import { currentSearch } from "../interfaces/header-types.ts";
+import { fetchSearchSortFilter } from "../interfaces/catalog-requests.ts";
+import { Cart } from "../interfaces/cart.-types.ts";
+import Products from "../components/catalog/products.ts";
 
 export const categories: CategoryType = {
   array: [],
@@ -28,35 +35,10 @@ export const products = {
 };
 
 export function setProductsArray(answer) {
+  products.array.length = 0;
   if (answer.results) {
     products.array = answer.results;
   }
-}
-
-export function getLocale(props) {
-  let locale;
-  const userLanguages = window.navigator.languages;
-  const appLanguages = Object.keys(props.masterData.current.name);
-
-  if (appLanguages.length === 1) {
-    locale = appLanguages.toString();
-  } else {
-    const languagesSet = new Set(appLanguages.concat(userLanguages));
-
-    if (languagesSet.size === appLanguages.length + userLanguages.length) {
-      locale = languagesSet.has("en-US") ? "en-US" : Array.from(languagesSet)[0];
-    } else if (appLanguages.length + userLanguages.length - languagesSet.size === 1) {
-      appLanguages.forEach((item) => {
-        if (languagesSet.has(item)) {
-          locale = item;
-        }
-        return locale;
-      });
-    } else {
-      [locale] = Array.from(languagesSet);
-    }
-  }
-  return locale;
 }
 
 export function getPriceBlockByLocale(props, locale) {
@@ -79,7 +61,7 @@ function setCurrency(priceBlock, number) {
   return currencyCode + numberFixed;
 }
 
-export function setFinalPrice(props, locale: string) {
+export function setFinalPrice(props: Products | ProductsResult, locale: string) {
   const priceBlock = getPriceBlockByLocale(props, locale);
   const finalPriceNumber = priceBlock?.discounted?.value?.centAmount ?? priceBlock.value.centAmount;
   return setCurrency(priceBlock, finalPriceNumber);
@@ -178,7 +160,6 @@ export function setCurrentFilter(params: URLSearchParams) {
   });
 }
 
-// вставить перед new Catalog Page
 export function setCurrentFiltersArray(params: URLSearchParams) {
   const array = [];
   const paramsArray = Array.from(params.entries());
@@ -188,7 +169,6 @@ export function setCurrentFiltersArray(params: URLSearchParams) {
     }
   });
   currentFilterArray.filter = array;
-  // console.log(currentFilterArray, "currentFilterArray");
 }
 
 export function clearCurrentSort() {
@@ -204,8 +184,8 @@ export function getAttributes(answer): Attributes {
   const totalAttributes = [];
   let totalAttributesNames = [];
   if (answer.results) {
-    answer.results.forEach((anserResult) => {
-      anserResult.masterVariant.attributes.forEach((attribute) => {
+    answer.results.forEach((answerResult) => {
+      answerResult.masterVariant.attributes.forEach((attribute) => {
         totalAttributesNames.push(attribute.name);
         totalAttributes.push(attribute);
       });
@@ -269,6 +249,24 @@ export function addProfileIco(where: HTMLElement) {
   where.appendChild(profileListItem);
 }
 
+export function addBasketIco(where: HTMLElement) {
+  const profileListItem = document.createElement("li");
+  profileListItem.classList.add("nav_list_item");
+
+  const profileLink = document.createElement("a");
+  profileLink.href = "#basket";
+  profileLink.classList.add("basket-link");
+
+  const profileIcon = document.createElement("img");
+  profileIcon.src = "../assets/icons/bag.png";
+  profileIcon.alt = "Basket";
+  profileIcon.classList.add("basket-icon");
+
+  profileLink.appendChild(profileIcon);
+  profileListItem.appendChild(profileLink);
+  where.appendChild(profileListItem);
+}
+
 export function setArrayOfAttributes(attributes: Attributes) {
   attributesForFilters.attributes = attributes;
 }
@@ -287,4 +285,58 @@ export function setTempArrayOfAttributes(params) {
       }
     }
   });
+  temparr.push(["limit", "150"]);
+}
+
+export function getTokenFromLocalStorage(): string | undefined {
+  let token;
+  if (localStorage.getItem("token")) {
+    token = JSON.parse(localStorage.getItem("token")).token;
+  } else if (localStorage.getItem("anonymous-token")) {
+    token = localStorage.getItem("anonymous-token");
+  }
+  return token;
+}
+
+export async function getNewAnonToken(): Promise<string> {
+  const answer = await getAccessToken();
+  return (answer as AccessToken).access_token;
+}
+
+export async function getBaseForAttributes() {
+  let p;
+  if (currentSearch.currentText) {
+    const searchString = `text.en-US=${currentSearch.currentText}&limit=8&offset=0&fuzzy=true`;
+    p = new URLSearchParams(searchString);
+  } else if (localStorage.getItem("productsCategoryId")) {
+    const string = `limit=8&offset=0&filter=categories.id:"${localStorage.getItem("productsCategoryId")}"`;
+    p = new URLSearchParams(string);
+  } else {
+    p = new URLSearchParams("limit=50&offset=0");
+  }
+  const result = await fetchSearchSortFilter(p);
+  return result;
+}
+
+export function addParamToFinalParamArray(finalArray: string[], param: URLSearchParams): void {
+  if (finalArray.length !== 0) {
+    finalArray.push(`&${param}`);
+  } else {
+    finalArray.push(`${param}`);
+  }
+}
+
+export function updateBasketCounter(basket: Cart | boolean): void {
+  const counter = document.querySelector(".basket-counter");
+  if (typeof basket !== "boolean") {
+    if (basket.totalLineItemQuantity) {
+      if (!counter.classList.contains(".counter_active")) {
+        counter.classList.add("counter_active");
+      }
+      counter.textContent = String(basket.totalLineItemQuantity);
+    } else {
+      counter.classList.remove("counter_active");
+      counter.textContent = "";
+    }
+  }
 }
